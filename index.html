@@ -1,13 +1,16 @@
 <!doctype html>
 <html>
   <head>
-    <script src="charting.js"></script>
+    <script src="js/requirejs.js"></script>
+    <script src="js/charting.js"></script>
     <script src="js/Chart.js/Chart.js"></script>
   </head>
   <body>
-    <canvas id="mainChart" width = "400" height="50"></canvas>
+    <canvas id="mainChart" width = "400" height="100"></canvas>
+    <canvas id="pieChart" width = "100" height="100"></canvas>
 
     <script>
+
   	var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
     var leftColumn = [];
     var rightColumn = [];
@@ -34,13 +37,37 @@
           data : rightColumn
   			}
   		]
-
   	}
+    var pieChartData = [
+      {
+        value: 300,
+        color:"#F7464A",
+        highlight: "#FF5A5E",
+        label: "Red"
+      },
+      {
+        value: 50,
+        color: "#46BFBD",
+        highlight: "#5AD3D1",
+        label: "Green"
+      },
+      {
+        value: 100,
+        color: "#FDB45C",
+        highlight: "#FFC870",
+        label: "Yellow"
+      }
+    ];
   	window.onload = function(){
   		var ctx = document.getElementById("mainChart").getContext("2d");
   		window.myBar = new Chart(ctx).Bar(barChartData, {
   			responsive : true
   		});
+
+      var pieCtx = document.getElementById("pieChart").getContext("2d");
+      window.myPie = new Chart(pieCtx).Pie(pieChartData, {
+        percentageInnerCount: 50
+      });
   	}
 
   	</script>

@@ -1,7 +1,7 @@
 window.onload = function() {
-  var canvas = window.document.getElementById("mainChart");
+  var canvas = document.getElementById("mainChart");
   var context = canvas.getContext("2d");
-  context.rect(20,20,150,100);
-  context.fillStyle = "red";
+  context.rect(0,0,200,100);
+  context.fillStyle = "green";
   context.fill();
 }

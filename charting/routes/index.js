@@ -13,17 +13,19 @@ router.get('/data', function(req, res) {
 
   pg.connect(connectionString, function(err, client, done) {
 
-    var query = client.query("SELECT * FROM spending;");
+    var name = req.query.name;
+
+    var query = client.query("SELECT * FROM spending WHERE name = $1", [name]);
 
     query.on('row', function(row) {
       results.push(row);
     });
 
-
     query.on('end', function() {
       client.end();
       return res.json(results);
     })
+
     if(err) {
       console.log(err);
     }

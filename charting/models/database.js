@@ -3,5 +3,5 @@ var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/us
 
 var client = new pg.Client(connectionString);
 client.connect();
-var query = client.query('INSERT INTO spending VALUES (1, \'Russell\', 100.25)');
+var query = client.query('CREATE TABLE login (id int, username varchar(20), password varchar(20))');
 query.on('end', function() { client.end(); });

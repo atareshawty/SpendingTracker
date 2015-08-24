@@ -4,4 +4,13 @@ block content
   h1= title
   p Track your spending without all of the cool credit card stuff!
   p This is a #[a(href='users') sample user]
-  p Login Stuff will go here soon
+  form
+        | Email:
+        br
+        input(type='text', name='email')
+        br
+        | Password:
+        br
+        input(type='text', name='password')
+        br
+        input(type='submit' value='Submit')

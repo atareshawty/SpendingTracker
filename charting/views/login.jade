@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1 Sign Up/In
+  form(action='', method='post')
+    label(for='POST-username') Username
+    input#POST-name(type='text', name='username')
+    label(for='POST-password') Password
+    input#POST-password(type='text', name='password')
+    input(type='submit', value='Submit')

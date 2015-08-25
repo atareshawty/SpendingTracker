@@ -1,9 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var pg = require('pg');
-var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';
+var db = require('../db');
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Track My Spending' });
 });
@@ -11,5 +9,28 @@ router.get('/', function(req, res, next) {
 router.get('/about', function(req, res, next) {
   res.render('about');
 });
+
+router.get('/signup', function(req, res, next) {
+  res.render('signup');
+});
+
+router.post('/signup', function(req, res, next) {
+  try {
+    var usernameExists = null;
+    usernameExists = db.signup.usernameExists(req.body.username);
+    while (usernameExists !== null) {console.log(usernameExists)}
+    if (usernameExists) {
+      res.send('That username already exists! Reload the page and try again');
+    } else {
+      db.signup.insertUsernameAndPassword(req.body.username, req.body.password);
+      res.send('Successful entry of username and password!');
+    }
+
+  } catch(err) {
+    res.send('Sorry about that error' + err);
+  }
+
+});
+
 
 module.exports = router;

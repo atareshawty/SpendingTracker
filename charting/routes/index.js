@@ -15,21 +15,18 @@ router.get('/signup', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-  try {
-    var usernameExists = null;
-    usernameExists = db.signup.usernameExists(req.body.username);
-    while (usernameExists !== null) {console.log(usernameExists)}
-    if (usernameExists) {
-      res.send('That username already exists! Reload the page and try again');
+  var username = req.body.username;
+  var password = req.body.password;
+
+  db.signup.insertUsernameAndPassword(username, password, function(err, isUsernameInDB) {
+
+    if (err) {res.send('Whoops! Something went wrong');}
+    if (isUsernameInDB) {
+      res.send('That username was already taken. Reload the page and try again');
     } else {
-      db.signup.insertUsernameAndPassword(req.body.username, req.body.password);
-      res.send('Successful entry of username and password!');
+      res.send('The username and password was successfully added to the db! Have a beer');
     }
-
-  } catch(err) {
-    res.send('Sorry about that error' + err);
-  }
-
+  });
 });
 
 

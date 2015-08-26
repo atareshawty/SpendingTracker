@@ -1,32 +1,32 @@
+//signup
 var pg = require('pg');
-var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';
 
-var client = new pg.Client(connectionString);
+var createDBClient = function() {
+  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';
+  var client = new pg.Client(connectionString);
+  client.connect();
+  return client;
+};
 
+exports.insertUsernameAndPassword = function(username, password, callback) {
+  var client = createDBClient();
 
-exports.usernameExists = function(username) {
-  var usernameExists = null;
-  try {
-    client.connect(function(err) {
-      client.query('SELECT * FROM login WHERE username = $1 LIMIT 1', [username], function(err, results) {
-        usernameExists = results.rowCount == 1;
+  client.on('error', function(err) {
+    callback(err);
+  });
+
+  var checkQuery = client.query('SELECT * FROM login WHERE username = $1',[username]);
+  checkQuery.on('end', function(result) {
+    var isUsernameInDB = result.rowCount > 0;
+    if (!isUsernameInDB) {
+      var insertQuery = client.query('INSERT INTO login (username, password) VALUES($1,$2)', [username, password]);
+      insertQuery.on('end', function() {
         client.end();
+        callback(null, isUsernameInDB);
       });
-    });
-    return usernameExists;
-  } catch (err) {
-    throw new Error('Something went wrong!' + err);
-  }
-}
-
-exports.insertUsernameAndPassword = function(username, password) {
-  try {
-    client.connect(function(err) {
-      client.query('INSERT INTO login (username, password) VALUES($1, $2)', [username, password], function(err) {
-        client.end();
-      });
-    });
-  } catch (err) {
-    throw new Error('Something went wrong!' + err);
-  }
-}
+    } else {
+      client.end();
+      callback(null, isUsernameInDB);
+    }
+  });
+};

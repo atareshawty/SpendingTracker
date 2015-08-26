@@ -14,6 +14,14 @@ router.get('/signup', function(req, res, next) {
   res.render('signup');
 });
 
+router.get('/signupFailure', function(req, res, next) {
+  res.render('signupFailure');
+});
+
+router.get('/signupSuccess', function(req, res, next) {
+  res.render('signupSuccess');
+})
+
 router.post('/signup', function(req, res, next) {
   var username = req.body.username;
   var password = req.body.password;
@@ -22,9 +30,9 @@ router.post('/signup', function(req, res, next) {
 
     if (err) {res.send('Whoops! Something went wrong');}
     if (isUsernameInDB) {
-      res.send('That username was already taken. Reload the page and try again');
+      res.redirect('/signupFailure');
     } else {
-      res.send('The username and password was successfully added to the db! Have a beer');
+      res.redirect('/signupSuccess');
     }
   });
 });

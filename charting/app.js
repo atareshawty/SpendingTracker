@@ -72,10 +72,12 @@ app.get('/login', function(req, res, next) {
 });
 
 app.post('/login',
-  passport.authenticate('local', { failureRedirect: '/about' }),
+  passport.authenticate('local'),
   function(req, res) {
-    res.redirect('/');
-});
+    // If this function gets called, authentication was successful.
+    // `req.user` contains the authenticated user.
+    res.redirect('/users/' + req.user.id);
+  });
 
 app.get('/logout',
   function(req, res){

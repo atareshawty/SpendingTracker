@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  script(src="/javascripts/data.js")
+  h1= user.username
+  p Visualize your spending
+  p= user.password
+  p= user.id
+
+  #[a(href='/') Home]

@@ -6,4 +6,8 @@ router.get('/', function(req, res, next) {
   res.render('users', { title: 'Sample User'});
 });
 
+router.get('/:id', function(req, res, next) {
+  res.render('user', { user: req.user });
+});
+
 module.exports = router;

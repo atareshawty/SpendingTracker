@@ -1,5 +1,6 @@
 //signup
 var pg = require('pg');
+var bcrypt = require('bcrypt');
 
 var createDBClient = function() {
   var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';
@@ -19,7 +20,10 @@ exports.insertUsernameAndPassword = function(username, password, callback) {
   checkQuery.on('end', function(result) {
     var isUsernameInDB = result.rowCount > 0;
     if (!isUsernameInDB) {
-      var insertQuery = client.query('INSERT INTO login (username, password) VALUES($1,$2)', [username, password]);
+      var hash = bcrypt.hashSync(password, 10);
+      console.log("The user password hash is: " + hash);
+      console.log("And the length of the hash is: " + hash.length);
+      var insertQuery = client.query('INSERT INTO login (username, password) VALUES($1,$2)', [username, hash]);
       insertQuery.on('end', function() {
         client.end();
         callback(null, isUsernameInDB);

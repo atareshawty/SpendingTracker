@@ -21,8 +21,6 @@ exports.insertUsernameAndPassword = function(username, password, callback) {
     var isUsernameInDB = result.rowCount > 0;
     if (!isUsernameInDB) {
       var hash = bcrypt.hashSync(password, 10);
-      console.log("The user password hash is: " + hash);
-      console.log("And the length of the hash is: " + hash.length);
       var insertQuery = client.query('INSERT INTO login (username, password) VALUES($1,$2)', [username, hash]);
       insertQuery.on('end', function() {
         client.end();

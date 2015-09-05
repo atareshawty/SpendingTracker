@@ -15,6 +15,7 @@ passport.use(new Strategy(
     db.users.findByUsername(username, function(err, user) {
       if (err) { return cb(err); }
       if (!user) { return cb(null, false); }
+      console.log(user.spending);
       console.log('Passwords match: ' + bcrypt.compareSync(password, user.password));
       if (!bcrypt.compareSync(password, user.password)) { return cb(null, false); }
       return cb(null, user);

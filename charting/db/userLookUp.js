@@ -26,10 +26,12 @@ function createUser(id, username, password, callback) {
   var spending = [];
   query.on('row', function(row) {
     spending.push(new Transaction(row.cost, row.category, row.location));
+    console.log('Transaction has been added to user.spending');
   });
 
   query.on('end', function() {
     var user = new User(id, username, password, spending);
+    console.log(user.spending);
     callback(null, user);
   })
 }
@@ -39,11 +41,12 @@ exports.findByUsername = function(username, cb) {
     var client = createDBClient();
     var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
     query.on('row', function(row) {
-      console.log(row.password);
       if (row) {
         createUser(row.id, row.username, row.password, function(err, user) {
             return cb(null, user);
         });
+      } else {
+        cb(new Error('User ' + username + ' does not exist'));
       }
     });
   });
@@ -57,10 +60,9 @@ exports.findById = function(id, cb) {
     query.on('row', function(row) {
       var userRecord = {};
       if (row) {
-        userRecord.id = row.id;
-        userRecord.username = row.username;
-        userRecord.password = row.password;
-        cb(null, userRecord);
+        createUser(row.id, row.username, row.password, function(err, user) {
+          return cb(null, user);
+        })
       } else {
         cb(new Error('User ' + id + ' does not exist'));
       }

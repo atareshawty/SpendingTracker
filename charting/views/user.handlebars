@@ -1,7 +1,7 @@
 <h1>{{user.username}}</h1>
 <p>Visualize your spending</p>
-<p>{{user.password}}</p>
 <p>{{user.id}}</p>
-<p>{{user.spending}}</p>
-
+<p>{{user.spending.length}}</p>
+<canvas id="mainChart" height="200" width="200"></canvas>
+<script type="text/x-handlebars-template" src="/javascripts/data.js"></script>
 <a href="/">Home</a>

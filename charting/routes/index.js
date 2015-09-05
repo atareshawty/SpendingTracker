@@ -3,7 +3,7 @@ var router = express.Router();
 var db = require('../db');
 
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Track My Spending' });
+  res.render('home');
 });
 
 router.get('/about', function(req, res, next) {

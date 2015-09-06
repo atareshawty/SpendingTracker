@@ -7,23 +7,6 @@ router.get('/', function(req, res, next) {
   res.render('home');
 });
 
-router.get('/login', function(req, res, next) {
-  res.render('login');
-});
-
-router.post('/login',
-  passport.authenticate('local'),
-  function(req, res) {
-    console.log(req.user);
-    res.redirect('/users/' + req.user.id);
-  });
-
-router.get('/logout',
-  function(req, res){
-    req.logout();
-    res.redirect('/');
-});
-
 router.get('/about', function(req, res, next) {
   res.render('about');
 });

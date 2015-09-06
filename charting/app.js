@@ -40,16 +40,40 @@ passport.use(new Strategy(
   })
 );
 
-passport.serializeUser(function(user, cb) {
-  cb(null, user.id);
+passport.serializeUser(function(user, done) {
+  var sessionUser = {id: user.id, username: user.username, spending: user.spending}
+  done(null, sessionUser);
 });
 
-passport.deserializeUser(function(id, cb) {
-  db.users.findById(id, function (err, user) {
-    if (err) { return cb(err); }
-    cb(null, user);
-  });
+passport.deserializeUser(function(sessionUser, done) {
+  done(null, sessionUser);
 });
+
+app.get('/login', function(req, res, next) {
+  if(req.session.passport) {
+    if(req.session.passport.user) {
+      res.redirect('/users/' + req.session.passport.user.id);
+    }
+  } else {
+    res.render('login');
+  }
+});
+
+app.post('/login',
+  passport.authenticate('local'),
+  function(req, res) {
+    console.log(req.user);
+    console.log(req.session);
+    res.redirect('/users/' + req.user.id);
+  });
+
+app.get('/logout',
+  function(req, res){
+    req.logout();
+    console.log(req.session);
+    res.redirect('/');
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

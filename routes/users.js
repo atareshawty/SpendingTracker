@@ -21,8 +21,6 @@ router.get('/:id', function(req, res) {
 
 router.post('/:id', function(req, res) {
   var transaction = db.spending.createTransaction(req.body.cost, req.body.category, req.body.location);
-  console.log('\n\n\n\n\n\n' + req.user.id)
-  console.log(req.body + '\n\n\n\n\n\n');
   db.spending.insertTransaction(req.user.id, transaction, function() {
     res.redirect('back');
   });

@@ -3,23 +3,27 @@ var router = express.Router();
 var passport = require('passport');
 var db = require('../db');
 
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   res.render('home');
 });
 
-router.get('/about', function(req, res, next) {
+router.get('/401', function(req, res) {
+  res.render('401');
+});
+
+router.get('/about', function(req, res) {
   res.render('about');
 });
 
-router.get('/signup', function(req, res, next) {
+router.get('/signup', function(req, res) {
   res.render('signup');
 });
 
-router.get('/signupFailure', function(req, res, next) {
+router.get('/signupFailure', function(req, res) {
   res.render('signupFailure');
 });
 
-router.post('/signup', function(req, res, next) {
+router.post('/signup', function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 

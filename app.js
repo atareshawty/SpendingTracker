@@ -58,15 +58,14 @@ app.get('/login', function(req, res, next) {
 });
 
 app.post('/login',
-  passport.authenticate('local'),
+  passport.authenticate('local', {failureRedirect: '/401'}),
   function(req, res) {
     res.redirect('/users/' + req.user.id);
-  });
+});
 
 app.get('/logout',
   function(req, res){
-    req.logout();
-    console.log(req.session);
+    req.session.destroy();
     res.redirect('/');
 });
 

@@ -2,7 +2,12 @@
 <img class="avatar" src="https://avatars3.githubusercontent.com/u/9919?v=3&s=144" width="72" height="72">
 <p>{{user.id}}</p>
 <p>{{user.spending.length}}</p>
-<canvas id="mainChart" height="200" width="200"></canvas>
-<script type="text/x-handlebars-template" src="/javascripts/data.js"></script>
-<a href="/">Home</a>
-<a href="/logout">Logout</a>
+<form action="" method="post">
+  <label for='POST-cost')>Cost</label>
+  <input id="POST-cost" type="text", name='cost'>
+  <label for='POST-category')>Category</label>
+  <input id="POST-category" type="text", name='category'>
+  <label for='POST-location')>Location</label>
+  <input id="POST-location" type="text", name='location'>
+  <input type="submit" value="Submit" class="btn btn-primary">
+</form>

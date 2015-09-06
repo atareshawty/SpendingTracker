@@ -20,18 +20,21 @@ function Transaction(cost, category, location) {
   this.location = location;
 }
 
-function createUser(id, username, password, callback) {
+function createUserObj(id, username, password, callback) {
   var client = createDBClient();
   var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
   var spending = [];
+
+  query.on('error', function(error) {
+      callback(error);
+  });
+
   query.on('row', function(row) {
     spending.push(new Transaction(row.cost, row.category, row.location));
-    console.log('Transaction has been added to user.spending');
   });
 
   query.on('end', function() {
     var user = new User(id, username, password, spending);
-    console.log(user.spending);
     callback(null, user);
   })
 }
@@ -40,13 +43,24 @@ exports.findByUsername = function(username, cb) {
   process.nextTick(function() {
     var client = createDBClient();
     var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
-    query.on('row', function(row) {
-      if (row) {
-        createUser(row.id, row.username, row.password, function(err, user) {
-            return cb(null, user);
+
+    query.on('error', function(error) {
+      cb(error);
+    });
+
+    query.on('row', function(row, result) {
+      result.addRow(row);
+    });
+
+    query.on('end', function(result) {
+      if (result.rowCount === 1) {
+        var row = result.rows[0];
+        createUserObj(row.id, row.username, row.password, function(err, user) {
+            if (err) {cb(err);}
+            cb(null, user);
         });
       } else {
-        cb(new Error('User ' + username + ' does not exist'));
+        cb(null, null);
       }
     });
   });

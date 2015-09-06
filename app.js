@@ -60,8 +60,6 @@ app.get('/login', function(req, res, next) {
 app.post('/login',
   passport.authenticate('local'),
   function(req, res) {
-    console.log(req.user);
-    console.log(req.session);
     res.redirect('/users/' + req.user.id);
   });
 

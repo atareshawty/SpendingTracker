@@ -10,12 +10,29 @@ var db = require('./db');
 var bcrypt = require('bcrypt');
 var exphbs  = require('express-handlebars');
 
+var app = express();
+var routes = require('./routes/index');
+var users = require('./routes/users');
+// app.use(favicon(path.join(__dirname, 'public', 'avatar.jpeg')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+app.use('/', routes);
+app.use('/users', users);
+
+//Passport stuff
 passport.use(new Strategy(
   function(username, password, cb) {
     db.users.findByUsername(username, function(err, user) {
       if (err) { return cb(err); }
       if (!user) { return cb(null, false); }
-      console.log(user.spending);
       console.log('Passwords match: ' + bcrypt.compareSync(password, user.password));
       if (!bcrypt.compareSync(password, user.password)) { return cb(null, false); }
       return cb(null, user);
@@ -32,48 +49,6 @@ passport.deserializeUser(function(id, cb) {
     if (err) { return cb(err); }
     cb(null, user);
   });
-});
-
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
-var app = express();
-
-// view engine setup
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
-app.set('view engine', 'handlebars');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use('/', routes);
-app.use('/users', users);
-
-app.get('/login', function(req, res, next) {
-  res.render('login');
-});
-
-app.post('/login',
-  passport.authenticate('local'),
-  function(req, res) {
-    // If this function gets called, authentication was successful.
-    // `req.user` contains the authenticated user.
-    res.redirect('/users/' + req.user.id);
-  });
-
-app.get('/logout',
-  function(req, res){
-    req.logout();
-    res.redirect('/');
 });
 
 // catch 404 and forward to error handler

@@ -27,7 +27,6 @@ app.set('view engine', 'handlebars');
 app.use('/', routes);
 app.use('/users', users);
 
-//Passport stuff
 passport.use(new Strategy(
   function(username, password, cb) {
     db.users.findByUsername(username, function(err, user) {
@@ -104,6 +103,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;

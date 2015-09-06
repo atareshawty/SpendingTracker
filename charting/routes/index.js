@@ -19,10 +19,6 @@ router.get('/signupFailure', function(req, res, next) {
   res.render('signupFailure');
 });
 
-router.get('/signupSuccess', function(req, res, next) {
-  res.render('signupSuccess');
-})
-
 router.post('/signup', function(req, res, next) {
   var username = req.body.username;
   var password = req.body.password;

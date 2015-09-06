@@ -51,21 +51,3 @@ exports.findByUsername = function(username, cb) {
     });
   });
 }
-
-exports.findById = function(id, cb) {
-  process.nextTick(function() {
-    var client = createDBClient();
-    var query = client.query('SELECT * from login WHERE id = $1', [id]);
-
-    query.on('row', function(row) {
-      var userRecord = {};
-      if (row) {
-        createUser(row.id, row.username, row.password, function(err, user) {
-          return cb(null, user);
-        })
-      } else {
-        cb(new Error('User ' + id + ' does not exist'));
-      }
-    });
-  });
-}

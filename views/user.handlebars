@@ -1,18 +1,34 @@
 <script>
-  alert('This popup worked!');
+  $(document).ready(function() {
+    console.log($('#inputForm input[name=cost]').val().length);
+    validate();
+    $('#inputForm input[name=cost], #inputForm input[name=category], #inputForm input[name=location]').change(validate);
+  });
+
+  function validate() {
+    var cost = $('#inputForm input[name=cost]').val();
+    var category = $('#inputForm input[name=category]').val();
+    var location = $('#inputForm input[name=location]').val();
+
+    if (cost.length > 0 && category.length > 0 && location.length > 0) {
+      $("input[type=submit]").attr("disabled", false);
+    } else {
+      $("input[type=submit]").attr("disabled", true);
+    }
+  }
 </script>
 <h1>{{user.username}}</h1>
 <img class="avatar" src="https://avatars3.githubusercontent.com/u/9919?v=3&s=144" width="72" height="72">
-<p>{{user.id}}</p>
 {{#each user.spending}}
   <p>Cost: ${{this.cost}}, Category: {{this.category}}, Location: {{this.location}}</p>
 {{/each}}
-<form name="input" method="post" >
+<h3>Total Spending: ${{user.total}}</h3>
+<form name="input" id="inputForm" onsubmit="return validateForm()" method="post">
   <label for='POST-cost')>Cost</label>
-  <input id="POST-cost" type="text", name='cost'>
+  <input id="POST-cost" type="text", name="cost" id="cost">
   <label for='POST-category')>Category</label>
-  <input id="POST-category" type="text", name='category'>
+  <input id="POST-category" type="text", name="category">
   <label for='POST-location')>Location</label>
-  <input id="POST-location" type="text", name='location'>
-  <input type="submit" value="Submit" class="btn btn-primary">
+  <input id="POST-location" type="text", name="location">
+  <input type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
 </form>

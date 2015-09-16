@@ -1,8 +1,25 @@
+<script>
+  $(document).ready(function() {
+    validate();
+    $('#inputForm input[name=username], #inputForm input[name=password]').change(validate);
+  });
+
+  function validate() {
+    var username = $('#inputForm input[name=username]').val();
+    var password = $('#inputForm input[name=password]').val();
+
+    if (username.length > 0 && password.length > 0) {
+      $("input[type=submit]").attr("disabled", false);
+    } else {
+      $("input[type=submit]").attr("disabled", true);
+    }
+  }
+</script>
 <h2>Sign Up</h2>
-<form action="" method="post">
+<form name="inputForm" id="inputForm" action="" method="post">
   <label for='POST-username')>Username</label>
   <input id="POST-name" type="text", name='username'>
   <label for='POST-password')>Password</label>
   <input id="POST-password" type="password", name='password'>
-  <input type="submit", value="Submit">
+  <input type="submit", value="Submit" class="btn btn-primary">
 </form>

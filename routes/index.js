@@ -16,7 +16,13 @@ router.get('/about', function(req, res) {
 });
 
 router.get('/signup', function(req, res) {
-  res.render('signup');
+  if(req.session.passport) {
+      if(req.session.passport.user) {
+        res.redirect('/users/' + req.session.passport.user.id);
+      }
+    } else {
+      res.render('signup');  
+    }
 });
 
 router.get('/signupFailure', function(req, res) {

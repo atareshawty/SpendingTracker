@@ -1,8 +1,13 @@
+<script>
+  alert('This popup worked!');
+</script>
 <h1>{{user.username}}</h1>
 <img class="avatar" src="https://avatars3.githubusercontent.com/u/9919?v=3&s=144" width="72" height="72">
 <p>{{user.id}}</p>
-<p>{{user.spending.length}}</p>
-<form action="" method="post">
+{{#each user.spending}}
+  <p>Cost: ${{this.cost}}, Category: {{this.category}}, Location: {{this.location}}</p>
+{{/each}}
+<form name="input" method="post" >
   <label for='POST-cost')>Cost</label>
   <input id="POST-cost" type="text", name='cost'>
   <label for='POST-category')>Category</label>

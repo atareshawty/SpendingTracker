@@ -7,11 +7,12 @@ var createDBClient = function() {
   return client;
 };
 
-function User(id, username, password, spending) {
+function User(id, username, password, spending, total) {
   this.id = id;
   this.username = username;
   this.password = password;
   this.spending = spending;
+  this.total = total;
 }
 
 function Transaction(cost, category, location) {
@@ -24,17 +25,19 @@ function createUserObj(id, username, password, callback) {
   var client = createDBClient();
   var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
   var spending = [];
+  var total = 0;
 
   query.on('error', function(error) {
       callback(error);
   });
 
   query.on('row', function(row) {
+    total += row.cost;
     spending.push(new Transaction(row.cost, row.category, row.location));
   });
 
   query.on('end', function() {
-    var user = new User(id, username, password, spending);
+    var user = new User(id, username, password, spending, total);
     callback(null, user);
   })
 }

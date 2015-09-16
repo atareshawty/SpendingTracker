@@ -39,7 +39,7 @@ passport.use(new Strategy(
 );
 
 passport.serializeUser(function(user, done) {
-  var sessionUser = {id: user.id, username: user.username, spending: user.spending}
+  var sessionUser = {id: user.id, username: user.username, spending: user.spending, total: user.total}
   done(null, sessionUser);
 });
 

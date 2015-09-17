@@ -13,7 +13,6 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-  //User id request matches logged in user id
   if (isValidSession(req)) {
     if (isValidLogin(req)) {
       res.render('user', { user: req.user });
@@ -33,7 +32,14 @@ router.post('/:id', function(req, res) {
 });
 
 var userMatchesURLReq = function(reqURL, userId) {
-  return reqURL == ('/' + userId);
+  var questionMarkIndex = reqURL.indexOf('?');
+  var id;
+  if (questionMarkIndex >= 0) {
+    id = reqURL.substring(1, questionMarkIndex);
+  } else {
+    id = reqURL.substring(1, reqURL.length);
+  }
+  return id == userId;
 }
 
 function isValidSession(req) {

@@ -19,12 +19,14 @@
 </table>
 <h3>Total Spending: ${{user.total}}</h3>
 
-<!-- Date Range Selector -->
-<label for="from">From:</label>
-<input type="text" id="from" name="from">
-<label for="To">To:</label>
-<input type="text" id="to" name="To">
-<input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
+<!-- Date Range Filter Selector -->
+<form name="filter" id="filter" method="get">
+  <label for="from">From:</label>
+  <input type="text" id="from" name="from">
+  <label for="To">To:</label>
+  <input type="text" id="to" name="To">
+  <input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
+</form>
 
 <!-- Submit more spending data -->
 <form name="input" id="inputForm" method="post">
@@ -60,7 +62,7 @@
         $('#from').datepicker("option", "minDate", selectedDate)
       }
     });
-    
+
     $('#to').datepicker({
       defaultDate: "+0",
       changeMonth: true,

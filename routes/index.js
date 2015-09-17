@@ -21,8 +21,8 @@ router.get('/signup', function(req, res) {
         res.redirect('/users/' + req.session.passport.user.id);
       }
     } else {
-      res.render('signup');  
-    }
+      res.render('signup');
+  }
 });
 
 router.get('/signupFailure', function(req, res) {

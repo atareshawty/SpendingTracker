@@ -6,3 +6,8 @@ body {
 a {
   color: #00B7FF;
 }
+
+.spendingTable {
+  width: 50%;
+  text-align: left;
+}

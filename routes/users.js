@@ -15,7 +15,20 @@ router.get('/', function(req, res) {
 router.get('/:id', function(req, res) {
   if (isValidSession(req)) {
     if (isValidLogin(req)) {
-      res.render('user', { user: req.user });
+      if (req.query.from) {
+        console.log('Made it to url query logic');
+        db.users.getUserFilterDate(req.user.id, req.query.from, req.query.To, function(err, spending, total) {
+          if (!err) {
+            req.user.spending = spending;
+            req.user.total = total;
+            res.render('user', {user: req.user});
+          } else {
+            res.send('Database error');
+          }
+        });
+      } else {
+        res.render('user', { user: req.user });
+      }
     } else {
       res.send('Don\'t try to access another user\'s information!');
     }
@@ -31,7 +44,7 @@ router.post('/:id', function(req, res) {
   });
 });
 
-var userMatchesURLReq = function(reqURL, userId) {
+function userMatchesURLReq(reqURL, userId) {
   var questionMarkIndex = reqURL.indexOf('?');
   var id;
   if (questionMarkIndex >= 0) {
@@ -48,6 +61,10 @@ function isValidSession(req) {
 
 function isValidLogin(req) {
   return userMatchesURLReq(req.url, req.session.passport.user.id);
+}
+
+function urlHasQuery(req) {
+  return Object.keys(req.query).length === 0;
 }
 
 module.exports = router;

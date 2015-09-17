@@ -18,10 +18,10 @@ exports.createTransaction = function(cost, category, location, date) {
   return new Transaction(cost, category, location, date);
 }
 
-exports.insertTransaction = function(id, transaction, date, done) {
+exports.insertTransaction = function(id, transaction, done) {
   var client = createDBClient();
   var queryString = 'INSERT INTO spending VALUES($1, $2, $3, $4, $5)';
-  var query = client.query(queryString,[id, transaction.cost, transaction.category, transaction.location, date]);
+  var query = client.query(queryString,[id, transaction.cost, transaction.category, transaction.location, transaction.date]);
   query.on('end', function(row) {
     client.end();
     done();

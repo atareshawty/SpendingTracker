@@ -35,14 +35,13 @@ function createUserObj(id, username, password, callback) {
   query.on('row', function(row) {
     total += row.cost;
     var date = row.date;
-    console.log(date);
     spending.push(new Transaction(row.cost, row.category, row.location, row.date));
   });
 
   query.on('end', function() {
     var user = new User(id, username, password, spending, total);
     callback(null, user);
-  })
+  });
 }
 
 exports.findByUsername = function(username, cb) {
@@ -69,5 +68,27 @@ exports.findByUsername = function(username, cb) {
         cb(null, null);
       }
     });
+  });
+}
+
+exports.getUserFilterDate = function(id, minDate, maxDate, done) {
+  var client = createDBClient();
+  var queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3';
+  var query = client.query(queryString, [id, minDate, maxDate]);
+  var total = 0;
+  var spending = [];
+
+  query.on('error', function(error) {
+    done(error);
+  });
+
+  query.on('row', function(row) {
+    total += row.cost;
+    var date = row.date;
+    spending.push(new Transaction(row.cost, row.category, row.location, row.date));
+  });
+
+  query.on('end', function() {
+    done(null, spending, total);
   });
 }

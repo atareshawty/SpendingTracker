@@ -26,7 +26,7 @@ router.get('/:id', function(req, res) {
 });
 
 router.post('/:id', function(req, res) {
-  var transaction = db.spending.createTransaction(req.body.cost, req.body.category, req.body.location);
+  var transaction = db.spending.createTransaction(req.body.cost, req.body.category, req.body.location, req.body.date);
   db.spending.insertTransaction(req.user.id, transaction, function() {
     res.redirect('back');
   });

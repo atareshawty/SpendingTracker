@@ -1,46 +1,112 @@
 <h1>{{user.username}}</h1>
 <img class="avatar" src="https://avatars3.githubusercontent.com/u/9919?v=3&s=144" width="72" height="72">
 <canvas class="chart"></canvas>
-<table class="spendingTable" style="width:100%" style="text-align:left">
+<table class="spendingTable">
   <tr>
     <th>Cost</th>
     <th>Category</th>
     <th>Location</th>
+    <th>Date</th>
   </tr>
 {{#each user.spending}}
   <tr>
     <td class="cost">${{this.cost}}</td>
     <td class="category">{{this.category}}</td>
     <td class="location">{{this.location}}</td>
+    <td class="date">{{this.date}}</td>
   </tr>
 {{/each}}
 </table>
 <h3>Total Spending: ${{user.total}}</h3>
-<form name="input" id="inputForm" onsubmit="return validateForm()" method="post">
+
+<!-- Date Range Selector -->
+<label for="from">From:</label>
+<input type="text" id="from" name="from">
+<label for="To">To:</label>
+<input type="text" id="to" name="To">
+<input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
+
+<!-- Submit more spending data -->
+<form name="input" id="inputForm" method="post">
   <label for='POST-cost')>Cost</label>
   <input id="POST-cost" type="text", name="cost" id="cost">
   <label for='POST-category')>Category</label>
   <input id="POST-category" type="text", name="category">
   <label for='POST-location')>Location</label>
   <input id="POST-location" type="text", name="location">
-  <input type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
+  <label for='POST-date'>Date</label>
+  <input id="POST-date" type="text", name="date">
+  <input id="submitData" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
 </form>
+
+<!-- Jquery fun -->
 <script>
   $(document).ready(function() {
-    validate();
-    $('#inputForm input[name=cost], #inputForm input[name=category], #inputForm input[name=location]').change(validate);
+    validateLogging();
+    createDateRange();
+    createSpendingDate();
+    validateDate();
+    $('#POST-name, #POST-category, #POST-location, #POST-date').change(validateLogging);
+    $('#from, #to').change(validateDate);
   });
 
-  function validate() {
+  function createDateRange() {
+    $('#from').datepicker({
+      defaultDate: "-1m",
+      changeMonth: true,
+      numberOfMonths: 1,
+      dateFormat: "yy-mm-dd",
+      onClose: function(selectedDate) {
+        $('#from').datepicker("option", "minDate", selectedDate)
+      }
+    });
+    
+    $('#to').datepicker({
+      defaultDate: "+0",
+      changeMonth: true,
+      numberOfMonths: 1,
+      dateFormat: "yy-mm-dd",
+      onClose: function(selectedDate) {
+        $('#from').datepicker("option", "maxDate", selectedDate)
+      }
+    });
+  }
+
+  function createSpendingDate() {
+    $('#POST-date').datepicker({
+      defaultDate: "+0",
+      changeMonth: true,
+      numberOfMonths: 1,
+      dateFormat: "yy-mm-dd",
+      onClose: function(selectedDate) {
+        $('#from').datepicker("option", "maxDate", selectedDate)
+      }
+    });
+  }
+
+  function validateLogging() {
     var cost = $('#inputForm input[name=cost]').val();
     var category = $('#inputForm input[name=category]').val();
     var location = $('#inputForm input[name=location]').val();
+    var date = $('#POST-date').val();
 
-    if (cost.length > 0 && category.length > 0 && location.length > 0) {
-      $("input[type=submit]").attr("disabled", false);
+    if (cost.length > 0 && category.length > 0 && location.length > 0 && date.length > 0) {
+      $("input[id=submitData]").attr("disabled", false);
     } else {
-      $("input[type=submit]").attr("disabled", true);
+      $("input[id=submitData]").attr("disabled", true);
     }
   }
+
+  function validateDate() {
+    var minDate = $('#from').val();
+    var maxDate = $('#to').val();
+
+    if (minDate.length > 0 && maxDate.length > 0) {
+      $("input[id=submitDate]").attr("disabled", false);
+    } else {
+      $("input[id=submitDate]").attr("disabled", true);
+    }
+  }
+
 </script>
 <script src="/javascripts/data.js"></script>

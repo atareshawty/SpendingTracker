@@ -15,10 +15,11 @@ function User(id, username, password, spending, total) {
   this.total = total;
 }
 
-function Transaction(cost, category, location) {
+function Transaction(cost, category, location, date) {
   this.cost = cost;
   this.category = category;
   this.location = location;
+  this.date = date;
 }
 
 function createUserObj(id, username, password, callback) {
@@ -33,7 +34,9 @@ function createUserObj(id, username, password, callback) {
 
   query.on('row', function(row) {
     total += row.cost;
-    spending.push(new Transaction(row.cost, row.category, row.location));
+    var date = row.date;
+    console.log(date);
+    spending.push(new Transaction(row.cost, row.category, row.location, row.date));
   });
 
   query.on('end', function() {

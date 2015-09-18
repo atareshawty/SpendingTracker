@@ -1,9 +1,8 @@
-//signup
 var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
 
 var createDBClient = function() {
-  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';
+  var connectionString = process.env.DATABASE_URL || 'postgres://https://shielded-brook-3126.herokuapp.com?ssl=true';
   var client = new pg.Client(connectionString);
   client.connect();
   return client;

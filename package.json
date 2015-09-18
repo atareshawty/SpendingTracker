@@ -1,6 +1,7 @@
 {
   "name": "SpendingTracker",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Track your spending visually",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"

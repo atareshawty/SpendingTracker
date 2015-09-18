@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 var db = require('./db');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-nodejs');
 var exphbs  = require('express-handlebars');
 
 var app = express();

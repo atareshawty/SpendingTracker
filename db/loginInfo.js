@@ -1,6 +1,6 @@
 //signup
 var pg = require('pg');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-nodejs');
 
 var createDBClient = function() {
   var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';

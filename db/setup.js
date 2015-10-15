@@ -20,5 +20,4 @@ var finalQuery = client.query('CREATE TABLE spending (id int, cost float, catego
 finalQuery.on('end', function() {
   console.log('Done!');
   client.end();
-
 });

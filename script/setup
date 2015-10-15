@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# script/setup: Set up application for the first time after cloning, or set it
+#               back to the initial first unused state.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+if [ -f "Brewfile" ] && [ "$(uname -s)" = "Darwin" ]; then
+  brew update
+  brew tap homebrew/bundle 2>/dev/null
+fi
+
+script/bootstrap
+
+if psql -lqt | cut -d \| -f 1 | grep -w user_spending | grep 0; then
+  echo "===> Setting up DB..."
+  createdb user_spending
+  node db/setup.js
+else
+  echo "Database already exists"
+fi
+
+echo "==> App is now ready to go!"

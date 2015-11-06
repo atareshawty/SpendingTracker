@@ -1,4 +1,3 @@
-//A transaction will be represented as a map of category/cost (string, number) pair!!
 window.onload = function() {
   var canvas = $(".chart").get(0);
   var context = canvas.getContext("2d");
@@ -6,6 +5,31 @@ window.onload = function() {
   buildChart(transactions, context);
 }
 
+/**
+  Gets builds pie chart from transactions array and html canvas contect
+  @param transactions - map of key (category) , value (dollar value) to go into chart
+  @param context - context of html canvas element
+*/
+function buildChart(transactions, context) {
+  var chartData = [];
+  transactions.forEach(function(value, key, map) {
+    dataPoint = {
+      value: value,
+      color: randomColor(),
+      highlight: "#FF5A5E",
+      label: key
+    }
+    chartData.push(dataPoint);
+  })
+
+  return new Chart(context).Pie(chartData);
+}
+
+/**
+  Gets element(s) on page with class name {@elementClass}
+  @param elementClass - identifier of element
+  @return array of elements found
+*/
 function getElementsByClass(elementClass) {
   var classToFind = '.' + elementClass;
   var elementsFound = [];
@@ -15,8 +39,12 @@ function getElementsByClass(elementClass) {
   return elementsFound;
 }
 
+/**
+  Complies together all user transactions into map and returns
+  @return map of key (category) and value (dollar value) for each transaction on page
+*/
 function getTransactions() {
-  var costs = [], categories = [], locations = [];
+  var costs = [], categories = [];
   var transactionMap = new Map();
   costs = getElementsByClass('cost');
   categories = getElementsByClass('category');
@@ -36,21 +64,9 @@ function getTransactions() {
   return transactionMap;
 }
 
-function buildChart(transactions, context) {
-  var chartData = [];
-  transactions.forEach(function(value, key, map) {
-    dataPoint = {
-      value: value,
-      color: randomColor(),
-      highlight: "#FF5A5E",
-      label: key
-    }
-    chartData.push(dataPoint);
-  })
-
-  return new Chart(context).Pie(chartData);
-}
-
+/**
+  @return random color based on hexadecimal value (string)
+*/
 function randomColor() {
   var letters = '0123456789ABCDEF'.split('');
   var color = '#';

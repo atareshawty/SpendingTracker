@@ -17,27 +17,27 @@
   </tr>
 {{/each}}
 </table>
-<h3>Total Spending: ${{user.total}}</h3>
+<h3>Total Spending: ${{user.getTotalSpending}}</h3>
 
 <!-- Date Range Filter Selector -->
 <form name="filter" id="filter" method="get">
   <label for="from">From:</label>
-  <input type="text" id="from" name="from">
+  <input type="text" id="from" name="from", placeholder="2015-01-01">
   <label for="To">To:</label>
-  <input type="text" id="to" name="To">
+  <input type="text" id="to" name="To", placeholder="2015-01-31">
   <input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
 </form>
 
 <!-- Submit more spending data -->
 <form name="input" id="inputForm" method="post">
   <label for='POST-cost')>Cost</label>
-  <input id="POST-cost" type="text", name="cost" id="cost">
+  <input id="POST-cost" type="text", name="cost" id="cost", placeholder="Ex: $10.99">
   <label for='POST-category')>Category</label>
-  <input id="POST-category" type="text", name="category">
+  <input id="POST-category" type="text", name="category", placeholder="Ex: Entertainment">
   <label for='POST-location')>Location</label>
-  <input id="POST-location" type="text", name="location">
+  <input id="POST-location" type="text", name="location", placeholder="Ex: AMC Theater">
   <label for='POST-date'>Date</label>
-  <input id="POST-date" type="text", name="date">
+  <input id="POST-date" type="text", name="date", placeholder="2015-10-03">
   <input id="submitData" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
 </form>
 

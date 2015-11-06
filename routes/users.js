@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var db = require('../db')
+var db = require('../db/users.js');
+var passport = require('passport');
+var brcypt = require('bcrypt-nodejs');
+var User = require('../public/javascripts/userModel.js');
+var Transaction = require('../public/javascripts/transactionModel.js');
 
 router.get('/', function(req, res) {
   if(req.session.passport) {
@@ -12,15 +16,43 @@ router.get('/', function(req, res) {
   }
 });
 
+router.get('/login', function(req, res, next) {
+  if(req.session.passport) {
+    if(req.session.passport.user) {
+      res.redirect('/users/' + req.session.passport.user.id);
+    }
+  } else {
+    res.render('login');
+  }
+});
+
+router.get('/logout',
+  function(req, res){
+    req.session.destroy();
+    res.redirect('/');
+});
+
+router.get('/signup', function(req, res) {
+  if(req.session.passport) {
+      if(req.session.passport.user) {
+        res.redirect('/users/' + req.session.passport.user.id);
+      }
+    } else {
+      res.render('signup');
+  }
+});
+
+router.get('/signupFailure', function(req, res) {
+  res.render('signupFailure');
+});
+
 router.get('/:id', function(req, res) {
   if (isValidSession(req)) {
     if (isValidLogin(req)) {
       if (req.query.from) {
-        console.log('Made it to url query logic');
-        db.users.getUserFilterDate(req.user.id, req.query.from, req.query.To, function(err, spending, total) {
+        db.getUserFilterDate(req.user.id, req.query.from, req.query.To, function(err, spending) {
           if (!err) {
             req.user.spending = spending;
-            req.user.total = total;
             res.render('user', {user: req.user});
           } else {
             res.send('Database error');
@@ -37,9 +69,34 @@ router.get('/:id', function(req, res) {
   }
 });
 
+router.post('/signup', function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+
+  db.insertUsernameAndPassword(username, password, function(err, isUsernameInDB) {
+    if (err) {res.send('Whoops! Something went wrong with your signup');}
+    if (isUsernameInDB) {
+      res.redirect('/users/signupFailure');
+    } else {
+      passport.authenticate('local', {failureRedirect: '/401'});
+      res.redirect('/users/login');
+    }
+  });
+});
+
+router.post('/login',
+  passport.authenticate('local', {failureRedirect: '/401'}),
+  function(req, res) {
+    console.log('Made it to login post handler');
+    res.redirect('/users/' + req.user.id);
+});
+
 router.post('/:id', function(req, res) {
-  var transaction = db.spending.createTransaction(req.body.cost, req.body.category, req.body.location, req.body.date);
-  db.spending.insertTransaction(req.user.id, transaction, function() {
+  var transaction = new Transaction(req.body.cost, req.body.category, req.body.location, req.body.date);
+  db.insertTransaction(req.user.id, transaction, function(err) {
+    if (err) {
+      console.log('Error: ' + err + '. From db.insertTransaction()');
+    }
     res.redirect('back');
   });
 });

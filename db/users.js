@@ -1,62 +1,71 @@
 var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
+var User = require('../public/javascripts/userModel.js');
+var Transaction = require('../public/javascripts/transactionModel.js');
 
-var createDBClient = function() {
+function createDBClient() {
   var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';
   var client = new pg.Client(connectionString);
   client.connect();
   return client;
 };
 
-function User(id, username, password, spending, total) {
-  this.id = id;
-  this.username = username;
-  this.password = password;
-  this.spending = spending;
-  this.total = total;
-}
-
-function Transaction(cost, category, location, date) {
-  this.cost = cost;
-  this.category = category;
-  this.location = location;
-  this.date = date;
-}
-
-function createUserObj(id, username, password, callback) {
-  console.log('Creating user');
+/**
+  Gets all necessary information from db to create user object passed back into callback
+  Callback function {@done} expects {@err} and {@user}
+  @param id - id for lookup in db
+  @param username
+  @param password
+  @param done - callback
+*/
+function createUserObj(id, username, password, done) {
+  console.log('\nCreating user');
   var client = createDBClient();
   var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
   var spending = [];
-  var total = 0;
 
   query.on('error', function(error) {
-      callback(error);
+      done(error);
   });
 
   query.on('row', function(row) {
-    total += row.cost;
     var date = row.date;
     spending.push(new Transaction(row.cost, row.category, row.location, row.date));
   });
 
   query.on('end', function() {
-    var user = new User(id, username, password, spending, total);
-    callback(null, user);
+    var user = new User(id, username, password, spending);
+    done(null, user);
   });
 };
 
+/**
+  Inserts transaction {@transaction} into db, for user with id = {@id}
+  Callback function {@done} expects {@err}
+  @param id - user id
+  @param transaction - inserted into db
+  @param done - callback function
+*/
 exports.insertTransaction = function(id, transaction, done) {
-  console.log('Inserting transaction');
   var client = createDBClient();
   var queryString = 'INSERT INTO spending VALUES($1, $2, $3, $4, $5)';
   var query = client.query(queryString,[id, transaction.cost, transaction.category, transaction.location, transaction.date]);
+  query.on('error', function(err) {
+    client.end();
+    done(err);
+  })
   query.on('end', function(row) {
     client.end();
-    done();
+    done(null);
   });
 };
 
+/**
+  Finds user by {@username} and returns user into {@cb} callback function
+  Callback params: {@err}, {@user} object
+  @param username
+  @param cb
+*/
 exports.findByUsername = function(username, cb) {
   console.log('Find by username');
   process.nextTick(function() {
@@ -85,12 +94,19 @@ exports.findByUsername = function(username, cb) {
   });
 };
 
+/**
+  Gets all spending info from user {@id} between {@minDate} and {@maxDate}
+  Callback params are {@err} and {@spending} which is an array of transactions
+  @param id - id of user for which information is requested
+  @param minDate - minimum date for which information is requested
+  @param maxDate - maximum date for which information is requested
+  @param callback function
+*/
 exports.getUserFilterDate = function(id, minDate, maxDate, done) {
   console.log('get user filter date');
   var client = createDBClient();
   var queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3';
   var query = client.query(queryString, [id, minDate, maxDate]);
-  var total = 0;
   var spending = [];
 
   query.on('error', function(error) {
@@ -98,47 +114,45 @@ exports.getUserFilterDate = function(id, minDate, maxDate, done) {
   });
 
   query.on('row', function(row) {
-    total += row.cost;
     var date = row.date;
     spending.push(new Transaction(row.cost, row.category, row.location, row.date));
   });
 
   query.on('end', function() {
-    done(null, spending, total);
+    client.end();
+    done(null, spending);
   });
 };
 
-exports.createTransaction = function(cost, category, location, date) {
-  return new Transaction(cost, category, location, date);
-};
-
-exports.insertUsernameAndPassword = function(username, password, callback) {
+/**
+  Inserts new username and password into db
+  Callback function {@done} expects {@err} and {@isUsernameAlreadyInDB}
+  @param username
+  @param password
+  @param callback function
+*/
+exports.insertUsernameAndPassword = function(username, password, done) {
   console.log('insert username and password');
   usernameExists(username, function(err, exists) {
-    if (err) {callback(err);}
+    if (err) {done(err);}
 
-    var client = createDBClient();
-    var id = null;
-    client.on('error', function(err) {
-      callback(err);
-    });
-
-    if (!exists) {
-      var hash = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-      var insertQuery = client.query('INSERT INTO login (username, password) VALUES($1,$2)', [username, hash]);
-      insertQuery.on('end', function() {
-        var idQuery = client.query('SELECT * FROM login WHERE username = $1', [username]);
-        idQuery.on('row', function(row) {
-          id = row.id;
-        });
-        idQuery.on('end', function() {
-          client.end();
-          callback(null, false, id);
-        })
-      });
+    if (exists) {
+      done(null, true);
     } else {
-      client.end();
-      callback(null, true);
+
+      var client = createDBClient();
+      client.on('error', function(err) {
+        callback(err);
+      });
+      var hash = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+      var query = client.query('INSERT INTO login (username, password) VALUES($1, $2)', [username, hash]);
+      query.on('error', function(err) {
+        done(err);
+      });
+      query.on('end', function() {
+        client.end();
+        done(null, false);
+      });
     }
   });
 };
@@ -153,7 +167,6 @@ function usernameExists(username, callback) {
 
   var query = client.query('SELECT * FROM login WHERE username = $1', [username]);
   query.on('end', function(result) {
-    // client.end();
     callback(null, result.rowCount > 0);
   });
 }

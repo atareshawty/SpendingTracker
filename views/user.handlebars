@@ -1,5 +1,5 @@
-<h1>{{user.username}}</h1>
-<img class="avatar" src="https://avatars3.githubusercontent.com/u/9919?v=3&s=144" width="72" height="72">
+<h1>Welcome, {{user.username}}!</h1>
+<!-- <img class="avatar" src="https://avatars3.githubusercontent.com/u/9919?v=3&s=144" width="72" height="72"> -->
 <canvas class="chart"></canvas>
 <table class="spendingTable">
   <tr>
@@ -17,26 +17,38 @@
   </tr>
 {{/each}}
 </table>
-<h3>Total Spending: ${{user.getTotalSpending}}</h3>
+<h3>Total Spending: ${{user.total}}</h3>
+
+<!-- Get customized user categories -->
+<h2>Want your own Categories?</h2>
+<form name="categories" id="customize" method="post">
+  <label>Category</label>
+  <input type="text" id="customCategory", name="category", placeholder="Make your own!">
+  <input id="submitCategory" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
+</form>
 
 <!-- Date Range Filter Selector -->
 <form name="filter" id="filter" method="get">
-  <label for="from">From:</label>
+  <label>From</label>
   <input type="text" id="from" name="from", placeholder="2015-01-01">
-  <label for="To">To:</label>
+  <label>To</label>
   <input type="text" id="to" name="To", placeholder="2015-01-31">
   <input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
 </form>
 
 <!-- Submit more spending data -->
 <form name="input" id="inputForm" method="post">
-  <label for='POST-cost')>Cost</label>
+  <label>Cost</label>
   <input id="POST-cost" type="text", name="cost" id="cost", placeholder="Ex: $10.99">
-  <label for='POST-category')>Category</label>
-  <input id="POST-category" type="text", name="category", placeholder="Ex: Entertainment">
-  <label for='POST-location')>Location</label>
+  <label>Category</label>
+  <select id="POST-category" name="category">
+    {{#each user.categories}}
+      <option>{{this}}</option>
+    {{/each}}
+  </select>
+  <label>Location</label>
   <input id="POST-location" type="text", name="location", placeholder="Ex: AMC Theater">
-  <label for='POST-date'>Date</label>
+  <label>Date</label>
   <input id="POST-date" type="text", name="date", placeholder="2015-10-03">
   <input id="submitData" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
 </form>
@@ -48,8 +60,10 @@
     createDateRange();
     createSpendingDate();
     validateDate();
-    $('#POST-name, #POST-category, #POST-location, #POST-date').change(validateLogging);
+    validateCategories();
+    $('#POST-name, #POST-location, #POST-date').change(validateLogging);
     $('#from, #to').change(validateDate);
+    $('#customCategory').change(validateCategories);
   });
 
   function createDateRange() {
@@ -89,11 +103,10 @@
 
   function validateLogging() {
     var cost = $('#inputForm input[name=cost]').val();
-    var category = $('#inputForm input[name=category]').val();
     var location = $('#inputForm input[name=location]').val();
     var date = $('#POST-date').val();
 
-    if (cost.length > 0 && category.length > 0 && location.length > 0 && date.length > 0) {
+    if (cost.length > 0 && location.length > 0 && date.length > 0) {
       $("input[id=submitData]").attr("disabled", false);
     } else {
       $("input[id=submitData]").attr("disabled", true);
@@ -108,6 +121,15 @@
       $("input[id=submitDate]").attr("disabled", false);
     } else {
       $("input[id=submitDate]").attr("disabled", true);
+    }
+  }
+
+  function validateCategories() {
+    var category = $('#customCategory').val();
+    if (category.length > 0) {
+      $("input[id=submitCategory]").attr("disabled", false);
+    } else {
+      $("input[id=submitCategory]").attr("disabled", true);
     }
   }
 

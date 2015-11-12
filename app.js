@@ -9,6 +9,7 @@ var Strategy = require('passport-local').Strategy;
 var db = require('./db/users.js');
 var bcrypt = require('bcrypt-nodejs');
 var exphbs  = require('express-handlebars');
+var User = require('./public/javascripts/userModel.js');
 
 var app = express();
 var pages = require('./routes/pages');
@@ -29,18 +30,18 @@ app.use('/users', users);
 
 passport.use(new Strategy(
   function(username, password, cb) {
-    db.findByUsername(username, function(err, user) {
+    db.findByUsername(username, function(err, user, userPassword) {
       if (err) { return cb(err); }
       if (!user) { return cb(null, false); }
-      if (!bcrypt.compareSync(password, user.password)) { return cb(null, false); }
+      if (!bcrypt.compareSync(password, userPassword)) { return cb(null, false); }
       return cb(null, user);
     });
   })
 );
 
 passport.serializeUser(function(user, done) {
-  var sessionUser = {id: user.id, username: user.username, spending: user.spending, total: user.total}
-  done(null, sessionUser);
+  user.total = user.getTotalSpending();
+  done(null, user);
 });
 
 passport.deserializeUser(function(sessionUser, done) {

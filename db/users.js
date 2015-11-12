@@ -18,7 +18,7 @@ function createDBClient() {
   @param password
   @param done - callback
 */
-function createUserObj(id, username, password, done) {
+function createUserObj(id, username, done) {
   console.log('\nCreating user');
   var client = createDBClient();
   var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
@@ -34,8 +34,15 @@ function createUserObj(id, username, password, done) {
   });
 
   query.on('end', function() {
-    var user = new User(id, username, password, spending);
-    done(null, user);
+    var user = new User(id, username, spending);
+    client.end();
+    getCategories(id, function(err, categories) {
+      if (err) {
+        done(err);
+      } else {
+        done(null, new User(id, username, spending, categories));
+      }
+    });
   });
 };
 
@@ -62,18 +69,18 @@ exports.insertTransaction = function(id, transaction, done) {
 
 /**
   Finds user by {@username} and returns user into {@cb} callback function
-  Callback params: {@err}, {@user} object
+  Callback params: {@err}, {@user} object, {@password} string
   @param username
   @param cb
 */
-exports.findByUsername = function(username, cb) {
+exports.findByUsername = function(username, done) {
   console.log('Find by username');
   process.nextTick(function() {
     var client = createDBClient();
     var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
 
     query.on('error', function(error) {
-      cb(error);
+      done(error);
     });
 
     query.on('row', function(row, result) {
@@ -81,14 +88,15 @@ exports.findByUsername = function(username, cb) {
     });
 
     query.on('end', function(result) {
+      client.end();
       if (result.rowCount === 1) {
         var row = result.rows[0];
-        createUserObj(row.id, row.username, row.password, function(err, user) {
-            if (err) {cb(err);}
-            cb(null, user);
+        createUserObj(row.id, row.username, function(err, user) {
+            if (err) {done(err);}
+            done(null, user, row.password);
         });
       } else {
-        cb(null, null);
+        done(null, null);
       }
     });
   });
@@ -114,7 +122,6 @@ exports.getUserFilterDate = function(id, minDate, maxDate, done) {
   });
 
   query.on('row', function(row) {
-    var date = row.date;
     spending.push(new Transaction(row.cost, row.category, row.location, row.date));
   });
 
@@ -126,7 +133,7 @@ exports.getUserFilterDate = function(id, minDate, maxDate, done) {
 
 /**
   Inserts new username and password into db
-  Callback function {@done} expects {@err} and {@isUsernameAlreadyInDB}
+  Callback function {@done} expects {@err} and {@isUsernameAlreadyInDB} - boolean
   @param username
   @param password
   @param callback function
@@ -156,6 +163,57 @@ exports.insertUsernameAndPassword = function(username, password, done) {
     }
   });
 };
+
+/**
+  Inserts new category into db based on user password
+  Callback function only expects possible error
+  @param user id
+  @param string
+  @param callback function
+*/
+exports.insertNewCategory = function(id, category, done) {
+  console.log('Inserting new categories...');
+  var client = createDBClient();
+  var queryString = 'INSERT INTO categories VALUES($1, $2)';
+  var query = client.query(queryString, [id, category]);
+
+  query.on('error', function(err) {
+    done(err);
+  });
+
+  query.on('end', function() {
+    client.end();
+    done(null);
+  });
+};
+
+/**
+  Retrieves all categories (default and personalized) from db
+  Callback function {@done} expects {@err} and {@categories} - an array of strings
+  @param user id for which personalized categories exist
+  @param callback function
+*/
+function getCategories(id, done) {
+  var client = createDBClient();
+  var categoryQueryString = 'SELECT category FROM categories WHERE id = 0 OR id = $1';
+  var categoryQuery = client.query(categoryQueryString, [id]);
+  var categories = [];
+
+  categoryQuery.on('error', function(err) {
+    done(err);
+  });
+
+  categoryQuery.on('row', function(row) {
+      categories.push(row.category);
+  });
+
+  categoryQuery.on('end', function() {
+    client.end();
+    done(null, categories);
+  })
+
+}
+
 
 function usernameExists(username, callback) {
   console.log('username exists');

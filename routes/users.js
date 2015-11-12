@@ -53,13 +53,18 @@ router.get('/:id', function(req, res) {
         db.getUserFilterDate(req.user.id, req.query.from, req.query.To, function(err, spending) {
           if (!err) {
             req.user.spending = spending;
-            res.render('user', {user: req.user});
+            var newUser = new User(req.user.id, req.user.username, req.user.spending, req.user.categories);
+            newUser.total = newUser.getTotalSpending();
+            res.render('user', {user: newUser});
           } else {
             res.send('Database error');
           }
         });
       } else {
-        res.render('user', { user: req.user });
+        db.findByUsername(req.user.username, function(err, user, userPassword) {
+          user.total = user.getTotalSpending();
+          res.render('user', { user: user });
+        });
       }
     } else {
       res.send('Don\'t try to access another user\'s information!');
@@ -92,6 +97,16 @@ router.post('/login',
 });
 
 router.post('/:id', function(req, res) {
+  if (req.body.cost) {
+    handleTransactionPost(req, res);
+  } else if (req.body.category) {
+    handleCategoryPost(req, res);
+  } else {
+    res.redirect('back');
+  }
+});
+
+function handleTransactionPost(req, res) {
   var transaction = new Transaction(req.body.cost, req.body.category, req.body.location, req.body.date);
   db.insertTransaction(req.user.id, transaction, function(err) {
     if (err) {
@@ -99,7 +114,16 @@ router.post('/:id', function(req, res) {
     }
     res.redirect('back');
   });
-});
+}
+
+function handleCategoryPost(req, res) {
+  db.insertNewCategory(req.user.id, req.body.category, function(err) {
+    if (err) {
+      console.log('Error: ' + err + '. From insertNewCategory()');
+    }
+    res.redirect('back');
+  });
+}
 
 function userMatchesURLReq(reqURL, userId) {
   var questionMarkIndex = reqURL.indexOf('?');

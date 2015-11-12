@@ -1,8 +1,8 @@
-function User(id, username, password, spending) {
+function User(id, username, spending, categories) {
   this.id = id;
   this.username = username;
-  this.password = password;
   this.spending = spending;
+  this.categories = categories;
 }
 
 User.prototype.getId = function() {
@@ -15,14 +15,18 @@ User.prototype.getUsername = function() {
 
 User.prototype.getSpending = function() {
   return this.spending;
-}
+};
+
+User.prototype.getCategories = function() {
+  return this.categories;
+};
 
 User.prototype.getTotalSpending = function() {
   var total = 0;
-  spending.forEach(function(element, index, array) {
-    total += element;
+  this.spending.forEach(function(element) {
+    total += element.cost;
   });
   return total;
-}
+};
 
 module.exports = User;

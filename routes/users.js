@@ -77,16 +77,21 @@ router.get('/:id', function(req, res) {
 router.post('/signup', function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
+  var emailRegex = /.+\@.+/;
 
-  db.insertUsernameAndPassword(username, password, function(err, isUsernameInDB) {
-    if (err) {res.send('Whoops! Something went wrong with your signup');}
-    if (isUsernameInDB) {
-      res.redirect('/users/signupFailure');
-    } else {
-      passport.authenticate('local', {failureRedirect: '/401'});
-      res.redirect('/users/login');
-    }
-  });
+  if (emailRegex.match(username)) {
+    db.insertUsernameAndPassword(username, password, function(err, isUsernameInDB) {
+      if (err) {res.send('Whoops! Something went wrong with your signup');}
+      if (isUsernameInDB) {
+        res.redirect('/users/signupFailure');
+      } else {
+        passport.authenticate('local', {failureRedirect: '/401'});
+        res.redirect('/users/login');
+      }
+    });
+  } else {
+    res.send('Please reload the page and try again with a valid email address');
+  }
 });
 
 router.post('/login',

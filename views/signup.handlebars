@@ -7,8 +7,9 @@
   function validate() {
     var username = $('#inputForm input[name=username]').val();
     var password = $('#inputForm input[name=password]').val();
+    var emailRegex = /.+\@.+/;
 
-    if (username.length > 0 && password.length > 0) {
+    if (username.length > 0 && password.length > 0 && emailRegex.test(username)) {
       $("input[type=submit]").attr("disabled", false);
     } else {
       $("input[type=submit]").attr("disabled", true);
@@ -17,8 +18,8 @@
 </script>
 <h2>Sign Up</h2>
 <form name="inputForm" id="inputForm" action="" method="post">
-  <label>Username</label>
-  <input type="text", name='username', placeholder="Username" autofocus>
+  <label>Email</label>
+  <input type="text", name='username', placeholder="user@example.com" autofocus>
   <label>Password</label>
   <input type="password", name='password', placeholder="Password">
   <input type="submit", value="Submit" class="btn btn-primary">

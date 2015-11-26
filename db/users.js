@@ -2,10 +2,10 @@ var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
+var config = require('../config.js');
 
-function createDBClient() {
-  var connectionString = 'postgres://localhost:5432/user_spending';
-  var client = new pg.Client(connectionString);
+var createDBClient = function() {
+  var client = new pg.Client(config.db.postgres);
   client.connect();
   return client;
 };
@@ -29,12 +29,10 @@ function createUserObj(id, username, done) {
   });
 
   query.on('row', function(row) {
-    var date = row.date;
     spending.push(new Transaction(row.cost, row.category, row.location, row.date));
   });
 
   query.on('end', function() {
-    var user = new User(id, username, spending);
     client.end();
     getCategories(id, function(err, categories) {
       if (err) {
@@ -75,30 +73,28 @@ exports.insertTransaction = function(id, transaction, done) {
 */
 exports.findByUsername = function(username, done) {
   console.log('Find by username');
-  process.nextTick(function() {
-    var client = createDBClient();
-    var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
+  var client = createDBClient();
+  var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
 
-    query.on('error', function(error) {
-      done(error);
-    });
+  query.on('error', function(error) {
+    done(error);
+  });
 
-    query.on('row', function(row, result) {
-      result.addRow(row);
-    });
+  query.on('row', function(row, result) {
+    result.addRow(row);
+  });
 
-    query.on('end', function(result) {
-      client.end();
-      if (result.rowCount === 1) {
-        var row = result.rows[0];
-        createUserObj(row.id, row.username, function(err, user) {
-            if (err) {done(err);}
-            done(null, user, row.password);
-        });
-      } else {
-        done(null, null);
-      }
-    });
+  query.on('end', function(result) {
+    client.end();
+    if (result.rowCount === 1) {
+      var row = result.rows[0];
+      createUserObj(row.id, row.username, function(err, user) {
+          if (err) {done(err);}
+          done(null, user, row.password);
+      });
+    } else {
+      done(null, null);
+    }
   });
 };
 
@@ -149,7 +145,7 @@ exports.insertUsernameAndPassword = function(username, password, done) {
 
       var client = createDBClient();
       client.on('error', function(err) {
-        callback(err);
+        done(err);
       });
       var hash = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
       var query = client.query('INSERT INTO login (username, password) VALUES($1, $2)', [username, hash]);

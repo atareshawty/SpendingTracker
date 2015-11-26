@@ -1,15 +1,24 @@
-function setup(app, handlers) {
+var express = require('express');
+var router = express.Router();
+var passport = require('passport');
+
+router.setup = function(app, handlers) {
   	app.get('/', handlers.staticPages.getHome);
 	app.get('/401', handlers.staticPages.get401);
-	app.get('/', handlers.staticPages.getAbout);
-	app.get('/users', handlers.user.getUser);
+	app.get('/about', handlers.staticPages.getAbout);
+	app.get('/users', handlers.user.getSampleUser);
 	app.get('/users/login', handlers.user.getLogin);
 	app.get('/users/logout', handlers.user.getLogout);
-	app.get('/users/signup', handlers.user.signup);
+	app.get('/users/signup', handlers.user.getSignup);
 	app.get('/users/:id', handlers.user.getUser);
 	app.post('/users/signup', handlers.user.createUser);
-	app.post('/users/login', handlers.user.postLogin);
+	app.post('/users/login', 
+		passport.authenticate('local', {failureRedirect: '/401'}),
+		function(req, res) {
+			console.log('Made it to login post handler');
+			res.redirect('/users/' + req.user.id);
+		});
 	app.post('/users/:id', handlers.user.postUser);
 }
 
-exports.setup = setup;
+module.exports = router;

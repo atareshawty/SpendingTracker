@@ -24,7 +24,7 @@ function UserHandler() {
 	
 	this.getLogout = function(req, res) {
 		req.session.destroy();
-		res.direct('/');
+		res.redirect('/');
 	};
 	
 	this.getSignup = function(req, res) {
@@ -108,23 +108,12 @@ function handleCategoryPost(req, res) {
   });
 }
 
-function userMatchesURLReq(reqURL, userId) {
-  var questionMarkIndex = reqURL.indexOf('?');
-  var id;
-  if (questionMarkIndex >= 0) {
-    id = reqURL.substring(1, questionMarkIndex);
-  } else {
-    id = reqURL.substring(1, reqURL.length);
-  }
-  return id == userId;
-}
-
 function isValidSession(req) {
   return !(req.session.passport == null || req.session.passport.user == null);
 }
 
 function isValidLogin(req) {
-  return userMatchesURLReq(req.url, req.session.passport.user.id);
+	return req.session.passport.user.id == req.url.substring(req.url.length - 2, req.url.length);
 }
 
 function urlHasQuery(req) {

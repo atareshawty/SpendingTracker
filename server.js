@@ -11,13 +11,13 @@ var path = require('path');
 var bcrypt = require('bcrypt-nodejs');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var config = require('./config.js');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
+app.use(require('express-session')({ secret: config.passport.secret, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
@@ -51,7 +51,7 @@ var handlers = {
 
 function start() {
   routes.setup(app, handlers);
-  var port = 3000;
+  var port = config.server.port;
   app.listen(port);
   console.log("Express server listening on port %d in %s mode", port, app.settings.env);
 }

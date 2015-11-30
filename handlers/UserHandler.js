@@ -15,7 +15,7 @@ function UserHandler() {
 	};
 	
 	this.getLogin = function(req, res) {
-		if (req.session.passport && req.session.user.id) {
+		if (isLoggedIn(req)) {
 			res.redirect('/users/' + req.session.passport.user.id);
 		} else {
 			res.render('login');
@@ -28,7 +28,7 @@ function UserHandler() {
 	};
 	
 	this.getSignup = function(req, res) {
-		if (req.session.passport && req.session.user.id) {
+		if (isLoggedIn(req)) {
 			res.redirect('/users/' + req.session.passport.user.id);
 		} else {
 			res.render('signup');
@@ -77,6 +77,11 @@ function UserHandler() {
 			}
 			});		
 	};
+	
+	this.postLogin = function(req, res) {
+			console.log('Made it to login post handler');
+			res.redirect('/users/' + req.user.id);
+		};
 
 	this.postUser = function(req, res) {
 		if (req.body.cost) {
@@ -113,11 +118,21 @@ function isValidSession(req) {
 }
 
 function isValidLogin(req) {
-	return req.session.passport.user.id == req.url.substring(req.url.length - 2, req.url.length);
+	var url = req.url;
+	var i = url.length - 1;
+	while (url.charAt(i - 1) != '/') {
+		i--;
+	}
+	return req.session.passport.user.id == url.substring(i, req.url.length);
 }
 
 function urlHasQuery(req) {
   return Object.keys(req.query).length === 0;
+}
+
+function isLoggedIn(req) {
+	console.log(Object.keys(req));
+	return (req.session.passport && req.session.user.id)
 }
 
 module.exports = UserHandler;

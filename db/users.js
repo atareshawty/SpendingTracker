@@ -2,10 +2,10 @@ var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
-var config = require('../config.js');
 
-var createDBClient = function() {
-  var client = new pg.Client(config.db.postgres);
+function createDBClient() {
+  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';
+  var client = new pg.Client(connectionString);
   client.connect();
   return client;
 };
@@ -73,28 +73,30 @@ exports.insertTransaction = function(id, transaction, done) {
 */
 exports.findByUsername = function(username, done) {
   console.log('Find by username');
-  var client = createDBClient();
-  var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
+  process.nextTick(function() {
+    var client = createDBClient();
+    var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
 
-  query.on('error', function(error) {
-    done(error);
-  });
+    query.on('error', function(error) {
+      done(error);
+    });
 
-  query.on('row', function(row, result) {
-    result.addRow(row);
-  });
+    query.on('row', function(row, result) {
+      result.addRow(row);
+    });
 
-  query.on('end', function(result) {
-    client.end();
-    if (result.rowCount === 1) {
-      var row = result.rows[0];
-      createUserObj(row.id, row.username, function(err, user) {
-          if (err) {done(err);}
-          done(null, user, row.password);
-      });
-    } else {
-      done(null, null);
-    }
+    query.on('end', function(result) {
+      client.end();
+      if (result.rowCount === 1) {
+        var row = result.rows[0];
+        createUserObj(row.id, row.username, function(err, user) {
+            if (err) {done(err);}
+            done(null, user, row.password);
+        });
+      } else {
+        done(null, null);
+      }
+    });
   });
 };
 
@@ -137,25 +139,18 @@ exports.getUserFilterDate = function(id, minDate, maxDate, done) {
 exports.insertUsernameAndPassword = function(username, password, done) {
   console.log('insert username and password');
   usernameExists(username, function(err, exists) {
-    if (err) {done(err);}
-
-    if (exists) {
+    if (err) {
+      done(err);
+    } else if (exists) {
       done(null, true);
     } else {
-
+      password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
       var client = createDBClient();
-      client.on('error', function(err) {
-        done(err);
-      });
-      var hash = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-      var query = client.query('INSERT INTO login (username, password) VALUES($1, $2)', [username, hash]);
-      query.on('error', function(err) {
-        done(err);
-      });
+      var query = client.query('INSERT INTO login (username, password) VALUES($1, $2)', [username, password]);
       query.on('end', function() {
         client.end();
         done(null, false);
-      });
+      })
     }
   });
 };
@@ -210,17 +205,16 @@ function getCategories(id, done) {
 
 }
 
-
-function usernameExists(username, callback) {
-  console.log('username exists');
-  var client = createDBClient();
-
-  client.on('error', function(err){
-    callback(err);
+function usernameExists(username, done) {
+  console.log('Username exists');
+  var client = createDBClient(), query;
+  client.on('error', function(err) {
+    done(err);
   });
-
-  var query = client.query('SELECT * FROM login WHERE username = $1', [username]);
+  
+  query = client.query('SELECT * FROM login WHERE username = $1', [username]);
   query.on('end', function(result) {
-    callback(null, result.rowCount > 0);
+    client.end();
+    done(null, result.rowCount > 0);
   });
 }

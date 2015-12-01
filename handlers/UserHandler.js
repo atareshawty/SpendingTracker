@@ -5,11 +5,17 @@ var brcypt = require('bcrypt-nodejs');
 
 function UserHandler() {
 	this.createUser = function(req, res) {
-		
+		db.insertUsernameAndPassword(req.body.username, req.body.password, function(err, inDB) {
+			if (inDB) {
+				res.status(401).send();
+			} else {
+				res.status(200).send();
+			}
+		})
 	};
 	
 	this.getUserModel = function(req, res) {
-		db.findById(req.body.id, function(err, user) {
+		db.findById(req.query.id, function(err, user) {
 			if (err) {
 				res.status(500).send(err);
 			} else {
@@ -20,7 +26,14 @@ function UserHandler() {
 	};
 	
 	this.deleteUser = function(req, res) {
-		
+		db.deleteUser(req.body.username, function(err, success) {
+			if (success) {
+				res.status(200).send();
+			} else {
+				res.status(500).send();
+			}
+		})
+	
 	}
 }
 

@@ -22,7 +22,7 @@ describe('Api', function() {
 	};
 	
 	it('should return correct user corresponding to id, as json', function(done) {
-		request(url).get('/api/users').send({"id": testUser.id}).expect('Content-Type', /json/).expect(200).expect(function(res) {
+		request(url).get('/api/users?id=' + testUser.id).expect('Content-Type', /json/).expect(200).expect(function(res) {
 			assert.equal(undefined, undefined);
 			res.body.should.have.property('username');
 			res.body.username.should.equal(testUser.username);
@@ -36,7 +36,7 @@ describe('Api', function() {
 	});
 	
 	it('should return correct spending corresponding to id, as json', function(done) {
-		request(url).get('/api/users').send({"id": testUser.id}).expect('Content-Type', /json/).expect(200).expect(function(res) {
+		request(url).get('/api/users?id=' + testUser.id).expect('Content-Type', /json/).expect(200).expect(function(res) {
 			assert.equal(undefined, undefined);
 			res.body.should.have.property('spending');
 			assert.deepEqual(res.body.spending, testUser.spending);
@@ -48,4 +48,35 @@ describe('Api', function() {
 			}
 		});
 	});
+	
+	it('should not create a new user when the username request already exists', function(done) {
+		var postObject = {
+			"username": testUser.username, 
+			"password": testUser.password
+		}
+		
+		request(url).post('/api/users').send(postObject).expect(401).end(function(err) {
+			if (err) {
+				done(err);
+			} else {
+				done();
+			}
+		});
+	});
+	
+	it('should create a new user when the username doesn\'t already exist', function(done) {
+		var postObject = {
+			"username": 'newUser',
+			"password": 'password'
+		}
+
+		request(url).post('/api/users').send(postObject).expect(200).end(function(err) {
+			if (err) done(err);
+			request(url).delete('/api/users').send(postObject).end(function(err) {
+				if (err) done(err);
+				done();
+			})
+		})
+	})
+	
 });

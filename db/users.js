@@ -218,6 +218,25 @@ exports.insertNewCategory = function(id, category, done) {
   });
 };
 
+exports.deleteUser = function(username, done) {
+  console.log('Deleting user...');
+  var client = createDBClient();
+  var loginQueryString = 'DELETE FROM login WHERE username=$1';
+  var categoriesQueryString = 'DELETE FROM categories WHERE id=$1';
+  var spendingQueryString = 'DELETE FROM spending WHERE id=$1';
+  
+  getId(username, function(err, id) {
+    if (err) done(err);
+    client.query(loginQueryString, [username]);
+    client.query(categoriesQueryString, [id]);
+    var query = client.query(spendingQueryString, [id]);
+    query.on('end', function() {
+      client.end();
+      done(false, true);
+    })
+  });
+}
+
 /**
   Retrieves all categories (default and personalized) from db
   Callback function {@done} expects {@err} and {@categories} - an array of strings
@@ -263,4 +282,22 @@ function usernameExists(username, done) {
     client.end();
     done(null, result.rowCount > 0);
   });
+}
+
+function getId(username, done) {
+  console.log('Username exists');
+  var client = createDBClient(), query;
+  client.on('error', function(err) {
+    done(err);
+  });
+  var id;
+  query = client.query('SELECT * FROM login WHERE username = $1', [username]);
+  query.on('row', function(row) {
+    id = row.id;
+  });
+  
+  query.on('end', function() {
+    client.end();
+    done(null, id);
+  })
 }

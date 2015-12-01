@@ -7,5 +7,11 @@ module.exports = {
 			},
 	"server": {
 			"port": 3000
+			},
+	"test": {
+		"user": {
+			"username": 'testGuy',
+			"password": 'testPassword'
+		}
 	}
 };

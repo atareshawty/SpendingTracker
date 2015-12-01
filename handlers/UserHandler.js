@@ -16,7 +16,7 @@ function UserHandler() {
 		if (req.isAuthenticated()) {
 			res.redirect('/users/' + req.session.passport.user.id);
 		} else {
-			res.render('login');
+			res.status(200).render('login');
 		}
 	};
 	
@@ -29,7 +29,7 @@ function UserHandler() {
 		if (req.isAuthenticated()) {
 			res.redirect('/users/' + req.session.passport.user.id);
 		} else {
-			res.render('signup');
+			res.status(200).render('signup');
 		}
 	};
 	
@@ -63,16 +63,17 @@ function UserHandler() {
 		db.insertUsernameAndPassword(username, password, function(err, isUsernameInDB) {
 			if (err) {res.send('Whoops! Something went wrong with your signup');}
 			if (isUsernameInDB) {
-				res.redirect('/users/signupFailure');
+				console.log('Username is already in db');
+				res.status(403).render('signupfailure');
 			} else {
-				res.redirect('/users/login');
+				res.status(200).redirect('/users/login');
 			}
 			});		
 	};
 	
 	//See routes.js for authentication. Not handled here!
 	this.postLogin = function(req, res) {
-			res.redirect('/users/' + req.user.id);
+			res.status(200).redirect('/users/' + req.user.id);
 	};
 
 	this.postUser = function(req, res) {

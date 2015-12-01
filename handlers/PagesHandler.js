@@ -2,6 +2,9 @@ var db = require('../db/users.js');
 var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
 var brcypt = require('bcrypt-nodejs');
+var http = require('http');
+var https = require('https');
+var config = require('../config.js');
 
 function StaticHandler() {
 	this.getHome = function(req, res) {
@@ -49,23 +52,42 @@ function StaticHandler() {
 	* Expecting post request to have params from and to properties for spending filtering
 	**/
 	this.getUser = function(req, res) {
-		if (req.session.passport && req.isAuthenticated()) {
-			var userId = req.session.passport.user.id || undefined;
-			var from = req.query.from || undefined;
-			var to = req.query.to || undefined;
-			db.getUser(userId, from, to, function(err, spending) {
-				if (!err) {
-					req.user.spending = spending;
-					var newUser = new User(userId, req.user.username, req.user.spending, req.user.categories);
-					newUser.total = newUser.getTotalSpending();
-					res.render('user', {user: newUser});
-				} else {
-					res.send('Database error');
-				}
+		// if (req.session.passport && req.isAuthenticated()) {
+		// 	var userId = req.session.passport.user.id || undefined;
+		// 	var from = req.query.from || undefined;
+		// 	var to = req.query.to || undefined;
+		// 	db.getUser(userId, from, to, function(err, spending) {
+		// 		if (!err) {
+		// 			req.user.spending = spending;
+		// 			var newUser = new User(userId, req.user.username, req.user.spending, req.user.categories);
+		// 			newUser.total = newUser.getTotalSpending();
+		// 			res.render('user', {user: newUser});
+		// 		} else {
+		// 			res.send('Database error');
+		// 		}
+		// 		});
+		// } else {
+		// 	res.render('needLogin');
+		// }
+		if (req.isAuthenticated()) {			
+			var options = {
+				"host": process.env.URL || 'localhost',
+				"port": config.server.port,
+				"path": '/api/users?id=' + req.session.passport.user.id,
+				"method": 'get'
+			}
+			var user;
+			var request = http.request(options, function(response) {
+				response.on('data', function(data) {
+					user = JSON.parse(data);	
+					res.render('user', {user: user});
 				});
+			});
+			
+			request.end();
 		} else {
 			res.render('needLogin');
-		}	
+		}
 	};
 	
 	this.createUser = function(req, res) {
@@ -80,7 +102,7 @@ function StaticHandler() {
 			} else {
 				res.status(200).redirect('/users/login');
 			}
-			});		
+		});		
 	};
 	
 	//See routes.js for authentication. Not handled here!

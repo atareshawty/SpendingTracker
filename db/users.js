@@ -101,6 +101,39 @@ exports.findByUsername = function(username, done) {
 };
 
 /**
+  Finds user by {@id} and returns user into {@cb} callback function
+  Callback params: {@err}, {@user} object
+  @param username
+  @param cb
+*/
+exports.findById = function(id, done) {
+  console.log('Find by id');
+    var client = createDBClient();
+    var query = client.query('SELECT * FROM login WHERE id = $1',[id]);
+
+    query.on('error', function(error) {
+      done(error);
+    });
+
+    query.on('row', function(row, result) {
+      result.addRow(row);
+    });
+
+    query.on('end', function(result) {
+      client.end();
+      if (result.rowCount === 1) {
+        var row = result.rows[0];
+        createUserObj(row.id, row.username, function(err, user) {
+            if (err) {done(err);}
+            done(null, user);
+        });
+      } else {
+        done(null, null);
+      }
+    });
+};
+
+/**
   Gets all spending info from user {@id} between {@minDate} and {@maxDate}
   Callback params are {@err} and {@spending} which is an array of transactions
   @param id - id of user for which information is requested
@@ -212,16 +245,12 @@ function getCategories(id, done) {
 
 }
 
-<<<<<<< HEAD
 /**
  * Checks to see whether or not a username exists
  * Callback function {@done} expects err and boolean
  * @param username
  * @param callback function
  */ 
-=======
-
->>>>>>> master
 function usernameExists(username, done) {
   console.log('Username exists');
   var client = createDBClient(), query;

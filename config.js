@@ -6,12 +6,15 @@ module.exports = {
 			"secret": 'keyboard cat'
 			},
 	"server": {
-			"port": 3000
+			"port": 3000,
+			"url": process.env.URL || "http://localhost:3000"
 			},
 	"test": {
 		"user": {
 			"username": 'testGuy',
-			"password": 'testPassword'
+			"password": 'testPassword',
+			"id": "29",
+			"spending": [ {"cost": 19.99, "category": 'Food', "location": 'TV', "date": '2015-12-01'}]
 		}
 	}
 };

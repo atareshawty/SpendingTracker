@@ -3,17 +3,20 @@ var router = express.Router();
 var passport = require('passport');
 
 router.setup = function(app, handlers) {
-  app.get('/', handlers.staticPages.getHome);
-	app.get('/401', handlers.staticPages.get401);
-	app.get('/about', handlers.staticPages.getAbout);
-	app.get('/users', handlers.user.getSampleUser);
-	app.get('/users/login', handlers.user.getLogin);
-	app.get('/users/logout', handlers.user.getLogout);
-	app.get('/users/signup', handlers.user.getSignup);
-	app.get('/users/:id', handlers.user.getUser);
-	app.post('/users/signup', handlers.user.createUser);
-	app.post('/users/login', passport.authenticate('local', {failureRedirect: '/401'}), handlers.user.postLogin);
-	app.post('/users/:id', handlers.user.postUser);
+  app.get('/', handlers.pages.getHome);
+	app.get('/401', handlers.pages.get401);
+	app.get('/about', handlers.pages.getAbout);
+	app.get('/users', handlers.pages.getSampleUser);
+	app.get('/users/login', handlers.pages.getLogin);
+	app.get('/users/logout', handlers.pages.getLogout);
+	app.get('/users/signup', handlers.pages.getSignup);
+	app.get('/users/:id', handlers.pages.getUser);
+	app.post('/users/signup', handlers.pages.createUser);
+	app.post('/users/login', passport.authenticate('local', {failureRedirect: '/401'}), handlers.pages.postLogin);
+	app.post('/users/:id', handlers.pages.postUser);
+	app.get('/api/users', handlers.user.getUserModel);
+	app.post('/api/users', handlers.user.createUser);
+	app.delete('/api/users', handlers.user.deleteUser);
 }
 
 module.exports = router;

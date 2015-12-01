@@ -17,10 +17,8 @@ router.get('/', function(req, res) {
 });
 
 router.get('/login', function(req, res, next) {
-  if(req.session.passport) {
-    if(req.session.passport.user) {
-      res.redirect('/users/' + req.session.passport.user.id);
-    }
+  if(req.isAuthenticated()) {
+    res.redirect('/users/' + req.session.passport.user.id);
   } else {
     res.render('login');
   }
@@ -33,11 +31,9 @@ router.get('/logout',
 });
 
 router.get('/signup', function(req, res) {
-  if(req.session.passport) {
-      if(req.session.passport.user) {
-        res.redirect('/users/' + req.session.passport.user.id);
-      }
-    } else {
+  if(req.isAuthenticated()) {
+    res.redirect('/users/' + req.session.passport.user.id);
+  } else {
       res.render('signup');
   }
 });
@@ -47,31 +43,25 @@ router.get('/signupFailure', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-  if (isValidSession(req)) {
-    if (isValidLogin(req)) {
-      if (req.query.from) {
-        db.getUserFilterDate(req.user.id, req.query.from, req.query.To, function(err, spending) {
-          if (!err) {
-            req.user.spending = spending;
-            var newUser = new User(req.user.id, req.user.username, req.user.spending, req.user.categories);
-            newUser.total = newUser.getTotalSpending();
-            res.render('user', {user: newUser});
-          } else {
-            res.send('Database error');
-          }
-        });
+  if (req.isAuthenticated()) {
+    var userId = req.session.passport.user.id || undefined;
+    var from = req.query.from || undefined;
+    var to = req.query.to || undefined;
+    console.log(from);
+    console.log(to)
+    db.getUser(userId, from, to, function(err, spending) {
+      if (!err) {
+        req.user.spending = spending;
+        var newUser = new User(userId, req.user.username, req.user.spending, req.user.categories);
+        newUser.total = newUser.getTotalSpending();
+        res.render('user', {user: newUser});
       } else {
-        db.findByUsername(req.user.username, function(err, user, userPassword) {
-          user.total = user.getTotalSpending();
-          res.render('user', { user: user });
-        });
+        res.send('Database error');
       }
-    } else {
-      res.send('Don\'t try to access another user\'s information!');
-    }
+      });
   } else {
     res.render('needLogin');
-  }
+  } 	
 });
 
 router.post('/signup', function(req, res) {
@@ -93,7 +83,6 @@ router.post('/signup', function(req, res) {
 router.post('/login',
   passport.authenticate('local', {failureRedirect: '/401'}),
   function(req, res) {
-    console.log('Made it to login post handler');
     res.redirect('/users/' + req.user.id);
 });
 
@@ -124,29 +113,6 @@ function handleCategoryPost(req, res) {
     }
     res.redirect('back');
   });
-}
-
-function userMatchesURLReq(reqURL, userId) {
-  var questionMarkIndex = reqURL.indexOf('?');
-  var id;
-  if (questionMarkIndex >= 0) {
-    id = reqURL.substring(1, questionMarkIndex);
-  } else {
-    id = reqURL.substring(1, reqURL.length);
-  }
-  return id == userId;
-}
-
-function isValidSession(req) {
-  return !(req.session.passport == null || req.session.passport.user == null);
-}
-
-function isValidLogin(req) {
-  return userMatchesURLReq(req.url, req.session.passport.user.id);
-}
-
-function urlHasQuery(req) {
-  return Object.keys(req.query).length === 0;
 }
 
 module.exports = router;

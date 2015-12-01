@@ -110,13 +110,23 @@ exports.findByUsername = function(username, done) {
   @param maxDate - maximum date for which information is requested
   @param callback function
 */
-exports.getUserFilterDate = function(id, minDate, maxDate, done) {
-  console.log('get user filter date');
+exports.getUser = function(id, minDate, maxDate, done) {
+  console.log('get user');
   var client = createDBClient();
-  var queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3';
-  var query = client.query(queryString, [id, minDate, maxDate]);
+  var queryString, query;
   var spending = [];
+  
+  if (minDate && maxDate) {
+    queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3';
+    query = client.query(queryString, [id, minDate, maxDate])
+  } else {
+    queryString = 'SELECT * FROM spending WHERE id = $1';
+    query = client.query(queryString, [id]);
+  }
 
+  console.log(queryString);
+  console.log(minDate);
+  console.log(maxDate);
   query.on('error', function(error) {
     done(error);
   });

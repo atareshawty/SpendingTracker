@@ -13,7 +13,9 @@ window.onload = function() {
 function buildChart(transactions, context) {
   var chartData = [];
   transactions.forEach(function(value, key, map) {
-    dataPoint = {
+    value *= 100;
+    value /= 100;
+    var dataPoint = {
       value: value,
       color: randomColor(),
       highlight: "#FF5A5E",

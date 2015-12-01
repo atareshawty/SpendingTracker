@@ -26,8 +26,7 @@ User.prototype.getTotalSpending = function() {
   this.spending.forEach(function(element) {
     total += element.cost;
   });
-  total *= 100;
-  total /= 100;
+  total = parseFloat(total.toFixed(2));
   return total;
 };
 

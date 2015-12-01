@@ -1,13 +1,11 @@
-var router = require('express').Router();
 var db = require('../db/users.js');
 var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
-var passport = require('passport');
 var brcypt = require('bcrypt-nodejs');
 
 function UserHandler() {
 	this.getSampleUser = function(req, res) {
-		if (req.session.passport && req.session.user.id) {
+		if (req.isAuthenticated()) {
 			res.redirect('/users/' + req.session.passport.user.id);
 		} else {
 			res.render('users', { title: 'Sample User'});
@@ -15,7 +13,7 @@ function UserHandler() {
 	};
 	
 	this.getLogin = function(req, res) {
-		if (isLoggedIn(req)) {
+		if (req.isAuthenticated()) {
 			res.redirect('/users/' + req.session.passport.user.id);
 		} else {
 			res.render('login');
@@ -28,36 +26,31 @@ function UserHandler() {
 	};
 	
 	this.getSignup = function(req, res) {
-		if (isLoggedIn(req)) {
+		if (req.isAuthenticated()) {
 			res.redirect('/users/' + req.session.passport.user.id);
 		} else {
 			res.render('signup');
 		}
 	};
 	
+	/**
+	* Expecting post request to have params from and to properties for spending filtering
+	**/
 	this.getUser = function(req, res) {
-		if (isValidSession(req)) {
-			if (isValidLogin(req)) {
-				if (req.query.from && req.query.To) {
-					db.getUserFilterDate(req.user.id, req.query.from, req.query.To, function(err, spending) {
-						if (!err) {
-							req.user.spending = spending;
-							var newUser = new User(req.user.id, req.user.username, req.user.spending, req.user.categories);
-							newUser.total = newUser.getTotalSpending();
-							res.render('user', {user: newUser});
-						} else {
-							res.send('Database error');
-						}
-						});
+		if (req.session.passport && req.isAuthenticated()) {
+			var userId = req.session.passport.user.id || undefined;
+			var from = req.query.from || undefined;
+			var to = req.query.to || undefined;
+			db.getUser(userId, from, to, function(err, spending) {
+				if (!err) {
+					req.user.spending = spending;
+					var newUser = new User(userId, req.user.username, req.user.spending, req.user.categories);
+					newUser.total = newUser.getTotalSpending();
+					res.render('user', {user: newUser});
 				} else {
-					db.findByUsername(req.user.username, function(err, user, userPassword) {
-						user.total = user.getTotalSpending();
-						res.render('user', { user: user });
-					});
+					res.send('Database error');
 				}
-			} else {
-			res.send('Don\'t try to access another user\'s information!');
-			}
+				});
 		} else {
 			res.render('needLogin');
 		}	
@@ -72,16 +65,15 @@ function UserHandler() {
 			if (isUsernameInDB) {
 				res.redirect('/users/signupFailure');
 			} else {
-				passport.authenticate('local', {failureRedirect: '/401'});
 				res.redirect('/users/login');
 			}
 			});		
 	};
 	
+	//See routes.js for authentication. Not handled here!
 	this.postLogin = function(req, res) {
-			console.log('Made it to login post handler');
 			res.redirect('/users/' + req.user.id);
-		};
+	};
 
 	this.postUser = function(req, res) {
 		if (req.body.cost) {
@@ -111,28 +103,6 @@ function handleCategoryPost(req, res) {
     }
     res.redirect('back');
   });
-}
-
-function isValidSession(req) {
-  return !(req.session.passport == null || req.session.passport.user == null);
-}
-
-function isValidLogin(req) {
-	var url = req.url;
-	var i = url.length - 1;
-	while (url.charAt(i - 1) != '/') {
-		i--;
-	}
-	return req.session.passport.user.id == url.substring(i, req.url.length);
-}
-
-function urlHasQuery(req) {
-  return Object.keys(req.query).length === 0;
-}
-
-function isLoggedIn(req) {
-	console.log(Object.keys(req));
-	return (req.session.passport && req.session.user.id)
 }
 
 module.exports = UserHandler;

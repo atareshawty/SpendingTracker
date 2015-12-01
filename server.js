@@ -1,3 +1,5 @@
+/* global process */
+/* global __dirname */
 var express = require('express');
 var app = express();
 var StaticHandler = require('./handlers/StaticHandler');
@@ -17,7 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(require('express-session')({ secret: config.passport.secret, resave: false, saveUninitialized: false }));
+app.use(require('express-session')({ secret: process.env.PASSPORT_SECRET || config.passport.secret, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));

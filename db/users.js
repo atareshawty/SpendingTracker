@@ -109,7 +109,7 @@ exports.findByUsername = function(username, done) {
   @param callback function
 */
 exports.getUser = function(id, minDate, maxDate, done) {
-  console.log('get user filter date');
+  console.log('get user');
   var client = createDBClient();
   var queryString, query;
   var spending = [];
@@ -212,12 +212,16 @@ function getCategories(id, done) {
 
 }
 
+<<<<<<< HEAD
 /**
  * Checks to see whether or not a username exists
  * Callback function {@done} expects err and boolean
  * @param username
  * @param callback function
  */ 
+=======
+
+>>>>>>> master
 function usernameExists(username, done) {
   console.log('Username exists');
   var client = createDBClient(), query;

@@ -8,7 +8,11 @@
     var username = $('#inputForm input[name=username]').val();
     var password = $('#inputForm input[name=password]').val();
 
+<<<<<<< HEAD
     if (username.length > 0 && password.length > 0) {
+=======
+    if (username.length > 0 && password.length > 0 && username.length <= 20) {
+>>>>>>> master
       $("input[type=submit]").attr("disabled", false);
     } else {
       $("input[type=submit]").attr("disabled", true);
@@ -18,7 +22,11 @@
 <h2>Sign Up</h2>
 <form name="inputForm" id="inputForm" action="" method="post">
   <label>Email</label>
+<<<<<<< HEAD
   <input type="text", name='username', placeholder="username" autofocus>
+=======
+  <input type="text", name='username', placeholder="Less than 20 chars, please!" autofocus>
+>>>>>>> master
   <label>Password</label>
   <input type="password", name='password', placeholder="password">
   <input type="submit", value="Submit" class="btn btn-primary">

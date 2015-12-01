@@ -29,12 +29,10 @@ function createUserObj(id, username, done) {
   });
 
   query.on('row', function(row) {
-    var date = row.date;
     spending.push(new Transaction(row.cost, row.category, row.location, row.date));
   });
 
   query.on('end', function() {
-    var user = new User(id, username, spending);
     client.end();
     getCategories(id, function(err, categories) {
       if (err) {
@@ -124,9 +122,6 @@ exports.getUser = function(id, minDate, maxDate, done) {
     query = client.query(queryString, [id]);
   }
 
-  console.log(queryString);
-  console.log(minDate);
-  console.log(maxDate);
   query.on('error', function(error) {
     done(error);
   });
@@ -217,7 +212,16 @@ function getCategories(id, done) {
 
 }
 
+<<<<<<< HEAD
+/**
+ * Checks to see whether or not a username exists
+ * Callback function {@done} expects err and boolean
+ * @param username
+ * @param callback function
+ */ 
+=======
 
+>>>>>>> master
 function usernameExists(username, done) {
   console.log('Username exists');
   var client = createDBClient(), query;

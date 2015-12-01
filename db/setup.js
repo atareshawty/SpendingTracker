@@ -1,9 +1,9 @@
 var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
+var config = require('./config');
 
 var createDBClient = function() {
-  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';
-  var client = new pg.Client(connectionString);
+  var client = new pg.Client(config.db.postgres);
   client.connect();
   return client;
 };

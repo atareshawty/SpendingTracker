@@ -113,7 +113,7 @@ exports.getUser = function(id, minDate, maxDate, done) {
   var client = createDBClient();
   var queryString, query;
   var spending = [];
-  
+
   if (minDate && maxDate) {
     queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3';
     query = client.query(queryString, [id, minDate, maxDate])
@@ -212,23 +212,19 @@ function getCategories(id, done) {
 
 }
 
-<<<<<<< HEAD
 /**
  * Checks to see whether or not a username exists
  * Callback function {@done} expects err and boolean
  * @param username
  * @param callback function
- */ 
-=======
-
->>>>>>> master
+ */
 function usernameExists(username, done) {
   console.log('Username exists');
   var client = createDBClient(), query;
   client.on('error', function(err) {
     done(err);
   });
-  
+
   query = client.query('SELECT * FROM login WHERE username = $1', [username]);
   query.on('end', function(result) {
     client.end();

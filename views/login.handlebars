@@ -1,19 +1,16 @@
 <script>
   $(document).ready(function() {
-    validate();
-    $('#inputForm input[name=username], #inputForm input[name=password]').change(validate);
+    var username = $('#inputForm input[name=username]');
+    var password = $('#inputForm input[name=password]');
+    $('#inputForm input[name=username], #inputForm input[name=password]').on('keyup',function() {
+      if (username.val().length > 0 && password.val().length > 0) {
+        $("input[type=submit]").attr("disabled", false);
+      } else {
+        $("input[type=submit]").attr("disabled", true);
+      }
+    });
   });
-
-  function validate() {
-    var username = $('#inputForm input[name=username]').val();
-    var password = $('#inputForm input[name=password]').val();
-
-    if (username.length > 0 && password.length > 0) {
-      $("input[type=submit]").attr("disabled", false);
-    } else {
-      $("input[type=submit]").attr("disabled", true);
-    }
-  }
+  
 </script>
 <h2>Login</h2>
 <form name="inputForm" id="inputForm" action="" method="post">
@@ -21,5 +18,5 @@
   <input id="POST-name" type="text", name='username', placeholder="Username" autofocus>
   <label for='POST-password')>Password</label>
   <input id="POST-password" type="password", name='password', placeholder="Password">
-  <input type="submit" value="Submit" class="btn btn-primary">
+  <input type="submit" value="Submit" class="btn btn-primary" disabled="true">
 </form>

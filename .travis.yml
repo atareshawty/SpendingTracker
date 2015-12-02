@@ -1,5 +1,10 @@
   language: node_js
 
+notifications: # set notification options
+  email:
+    recipients:
+      - russellTravisBuilds@marktareshawty.com
+      
 sudo: false
 
 node_js:
@@ -9,4 +14,5 @@ services:
   - postgresql
   
 before_script:
-  - psql -c 'create database spending_tracker_development;' -U postgres  
+  - psql -c 'create database spending_tracker_development;' -U postgres
+  - node db/testSetup.js

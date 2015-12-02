@@ -51,12 +51,20 @@ var handlers = {
   user: new UserHandler() 
 };
 
+var server;
+
 function start() {
   routes.setup(app, handlers);
   var port = config.server.port;
-  app.listen(port);
+  server = app.listen(port);
   console.log("Express server listening on port %d in %s mode", port, app.settings.env);
 }
 
+function end() {
+  console.log('K byeeeeeee!');
+  server.close();
+}
+
+exports.end = end;
 exports.start = start;
 exports.app = app;

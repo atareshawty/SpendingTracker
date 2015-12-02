@@ -2,7 +2,8 @@
   $(document).ready(function() {
     var username = $('#inputForm input[name=username]');
     var password = $('#inputForm input[name=password]');
-    $('#inputForm input[name=username], #inputForm input[name=password]').on('keyup',function() {
+
+    $('#inputForm input[name=username], #inputForm input[name=password]').on('keyup', function() {
       if (username.val().length > 0 && password.val().length > 0) {
         $("input[type=submit]").attr("disabled", false);
       } else {
@@ -10,7 +11,6 @@
       }
     });
   });
-  
 </script>
 <h2>Login</h2>
 <form name="inputForm" id="inputForm" action="" method="post">

@@ -4,7 +4,7 @@ var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
 
 function createDBClient() {
-  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/user_spending';
+  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development';
   var client = new pg.Client(connectionString);
   client.connect();
   return client;
@@ -161,7 +161,7 @@ exports.getUser = function(id, minDate, maxDate, done) {
   var client = createDBClient();
   var queryString, query;
   var spending = [];
-  
+
   if (minDate && maxDate) {
     queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3';
     query = client.query(queryString, [id, minDate, maxDate])
@@ -291,7 +291,7 @@ function usernameExists(username, done) {
   client.on('error', function(err) {
     done(err);
   });
-  
+
   query = client.query('SELECT * FROM login WHERE username = $1', [username]);
   query.on('end', function(result) {
     client.end();

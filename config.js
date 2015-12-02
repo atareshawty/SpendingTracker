@@ -1,6 +1,6 @@
 module.exports = {
 	"db": {
-			"postgres": 'postgres://localhost:5432/user_spending'
+			"postgres": 'postgres://localhost:5432/user_spending_development'
 		  },	
 	"passport": {
 			"secret": 'keyboard cat'

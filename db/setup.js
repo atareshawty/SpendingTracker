@@ -1,6 +1,6 @@
 var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
-var config = require('./config');
+var config = require('../config');
 
 var createDBClient = function() {
   var client = new pg.Client(config.db.postgres);

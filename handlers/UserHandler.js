@@ -15,9 +15,9 @@ function UserHandler() {
 	};
 	
 	this.getUserModel = function(req, res) {
-		db.findById(req.query.id, function(err, user) {
+		db.findById(req.query.id, req.query.from, req.query.to, function(err, user) {
 			if (err) {
-				res.status(500).send(err);
+				res.status(500).send(err.message);
 			} else {
 				res.set('Content-Type', 'application/json');
 				res.status(200).json(user);

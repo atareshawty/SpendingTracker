@@ -37,7 +37,6 @@ describe('Api', function() {
 	
 	it('should return correct spending corresponding to id, as json', function(done) {
 		request(url).get('/api/users?id=' + testUser.id).expect('Content-Type', /json/).expect(200).expect(function(res) {
-			assert.equal(undefined, undefined);
 			res.body.should.have.property('spending');
 			assert.deepEqual(res.body.spending, testUser.spending);
 		}).end(function(err) {
@@ -48,6 +47,16 @@ describe('Api', function() {
 			}
 		});
 	});
+	
+	it('should return the correct number of filtered dates when query params are provided', function(done) {
+		var params = '/api/users/?id=' + testUser.id + '&from=' + config.test.filerDates.from + '&to=' + config.test.filerDates.to;
+		request(url).get(params).expect('Content-Type', /json/).expect(200).expect(function(res) {
+			res.body.should.have.property('spending');
+			assert.deepEqual(res.body.spending.length, config.test.filerDates.expect);
+		}).end(function(err) {
+			done(err);
+		})
+	})
 	
 	it('should not create a new user when the username request already exists', function(done) {
 		var postObject = {

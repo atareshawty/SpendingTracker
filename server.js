@@ -38,7 +38,6 @@ passport.use(new Strategy(
 );
 
 passport.serializeUser(function(user, done) {
-  user.total = user.getTotalSpending();
   done(null, user);
 });
 

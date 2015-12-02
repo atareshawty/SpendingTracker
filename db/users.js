@@ -106,31 +106,46 @@ exports.findByUsername = function(username, done) {
   @param username
   @param cb
 */
-exports.findById = function(id, done) {
+exports.findById = function(id, minDate, maxDate, done) {
   console.log('Find by id');
-    var client = createDBClient();
-    var query = client.query('SELECT * FROM login WHERE id = $1',[id]);
-
-    query.on('error', function(error) {
-      done(error);
+  var client = createDBClient();
+  var queryString, query;
+  var username, spending = [], categories = [];
+  
+  if (minDate && maxDate) {
+    queryString = "SELECT a.username, b.cost, b.category, b.location, b.date FROM login a INNER JOIN spending b ON a.id = b.id WHERE a.id = $1 AND b.date BETWEEN $2 and $3";
+    query = client.query(queryString, [id, minDate, maxDate]);
+  } else {
+    queryString = "SELECT a.username, b.cost, b.category, b.location, b.date FROM login a INNER JOIN spending b ON a.id = b.id WHERE a.id = $1";
+    query = client.query(queryString, [id]);
+  }
+  
+  query.on('error', function(err) {
+    console.log('Error on initial query' + err.message);
+    done(err);
+  });
+  
+  query.on('row', function(row) {
+    username = row.username;
+    spending.push(new Transaction(row.cost, row.category, row.location, row.date));
+  });
+  
+  query.on('end', function() {
+    var categoryQuery = client.query('SELECT category FROM categories WHERE id = $1',[id]);
+    
+    categoryQuery.on('error', function(err) {
+      console.log('Error on category query' + err.message);
+      done(err);
     });
-
-    query.on('row', function(row, result) {
-      result.addRow(row);
+    
+    categoryQuery.on('row', function(row) {
+      categories.push(row.category);
     });
-
-    query.on('end', function(result) {
-      client.end();
-      if (result.rowCount === 1) {
-        var row = result.rows[0];
-        createUserObj(row.id, row.username, function(err, user) {
-            if (err) {done(err);}
-            done(null, user);
-        });
-      } else {
-        done(null, null);
-      }
-    });
+    
+    categoryQuery.on('end', function() {
+      done(null, new User(id, username, spending, categories));
+    })
+  })
 };
 
 /**

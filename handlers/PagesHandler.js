@@ -52,44 +52,32 @@ function StaticHandler() {
 	* Expecting post request to have params from and to properties for spending filtering
 	**/
 	this.getUser = function(req, res) {
-		// if (req.session.passport && req.isAuthenticated()) {
-		// 	var userId = req.session.passport.user.id || undefined;
-		// 	var from = req.query.from || undefined;
-		// 	var to = req.query.to || undefined;
-		// 	db.getUser(userId, from, to, function(err, spending) {
-		// 		if (!err) {
-		// 			req.user.spending = spending;
-		// 			var newUser = new User(userId, req.user.username, req.user.spending, req.user.categories);
-		// 			newUser.total = newUser.getTotalSpending();
-		// 			res.render('user', {user: newUser});
-		// 		} else {
-		// 			res.send('Database error');
-		// 		}
-		// 		});
-		// } else {
-		// 	res.render('needLogin');
-		// }
-		if (req.isAuthenticated()) {			
+		if (req.isAuthenticated()) {
+			var path;
+			if (req.query.from && req.query.to) {
+				path = "/api/users?id=" + req.session.passport.user.id + '&from=' + req.query.from + '&to=' + req.query.to;
+			} else {
+				path = "/api/users?id=" + req.session.passport.user.id;
+			}
 			var options = {
 				"host": process.env.URL || 'localhost',
 				"port": config.server.port,
-				"path": '/api/users?id=' + req.session.passport.user.id,
+				"path": path,
 				"method": 'get'
 			}
 			var user;
 			var request = http.request(options, function(response) {
 				response.on('data', function(data) {
-					user = JSON.parse(data);	
+					user = JSON.parse(data);
 					res.render('user', {user: user});
 				});
 			});
-			
 			request.end();
 		} else {
 			res.render('needLogin');
 		}
 	};
-	
+
 	this.createUser = function(req, res) {
 		var username = req.body.username;
 		var password = req.body.password;

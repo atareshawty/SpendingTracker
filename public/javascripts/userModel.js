@@ -3,6 +3,7 @@ function User(id, username, spending, categories) {
   this.username = username;
   this.spending = spending;
   this.categories = categories;
+  this.totalCost = getTotalCost(spending);
 }
 
 User.prototype.getId = function() {
@@ -21,13 +22,12 @@ User.prototype.getCategories = function() {
   return this.categories;
 };
 
-User.prototype.getTotalSpending = function() {
+function getTotalCost(spending) {
   var total = 0;
-  this.spending.forEach(function(element) {
-    total += element.cost;
+  spending.forEach(function(value) {
+    total += value.cost;
   });
   total = parseFloat(total.toFixed(2));
   return total;
-};
-
+}
 module.exports = User;

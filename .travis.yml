@@ -1,9 +1,12 @@
-language: node_js
+  language: node_js
 
 sudo: false
 
 node_js:
   - "4.1"
 
+services:
+  - postgresql
+  
 before_script:
-  - psql -C 'create database spending_tracker_test;' -U postgres
+  - psql -c 'create database spending_tracker_development;' -U postgres  

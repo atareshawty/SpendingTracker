@@ -8,11 +8,11 @@ var Transaction = require('../public/javascripts/transactionModel.js');
 
 router.get('/', function(req, res) {
   if(req.session.passport) {
-      if(req.session.passport.user) {
-        res.redirect('/users/' + req.session.passport.user.id);
-      }
-    } else {
-      res.render('users', { title: 'Sample User'});
+    if(req.session.passport.user) {
+      res.redirect('/users/' + req.session.passport.user.id);
+    }
+  } else {
+    res.render('users', { title: 'Sample User'});
   }
 });
 
@@ -25,16 +25,16 @@ router.get('/login', function(req, res, next) {
 });
 
 router.get('/logout',
-  function(req, res){
-    req.session.destroy();
-    res.redirect('/');
-});
+    function(req, res){
+      req.session.destroy();
+      res.redirect('/');
+    });
 
 router.get('/signup', function(req, res) {
   if(req.isAuthenticated()) {
     res.redirect('/users/' + req.session.passport.user.id);
   } else {
-      res.render('signup');
+    res.render('signup');
   }
 });
 
@@ -49,19 +49,19 @@ router.get('/:id', function(req, res) {
     var to = req.query.to || undefined;
     console.log(from);
     console.log(to)
-    db.getUser(userId, from, to, function(err, spending) {
-      if (!err) {
-        req.user.spending = spending;
-        var newUser = new User(userId, req.user.username, req.user.spending, req.user.categories);
-        newUser.total = newUser.getTotalSpending();
-        res.render('user', {user: newUser});
-      } else {
-        res.send('Database error');
-      }
+      db.getUser(userId, from, to, function(err, spending) {
+        if (!err) {
+          req.user.spending = spending;
+          var newUser = new User(userId, req.user.username, req.user.spending, req.user.categories);
+          newUser.total = newUser.getTotalSpending();
+          res.render('user', {user: newUser});
+        } else {
+          res.send('Database error');
+        }
       });
   } else {
     res.render('needLogin');
-  } 	
+  }
 });
 
 router.post('/signup', function(req, res) {
@@ -81,10 +81,10 @@ router.post('/signup', function(req, res) {
 });
 
 router.post('/login',
-  passport.authenticate('local', {failureRedirect: '/401'}),
-  function(req, res) {
-    res.redirect('/users/' + req.user.id);
-});
+    passport.authenticate('local', {failureRedirect: '/401'}),
+    function(req, res) {
+      res.redirect('/users/' + req.user.id);
+    });
 
 router.post('/:id', function(req, res) {
   if (req.body.cost) {

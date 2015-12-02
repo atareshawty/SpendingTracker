@@ -14,12 +14,12 @@ fi
 
 script/bootstrap
 
-if psql -lqt | cut -d \| -f 1 | grep -w user_spending | grep 0; then
-  echo "===> Setting up DB..."
-  createdb user_spending
-  node db/setup.js
-else
+if psql -lqt | cut -d \| -f 1 | grep -w spending_tracker_development; then
   echo "Database already exists"
+else
+  echo "===> Setting up DB..."
+  createdb spending_tracker_development
+  node db/setup.js
 fi
 
 echo "==> App is now ready to go!"

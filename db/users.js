@@ -220,8 +220,10 @@ function getCategories(id, done) {
  */
 function usernameExists(username, done) {
   console.log('Username exists');
-  var client = createDBClient(), query;
+  var client = createDBClient()
+  var query;
   client.on('error', function(err) {
+    console.log('Error from username exists: ' + err.message);
     done(err);
   });
 

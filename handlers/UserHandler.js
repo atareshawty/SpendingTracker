@@ -64,7 +64,7 @@ function UserHandler() {
       if (err) {res.send('Whoops! Something went wrong with your signup');}
       if (isUsernameInDB) {
         console.log('Username is already in db');
-        res.status(403).render('signupfailure');
+        res.status(403).render('signupFailure');
       } else {
         res.status(200).redirect('/users/login');
       }

@@ -1,9 +1,7 @@
-  language: node_js
+language: node_js
 
 notifications: # set notification options
-  email:
-    recipients:
-      - russellTravisBuilds@marktareshawty.com
+  email: false
       
 sudo: false
 

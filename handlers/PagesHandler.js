@@ -2,8 +2,7 @@ var db = require('../db/users.js');
 var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
 var brcypt = require('bcrypt-nodejs');
-var http = require('http');
-var https = require('https');
+var request = require('request');
 var config = require('../config.js');
 
 function StaticHandler() {
@@ -53,26 +52,18 @@ function StaticHandler() {
 	**/
 	this.getUser = function(req, res) {
 		if (req.isAuthenticated()) {
-			var path;
-			if (req.query.from && req.query.to) {
-				path = "/api/users?id=" + req.session.passport.user.id + '&from=' + req.query.from + '&to=' + req.query.to;
-			} else {
-				path = "/api/users?id=" + req.session.passport.user.id;
+			var propertiesObject = {
+				"from": req.query.from || null,
+				"to": req.query.to || null
 			}
-			var options = {
-				"host": process.env.URL || 'localhost',
-				"port": config.server.port,
-				"path": path,
-				"method": 'get'
-			}
-			var user;
-			var request = http.request(options, function(response) {
-				response.on('data', function(data) {
-					user = JSON.parse(data);
-					res.render('user', {user: user});
-				});
+			console.log('from: ' + propertiesObject.from);
+			console.log('to: ' + propertiesObject.to);
+			var url = config.server.url + '/api/users/' + req.session.passport.user.id;
+			request({url:url, qs:propertiesObject}, function(err, response, body) {
+  			if(err) { console.log(err); return; }
+				res.status(response.statusCode).render('user', {"user": JSON.parse(body)});
 			});
-			request.end();
+			
 		} else {
 			res.render('needLogin');
 		}
@@ -85,7 +76,6 @@ function StaticHandler() {
 		db.insertUsernameAndPassword(username, password, function(err, isUsernameInDB) {
 			if (err) {res.send('Whoops! Something went wrong with your signup');}
 			if (isUsernameInDB) {
-				console.log('Username is already in db');
 				res.status(403).render('signupfailure');
 			} else {
 				res.status(200).redirect('/users/login');

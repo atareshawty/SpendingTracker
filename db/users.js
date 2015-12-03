@@ -19,7 +19,6 @@ function createDBClient() {
   @param done - callback
 */
 function createUserObj(id, username, done) {
-  console.log('\nCreating user');
   var client = createDBClient();
   var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
   var spending = [];
@@ -72,7 +71,6 @@ exports.insertTransaction = function(id, transaction, done) {
   @param cb
 */
 exports.findByUsername = function(username, done) {
-  console.log('Find by username');
   process.nextTick(function() {
     var client = createDBClient();
     var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
@@ -107,7 +105,6 @@ exports.findByUsername = function(username, done) {
   @param cb
 */
 exports.findById = function(id, minDate, maxDate, done) {
-  console.log('Find by id');
   var client = createDBClient();
   var queryString, query;
   var username, spending = [], categories = [];
@@ -157,7 +154,6 @@ exports.findById = function(id, minDate, maxDate, done) {
   @param callback function
 */
 exports.getUser = function(id, minDate, maxDate, done) {
-  console.log('get user');
   var client = createDBClient();
   var queryString, query;
   var spending = [];
@@ -192,7 +188,6 @@ exports.getUser = function(id, minDate, maxDate, done) {
   @param callback function
 */
 exports.insertUsernameAndPassword = function(username, password, done) {
-  console.log('insert username and password');
   usernameExists(username, function(err, exists) {
     if (err) {
       done(err);
@@ -218,7 +213,6 @@ exports.insertUsernameAndPassword = function(username, password, done) {
   @param callback function
 */
 exports.insertNewCategory = function(id, category, done) {
-  console.log('Inserting new categories...');
   var client = createDBClient();
   var queryString = 'INSERT INTO categories VALUES($1, $2)';
   var query = client.query(queryString, [id, category]);
@@ -234,7 +228,6 @@ exports.insertNewCategory = function(id, category, done) {
 };
 
 exports.deleteUser = function(username, done) {
-  console.log('Deleting user...');
   var client = createDBClient();
   var loginQueryString = 'DELETE FROM login WHERE username=$1';
   var categoriesQueryString = 'DELETE FROM categories WHERE id=$1';
@@ -286,7 +279,6 @@ function getCategories(id, done) {
  * @param callback function
  */ 
 function usernameExists(username, done) {
-  console.log('Username exists');
   var client = createDBClient(), query;
   client.on('error', function(err) {
     done(err);
@@ -300,7 +292,6 @@ function usernameExists(username, done) {
 }
 
 function getId(username, done) {
-  console.log('Username exists');
   var client = createDBClient(), query;
   client.on('error', function(err) {
     done(err);

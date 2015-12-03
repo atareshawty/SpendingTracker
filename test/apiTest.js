@@ -10,19 +10,20 @@ var assert = require('assert');
 var request = require('supertest');  
 var pg = require('pg');
 var config = require('../config.js');
+var server = require('../server.js');
 
 
 describe('Api', function() {
-	var url = 'http://localhost:3000';
+	var url = config.server.url;
 	var testUser = {
 		"username": config.test.user.username,
 		"password": config.test.user.password,
 		"id": config.test.user.id,
 		"spending": config.test.user.spending
 	};
-	
+	server.start();
 	it('should return correct user corresponding to id, as json', function(done) {
-		request(url).get('/api/users?id=' + testUser.id).expect('Content-Type', /json/).expect(200).expect(function(res) {
+		request(url).get('/api/users/' + testUser.id).expect('Content-Type', /json/).expect(200).expect(function(res) {
 			assert.equal(undefined, undefined);
 			res.body.should.have.property('username');
 			res.body.username.should.equal(testUser.username);
@@ -36,7 +37,7 @@ describe('Api', function() {
 	});
 	
 	it('should return correct spending corresponding to id, as json', function(done) {
-		request(url).get('/api/users?id=' + testUser.id).expect('Content-Type', /json/).expect(200).expect(function(res) {
+		request(url).get('/api/users/' + testUser.id).expect('Content-Type', /json/).expect(200).expect(function(res) {
 			res.body.should.have.property('spending');
 			assert.deepEqual(res.body.spending, testUser.spending);
 		}).end(function(err) {
@@ -49,7 +50,8 @@ describe('Api', function() {
 	});
 	
 	it('should return the correct number of filtered dates when query params are provided', function(done) {
-		var params = '/api/users/?id=' + testUser.id + '&from=' + config.test.filerDates.from + '&to=' + config.test.filerDates.to;
+		var params = '/api/users/' + testUser.id + '?from=' + config.test.filerDates.from + '&to=' + config.test.filerDates.to;
+		console.log(params);
 		request(url).get(params).expect('Content-Type', /json/).expect(200).expect(function(res) {
 			res.body.should.have.property('spending');
 			assert.deepEqual(res.body.spending.length, config.test.filerDates.expect);
@@ -65,11 +67,7 @@ describe('Api', function() {
 		}
 		
 		request(url).post('/api/users').send(postObject).expect(401).end(function(err) {
-			if (err) {
-				done(err);
-			} else {
-				done();
-			}
+			done(err);
 		});
 	});
 	
@@ -80,10 +78,8 @@ describe('Api', function() {
 		}
 
 		request(url).post('/api/users').send(postObject).expect(200).end(function(err) {
-			if (err) done(err);
 			request(url).delete('/api/users').send(postObject).end(function(err) {
-				if (err) done(err);
-				done();
+				done(err);
 			})
 		})
 	})

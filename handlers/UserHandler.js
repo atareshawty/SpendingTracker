@@ -4,6 +4,7 @@ var Transaction = require('../public/javascripts/transactionModel.js');
 var brcypt = require('bcrypt-nodejs');
 
 function UserHandler() {
+
 	this.createUser = function(req, res) {
 		db.insertUsernameAndPassword(req.body.username, req.body.password, function(err, inDB) {
 			if (inDB) {

@@ -52,6 +52,7 @@ var handlers = {
 
 var server = {};
 server.end = function() {};
+
 function start() {
   routes.setup(app, handlers);
   var port = config.server.port;
@@ -60,7 +61,8 @@ function start() {
 }
 
 function end() {
-   server.close();
+  console.log('K byeeeeeee!');
+  server.close();
 }
 
 exports.end = end;

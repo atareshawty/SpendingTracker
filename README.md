@@ -1,4 +1,6 @@
 # Spending
+[![Build Status](https://travis-ci.org/atareshawty/SpendingTracker.svg?branch=master)](https://travis-ci.org/atareshawty/SpendingTracker)
+
 Sign up, login, and track your spending. Manually input your spending information and see it tracked graphically for you.
 
 ## Installation and setup
@@ -17,7 +19,7 @@ That's it! All your dependencies are ready to go
 
 ## Start the app
 ```bash
-script/server
+npm start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) and enjoy!

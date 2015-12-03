@@ -2,8 +2,8 @@
 /* global __dirname */
 var express = require('express');
 var app = express();
+var APIHandler = require('./handlers/APIHandler');
 var PagesHandler = require('./handlers/PagesHandler');
-var UserHandler = require('./handlers/UserHandler');
 var routes = require('./routes/routes');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
@@ -47,7 +47,7 @@ passport.deserializeUser(function(sessionUser, done) {
 
 var handlers = {
   pages: new PagesHandler(),
-  user: new UserHandler() 
+  user: new APIHandler() 
 };
 
 var server = {};

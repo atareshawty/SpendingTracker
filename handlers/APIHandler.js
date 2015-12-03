@@ -3,12 +3,15 @@ var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
 var brcypt = require('bcrypt-nodejs');
 
-function UserHandler() {
+function APIHandler() {
 
 	this.createUser = function(req, res) {
-		db.insertUsernameAndPassword(req.body.username, req.body.password, function(err, inDB) {
+		var username = req.query.username || req.body.username;
+		var password = req.query.password || req.body.password;
+		
+		db.insertUsernameAndPassword(username, password, function(err, inDB) {
 			if (inDB) {
-				res.status(401).send();
+				res.status(403).send();
 			} else {
 				res.status(200).send();
 			}
@@ -38,4 +41,4 @@ function UserHandler() {
 	}
 }
 
-module.exports = UserHandler;
+module.exports = APIHandler;

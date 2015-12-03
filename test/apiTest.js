@@ -51,7 +51,7 @@ describe('Api', function() {
 	
 	it('should return the correct number of filtered dates when query params are provided', function(done) {
 		var params = '/api/users/' + testUser.id + '?from=' + config.test.filerDates.from + '&to=' + config.test.filerDates.to;
-		console.log(params);
+
 		request(url).get(params).expect('Content-Type', /json/).expect(200).expect(function(res) {
 			res.body.should.have.property('spending');
 			assert.deepEqual(res.body.spending.length, config.test.filerDates.expect);
@@ -66,7 +66,7 @@ describe('Api', function() {
 			"password": testUser.password
 		}
 		
-		request(url).post('/api/users').send(postObject).expect(401).end(function(err) {
+		request(url).post('/api/users').send(postObject).expect(403).end(function(err) {
 			done(err);
 		});
 	});

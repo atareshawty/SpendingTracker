@@ -47,9 +47,6 @@ function StaticHandler() {
 		}
 	};
 	
-	/**
-	* Expecting post request to have params from and to properties for spending filtering
-	**/
 	this.getUser = function(req, res) {
 		if (req.isAuthenticated()) {
 			var propertiesObject = {
@@ -70,17 +67,23 @@ function StaticHandler() {
 	};
 
 	this.createUser = function(req, res) {
-		var username = req.body.username;
-		var password = req.body.password;
-				
-		db.insertUsernameAndPassword(username, password, function(err, isUsernameInDB) {
-			if (err) {res.send('Whoops! Something went wrong with your signup');}
-			if (isUsernameInDB) {
-				res.status(403).render('signupfailure');
-			} else {
-				res.status(200).redirect('/users/login');
+		if (req.body.username && req.body.username.length <= 20 && req.body.password) {
+			var postObject = {
+				"url": config.server.url + '/api/users',
+				"qs": {"username": req.body.username, "password": req.body.password}
 			}
-		});		
+			request.post(postObject, function(error, response, body) {
+				if (response.statusCode != 200) {
+					res.status(response.statusCode).render('signupFailure');
+				} else {
+					console.log('Status Code == 200');
+					res.status(response.statusCode).redirect('/users/login');
+				}
+			})
+		} else {
+			res.send("Try again with a valid username (< 20 in length) and password")
+		}
+	
 	};
 	
 	//See routes.js for authentication. Not handled here!

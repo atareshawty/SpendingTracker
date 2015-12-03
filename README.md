@@ -17,7 +17,7 @@ That's it! All your dependencies are ready to go
 
 ## Start the app
 ```bash
-script/server
+npm start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) and enjoy!

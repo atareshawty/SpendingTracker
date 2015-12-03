@@ -53,8 +53,6 @@ function StaticHandler() {
 				"from": req.query.from || null,
 				"to": req.query.to || null
 			}
-			console.log('from: ' + propertiesObject.from);
-			console.log('to: ' + propertiesObject.to);
 			var url = config.server.url + '/api/users/' + req.session.passport.user.id;
 			request({url:url, qs:propertiesObject}, function(err, response, body) {
   			if(err) { console.log(err); return; }
@@ -76,12 +74,11 @@ function StaticHandler() {
 				if (response.statusCode != 200) {
 					res.status(response.statusCode).render('signupFailure');
 				} else {
-					console.log('Status Code == 200');
 					res.status(response.statusCode).redirect('/users/login');
 				}
 			})
 		} else {
-			res.send("Try again with a valid username (< 20 in length) and password")
+			res.send("Try again with a valid username (< 20 in length) and password");
 		}
 	
 	};
@@ -92,33 +89,33 @@ function StaticHandler() {
 	};
 
 	this.postUser = function(req, res) {
+		var postObject;
 		if (req.body.cost) {
-			handleTransactionPost(req, res);
+			postObject = {
+				"url": config.server.url + '/api/users/' + req.session.passport.user.id,
+				"qs": {"cost": req.body.cost,
+							 "category": req.body.category,
+							 "location": req.body.location,
+							 "date": req.body.date
+							 }
+			}
 		} else if (req.body.category) {
-			handleCategoryPost(req, res);
+			postObject = {
+				"url": config.server.url + '/api/users/' + req.session.passport.user.id,
+				"qs": { "category": req.body.category}
+			}	
 		} else {
-			res.redirect('back');
-		}		
+			res.status(403).send('You need to send more than that!');
+		}
+		
+		request.post(postObject, function(error, response, body) {
+			if (response.statusCode != 200) {
+				res.status(response.statusCode).send(body);
+			} else {
+				res.status(response.statusCode).redirect('back');
+			}
+		});
 	};	
-}
-
-function handleTransactionPost(req, res) {
-  var transaction = new Transaction(req.body.cost, req.body.category, req.body.location, req.body.date);
-  db.insertTransaction(req.user.id, transaction, function(err) {
-    if (err) {
-      console.log('Error: ' + err + '. From db.insertTransaction()');
-    }
-    res.redirect('back');
-  });
-}
-
-function handleCategoryPost(req, res) {
-  db.insertNewCategory(req.user.id, req.body.category, function(err) {
-    if (err) {
-      console.log('Error: ' + err + '. From insertNewCategory()');
-    }
-    res.redirect('back');
-  });
 }
 
 module.exports = StaticHandler;

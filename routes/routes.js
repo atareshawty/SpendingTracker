@@ -14,9 +14,10 @@ router.setup = function(app, handlers) {
 	app.post('/users/signup', handlers.pages.createUser);
 	app.post('/users/login', passport.authenticate('local', {failureRedirect: '/401'}), handlers.pages.postLogin);
 	app.post('/users/:id', handlers.pages.postUser);
-	app.get('/api/users/:id', handlers.user.getUserModel);
-	app.post('/api/users', handlers.user.createUser);
-	app.delete('/api/users/:id', handlers.user.deleteUser);
+	app.get('/api/users/:id', handlers.api.getUserModel);
+	app.post('/api/users', handlers.api.createUser);
+	app.post('/api/users/:id', handlers.api.updateUser);
+	app.delete('/api/users/:id', handlers.api.deleteUser);
 }
 
 module.exports = router;

@@ -47,7 +47,7 @@ passport.deserializeUser(function(sessionUser, done) {
 
 var handlers = {
   pages: new PagesHandler(),
-  user: new APIHandler() 
+  api: new APIHandler() 
 };
 
 var server = {};

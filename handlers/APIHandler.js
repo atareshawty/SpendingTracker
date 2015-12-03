@@ -37,8 +37,41 @@ function APIHandler() {
 				res.status(500).send();
 			}
 		})
+	};
 	
+	this.updateUser = function(req, res) {
+		var cost = req.query.cost || req.body.cost;
+		var category = req.query.category || req.body.category;
+		var location = req.query.location || req.body.location;
+		var date = req.query.date || req.body.date;
+
+		if (cost && category && location && date) {
+			handleTransactionPost(cost, category, location, date, req, res);
+		} else if (category) {
+			handleCategoryPost(category, req, res);
+		} else {
+			res.status(403).send('You need to provide more information than that!');
+		}
 	}
+}
+
+function handleTransactionPost(cost, category, location, date, req, res) {
+  var transaction = new Transaction(cost, category, location, date);
+  db.insertTransaction(req.params.id, transaction, function(err) {
+    if (err) {
+      res.send(500).send('Database error');
+    }
+    res.status(200).send();
+  });
+}
+
+function handleCategoryPost(category, req, res) {
+	db.insertNewCategory(req.params.id, category, function(err) {
+		if (err) {
+			res.send(500).send('Database error');
+		}
+		res.status(200).send();
+  });
 }
 
 module.exports = APIHandler;

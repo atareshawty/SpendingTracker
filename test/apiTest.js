@@ -2,9 +2,6 @@
 /* global before */
 /* global it */
 /* global describe */
-/**
- * ApiTest.js tests all model functionality (returning correct data, etc)
- */ 
 var should = require('should'); 
 var assert = require('assert');
 var request = require('supertest');  
@@ -78,10 +75,20 @@ describe('Api', function() {
 		}
 
 		request(url).post('/api/users').send(postObject).expect(200).end(function(err) {
-			request(url).delete('/api/users').send(postObject).end(function(err) {
+			//Delete user created
+			var client = createDBClient();
+			var query = client.query('DELETE FROM login WHERE username = $1', [postObject.username]);
+			query.on('end', function() {
+				client.end();
 				done(err);
-			})
-		})
-	})
-	
+			});
+		});
+	});	
 });
+
+function createDBClient() {
+  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development';
+  var client = new pg.Client(connectionString);
+  client.connect();
+  return client;
+};

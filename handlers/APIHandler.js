@@ -30,7 +30,7 @@ function APIHandler() {
 	};
 	
 	this.deleteUser = function(req, res) {
-		db.deleteUser(req.body.username, function(err, success) {
+		db.deleteUser(req.session.passport.user.id, function(err, success) {
 			if (success) {
 				res.status(200).send();
 			} else {

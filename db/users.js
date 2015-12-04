@@ -227,21 +227,18 @@ exports.insertNewCategory = function(id, category, done) {
   });
 };
 
-exports.deleteUser = function(username, done) {
+exports.deleteUser = function(id, done) {
   var client = createDBClient();
-  var loginQueryString = 'DELETE FROM login WHERE username=$1';
+  var loginQueryString = 'DELETE FROM login WHERE id=$1';
   var categoriesQueryString = 'DELETE FROM categories WHERE id=$1';
   var spendingQueryString = 'DELETE FROM spending WHERE id=$1';
   
-  getId(username, function(err, id) {
-    if (err) done(err);
-    client.query(loginQueryString, [username]);
-    client.query(categoriesQueryString, [id]);
-    var query = client.query(spendingQueryString, [id]);
-    query.on('end', function() {
-      client.end();
-      done(false, true);
-    })
+  client.query(loginQueryString, [id]);
+  client.query(categoriesQueryString, [id]);
+  var lastQuery = client.query(spendingQueryString, [id]);
+
+  lastQuery.on('end', function() {
+    client.close();
   });
 }
 
@@ -291,21 +288,4 @@ function usernameExists(username, done) {
     client.end();
     done(null, result.rowCount > 0);
   });
-}
-
-function getId(username, done) {
-  var client = createDBClient(), query;
-  client.on('error', function(err) {
-    done(err);
-  });
-  var id;
-  query = client.query('SELECT * FROM login WHERE username = $1', [username]);
-  query.on('row', function(row) {
-    id = row.id;
-  });
-  
-  query.on('end', function() {
-    client.end();
-    done(null, id);
-  })
 }

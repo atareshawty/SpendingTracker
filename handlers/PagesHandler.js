@@ -115,7 +115,9 @@ function StaticHandler() {
 				res.status(response.statusCode).redirect('back');
 			}
 		});
-	};	
+	};
+	
+	this.deleteUser = function(req, res) {};	
 }
 
 module.exports = StaticHandler;

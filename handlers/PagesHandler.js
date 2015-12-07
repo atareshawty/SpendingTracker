@@ -80,7 +80,6 @@ function StaticHandler() {
 		} else {
 			res.send("Try again with a valid username (< 20 in length) and password");
 		}
-	
 	};
 	
 	//See routes.js for authentication. Not handled here!
@@ -117,7 +116,23 @@ function StaticHandler() {
 		});
 	};
 	
-	this.deleteUser = function(req, res) {};	
+	this.deleteUser = function(req, res) {
+		var id = req.params.id || req.body.id;
+		console.log('Delete request for id = '+ id);
+		if (id == req.session.passport.user.id) {
+			var postObject = {
+				"url": config.server.url + '/api/users/' + id,
+			};
+			
+			request.delete(postObject, function(error, response, body) {
+				res.status(response.statusCode).redirect('/');
+			});
+			
+		} else {
+			res.status(403).send();
+		}
+		
+	};	
 }
 
 module.exports = StaticHandler;

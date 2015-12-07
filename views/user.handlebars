@@ -53,6 +53,8 @@
   <input id="submitData" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
 </form>
 
+<button class="btn btn-danger delete-user" type="button">Delete</button>
+
 <!-- Jquery fun -->
 <script>
   $(document).ready(function() {
@@ -64,6 +66,15 @@
     $('#POST-name, #POST-location, #POST-date').change(validateLogging);
     $('#from, #to').change(validateDate);
     $('#customCategory').change(validateCategories);
+    $('.delete-user').on('click', function() {
+      var result = confirm('Are you sure you want to delte your account?');
+      if (result) {
+        $.ajax({
+          "type": "DELETE",
+          "url": window.location.herf
+        });   
+      }
+    })
   });
 
   function createDateRange() {

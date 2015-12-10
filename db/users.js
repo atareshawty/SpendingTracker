@@ -2,9 +2,10 @@ var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
+var config = require('../config');
 
 function createDBClient() {
-  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development';
+  var connectionString = process.env.DATABASE_URL || config.db.postgres;
   var client = new pg.Client(connectionString);
   client.connect();
   return client;
@@ -238,7 +239,7 @@ exports.deleteUser = function(id, done) {
   var lastQuery = client.query(spendingQueryString, [id]);
 
   lastQuery.on('end', function() {
-    client.close();
+    client.end();
   });
 }
 

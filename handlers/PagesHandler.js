@@ -119,19 +119,18 @@ function StaticHandler() {
 	this.deleteUser = function(req, res) {
 		var id = req.params.id || req.body.id;
 		console.log('Delete request for id = '+ id);
-		if (id == req.session.passport.user.id) {
+		if (req.isAuthenticated() && id == req.session.passport.user.id) {
 			var postObject = {
-				"url": config.server.url + '/api/users/' + id,
+				"url": config.server.url + '/api/users/' + id
 			};
-			
-			request.delete(postObject, function(error, response, body) {
-				res.status(response.statusCode).redirect('/');
+
+			request.del(postObject, function(error, response, body) {
+				res.status(response.statusCode).redirect(config.server.url);
 			});
 			
 		} else {
 			res.status(403).send();
-		}
-		
+		}	
 	};	
 }
 

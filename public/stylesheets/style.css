@@ -11,3 +11,22 @@ a {
   width: 40%;
   text-align: left;
 }
+
+.overlay {
+  visibility: hidden;
+  text-align: center;
+  position: fixed;
+  top: 25%;
+  left: 25%;
+  width: 50%;
+  height: 50%;
+  border-radius: 10px;
+  background: lightgray;
+}
+
+.overlay #confirm-name {
+  width: 50%;
+  height: 20%;
+  top: 40%;
+  opacity: 1;
+}

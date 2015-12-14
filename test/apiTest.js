@@ -12,24 +12,15 @@ var server = require('../server.js');
 
 describe('Api', function() {
 	var url = config.server.url;
-	var testUser = {
-		"username": config.test.user.username,
-		"password": config.test.user.password,
-		"id": config.test.user.id,
-		"spending": config.test.user.spending
-	};
+	var testUser = config.test.user;
 	server.start();
+  
 	it('should return correct user corresponding to id, as json', function(done) {
 		request(url).get('/api/users/' + testUser.id).expect('Content-Type', /json/).expect(200).expect(function(res) {
-			assert.equal(undefined, undefined);
 			res.body.should.have.property('username');
 			res.body.username.should.equal(testUser.username);
 		}).end(function(err) {
-			if (err) {
-				done(err);
-			} else {
-				done();
-			}
+			done(err);
 		});
 	});
 	
@@ -38,11 +29,7 @@ describe('Api', function() {
 			res.body.should.have.property('spending');
 			assert.deepEqual(res.body.spending, testUser.spending);
 		}).end(function(err) {
-			if (err) {
-				done(err);
-			} else {
-				done();
-			}
+			done(err);
 		});
 	});
 	
@@ -74,7 +61,7 @@ describe('Api', function() {
 			"password": 'password'
 		}
 
-		request(url).post('/api/users').send(postObject).expect(200).end(function(err) {
+		request(url).post('/api/users').send(postObject).expect(201).end(function(err) {
 			//Delete user created
 			var client = createDBClient();
 			var query = client.query('DELETE FROM login WHERE username = $1', [postObject.username]);
@@ -83,7 +70,11 @@ describe('Api', function() {
 				done(err);
 			});
 		});
-	});	
+	});
+  
+  it('should remove spending from db', function(done) {
+    done();
+  })	
 });
 
 function createDBClient() {

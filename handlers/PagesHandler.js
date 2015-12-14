@@ -28,7 +28,7 @@ function StaticHandler() {
 	
 	this.getLogin = function(req, res) {
 		if (req.isAuthenticated()) {
-			res.redirect('/users/' + req.session.passport.user.id);
+			res.status(303).redirect('/users/' + req.session.passport.user.id);
 		} else {
 			res.status(200).render('login');
 		}
@@ -56,11 +56,16 @@ function StaticHandler() {
 			var url = config.server.url + '/api/users/' + req.session.passport.user.id;
 			request({url:url, qs:propertiesObject}, function(err, response, body) {
   			if(err) { console.log(err); return; }
-				res.status(response.statusCode).render('user', {"user": JSON.parse(body)});
+				if (response.statusCode != 200) {
+					res.status(response.statusCode).send();
+				} else {
+				  res.status(response.statusCode).render('user', {"user": JSON.parse(body)});	
+				}
+				
 			});
 			
 		} else {
-			res.render('needLogin');
+			res.status(403).render('needLogin');
 		}
 	};
 

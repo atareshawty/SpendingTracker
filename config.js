@@ -1,3 +1,4 @@
+/* global process */
 module.exports = {
 	"db": {
 			"postgres": 'postgres://localhost:5432/spending_tracker_development'

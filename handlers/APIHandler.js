@@ -10,18 +10,20 @@ function APIHandler() {
 		var password = req.query.password || req.body.password;
 		
 		db.insertUsernameAndPassword(username, password, function(err, inDB) {
-			if (inDB) {
+			if (err) {
+				res.status(503).send();
+			} else if (inDB) {
 				res.status(403).send();
 			} else {
-				res.status(200).send();
+				res.status(201).send();
 			}
 		})
 	};
 	
-	this.getUserModel = function(req, res) {
+	this.getUser = function(req, res) {
 		db.findById(req.params.id, req.query.from, req.query.to, function(err, user) {
 			if (err) {
-				res.status(500).send(err.message);
+				res.status(503).send(err.message);
 			} else {
 				res.set('Content-Type', 'application/json');
 				res.status(200).json(user);
@@ -32,9 +34,9 @@ function APIHandler() {
 	this.deleteUser = function(req, res) {
 		db.deleteUser(req.params.id, function(err, success) {
 			if (success) {
-				res.status(200).send();
+				res.status(202).send();
 			} else {
-				res.status(500).send();
+				res.status(503).send();
 			}
 		})
 	};
@@ -50,7 +52,7 @@ function APIHandler() {
 		} else if (category) {
 			handleCategoryPost(category, req, res);
 		} else {
-			res.status(403).send('You need to provide more information than that!');
+			res.status(406).send('You need to provide more information than that!');
 		}
 	}
 }
@@ -59,18 +61,18 @@ function handleTransactionPost(cost, category, location, date, req, res) {
   var transaction = new Transaction(cost, category, location, date);
   db.insertTransaction(req.params.id, transaction, function(err) {
     if (err) {
-      res.send(500).send('Database error');
+      res.send(503).send('Database error');
     }
-    res.status(200).send();
+    res.status(201).send();
   });
 }
 
 function handleCategoryPost(category, req, res) {
 	db.insertNewCategory(req.params.id, category, function(err) {
 		if (err) {
-			res.send(500).send('Database error');
+			res.send(503).send('Database error');
 		}
-		res.status(200).send();
+		res.status(201).send();
   });
 }
 

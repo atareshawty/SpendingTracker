@@ -275,7 +275,7 @@ function getCategories(id, done) {
  * Callback function {@done} expects err and boolean
  * @param username
  * @param callback function
- */ 
+ */
 function usernameExists(username, done) {
   var client = createDBClient(), query;
   

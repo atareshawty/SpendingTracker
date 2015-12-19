@@ -2,9 +2,10 @@ var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
+var config = require('../config');
 
 function createDBClient() {
-  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development';
+  var connectionString = process.env.DATABASE_URL || config.db.postgres;
   var client = new pg.Client(connectionString);
   client.connect();
   return client;
@@ -19,7 +20,6 @@ function createDBClient() {
   @param done - callback
 */
 function createUserObj(id, username, done) {
-  console.log('\nCreating user');
   var client = createDBClient();
   var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
   var spending = [];
@@ -72,7 +72,6 @@ exports.insertTransaction = function(id, transaction, done) {
   @param cb
 */
 exports.findByUsername = function(username, done) {
-  console.log('Find by username');
   process.nextTick(function() {
     var client = createDBClient();
     var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
@@ -101,6 +100,53 @@ exports.findByUsername = function(username, done) {
 };
 
 /**
+  Finds user by {@id} and returns user into {@cb} callback function
+  Callback params: {@err}, {@user} object
+  @param username
+  @param cb
+*/
+exports.findById = function(id, minDate, maxDate, done) {
+  var client = createDBClient();
+  var queryString, query;
+  var username, spending = [], categories = [];
+  
+  if (minDate && maxDate) {
+    queryString = "SELECT a.username, b.cost, b.category, b.location, b.date FROM login a INNER JOIN spending b ON a.id = b.id WHERE a.id = $1 AND b.date BETWEEN $2 and $3";
+    query = client.query(queryString, [id, minDate, maxDate]);
+  } else {
+    queryString = "SELECT a.username, b.cost, b.category, b.location, b.date FROM login a INNER JOIN spending b ON a.id = b.id WHERE a.id = $1";
+    query = client.query(queryString, [id]);
+  }
+  
+  query.on('error', function(err) {
+    console.log('Error on initial query' + err.message);
+    done(err);
+  });
+  
+  query.on('row', function(row) {
+    username = row.username;
+    spending.push(new Transaction(row.cost, row.category, row.location, row.date));
+  });
+  
+  query.on('end', function() {
+    var categoryQuery = client.query('SELECT category FROM categories WHERE id = $1',[id]);
+    
+    categoryQuery.on('error', function(err) {
+      console.log('Error on category query' + err.message);
+      done(err);
+    });
+    
+    categoryQuery.on('row', function(row) {
+      categories.push(row.category);
+    });
+    
+    categoryQuery.on('end', function() {
+      done(null, new User(id, username, spending, categories));
+    })
+  })
+};
+
+/**
   Gets all spending info from user {@id} between {@minDate} and {@maxDate}
   Callback params are {@err} and {@spending} which is an array of transactions
   @param id - id of user for which information is requested
@@ -109,7 +155,6 @@ exports.findByUsername = function(username, done) {
   @param callback function
 */
 exports.getUser = function(id, minDate, maxDate, done) {
-  console.log('get user');
   var client = createDBClient();
   var queryString, query;
   var spending = [];
@@ -144,7 +189,6 @@ exports.getUser = function(id, minDate, maxDate, done) {
   @param callback function
 */
 exports.insertUsernameAndPassword = function(username, password, done) {
-  console.log('insert username and password');
   usernameExists(username, function(err, exists) {
     if (err) {
       done(err);
@@ -170,7 +214,6 @@ exports.insertUsernameAndPassword = function(username, password, done) {
   @param callback function
 */
 exports.insertNewCategory = function(id, category, done) {
-  console.log('Inserting new categories...');
   var client = createDBClient();
   var queryString = 'INSERT INTO categories VALUES($1, $2)';
   var query = client.query(queryString, [id, category]);
@@ -184,6 +227,21 @@ exports.insertNewCategory = function(id, category, done) {
     done(null);
   });
 };
+
+exports.deleteUser = function(id, done) {
+  var client = createDBClient();
+  var loginQueryString = 'DELETE FROM login WHERE id=$1';
+  var categoriesQueryString = 'DELETE FROM categories WHERE id=$1';
+  var spendingQueryString = 'DELETE FROM spending WHERE id=$1';
+  
+  client.query(loginQueryString, [id]);
+  client.query(categoriesQueryString, [id]);
+  var lastQuery = client.query(spendingQueryString, [id]);
+
+  lastQuery.on('end', function() {
+    client.end();
+  });
+}
 
 /**
   Retrieves all categories (default and personalized) from db
@@ -219,9 +277,8 @@ function getCategories(id, done) {
  * @param callback function
  */
 function usernameExists(username, done) {
-  console.log('Username exists');
-  var client = createDBClient()
-  var query;
+  var client = createDBClient(), query;
+  
   client.on('error', function(err) {
     console.log('Error from username exists: ' + err.message);
     done(err);

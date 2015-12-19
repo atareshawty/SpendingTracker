@@ -2,8 +2,8 @@
 /* global __dirname */
 var express = require('express');
 var app = express();
-var StaticHandler = require('./handlers/StaticHandler');
-var UserHandler = require('./handlers/UserHandler');
+var APIHandler = require('./handlers/APIHandler');
+var PagesHandler = require('./handlers/PagesHandler');
 var routes = require('./routes/routes');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
@@ -38,7 +38,6 @@ passport.use(new Strategy(
 );
 
 passport.serializeUser(function(user, done) {
-  user.total = user.getTotalSpending();
   done(null, user);
 });
 
@@ -47,11 +46,12 @@ passport.deserializeUser(function(sessionUser, done) {
 });
 
 var handlers = {
-  staticPages: new StaticHandler(),
-  user: new UserHandler() 
+  pages: new PagesHandler(),
+  api: new APIHandler() 
 };
 
-var server;
+var server = {};
+server.end = function() {};
 
 function start() {
   routes.setup(app, handlers);

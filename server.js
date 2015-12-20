@@ -61,7 +61,6 @@ function start() {
 }
 
 function end() {
-  console.log('K byeeeeeee!');
   server.close();
 }
 

@@ -52,7 +52,7 @@ function createUserObj(id, username, done) {
   @param done - callback function
 */
 exports.insertTransaction = function(id, transaction, done) {
-  if (id && transaction.cost && transaction.category && transaction.location && transaction.date && done) {
+  if (id && transaction.cost && transaction.category && transaction.location && transaction.date) {
     var client = createDBClient();
     var queryString = 'INSERT INTO spending VALUES($1, $2, $3, $4, $5)';
     var query = client.query(queryString,[id, transaction.cost, transaction.category, transaction.location, transaction.date]);
@@ -115,33 +115,37 @@ exports.findByUsername = function(username, done) {
   @param callback function
 */
 exports.getSpending = function(id, minDate, maxDate, done) {
-  var client = createDBClient();
-  var queryString, query;
-  var spending = []
-  var total = 0;
+  if (id) {
+    var client = createDBClient();
+    var queryString, query;
+    var spending = []
+    var total = 0;
 
-  if (minDate && maxDate) {
-    queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3';
-    query = client.query(queryString, [id, minDate, maxDate])
+    if (minDate && maxDate) {
+      queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3 ORDER BY date asc';
+      query = client.query(queryString, [id, minDate, maxDate])
+    } else {
+      queryString = 'SELECT * FROM spending WHERE id = $1 ORDER BY date asc';
+      query = client.query(queryString, [id]);
+    }
+
+    query.on('error', function(error) {
+      done(error);
+    });
+
+    query.on('row', function(row) {
+      spending.push(new Transaction(row.cost, row.category, row.location, row.date));
+      total += row.cost;
+    });
+
+    query.on('end', function() {
+      client.end();
+      total.toPrecision(2);
+      done(null, spending, total);
+    });
   } else {
-    queryString = 'SELECT * FROM spending WHERE id = $1';
-    query = client.query(queryString, [id]);
+    done('Please provide an id');
   }
-
-  query.on('error', function(error) {
-    done(error);
-  });
-
-  query.on('row', function(row) {
-    spending.push(new Transaction(row.cost, row.category, row.location, row.date));
-    total += row.cost;
-  });
-
-  query.on('end', function() {
-    client.end();
-    total.toPrecision(2);
-    done(null, spending, total);
-  });
 };
 
 /**
@@ -152,21 +156,25 @@ exports.getSpending = function(id, minDate, maxDate, done) {
   @param callback function
 */
 exports.insertUsernameAndPassword = function(username, password, done) {
-  usernameExists(username, function(err, exists) {
-    if (err) {
-      done(err);
-    } else if (exists) {
-      done(null, true);
-    } else {
-      password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-      var client = createDBClient();
-      var query = client.query('INSERT INTO login (username, password) VALUES($1, $2)', [username, password]);
-      query.on('end', function() {
-        client.end();
-        done(null, false);
-      })
-    }
-  });
+  if (username && password) {
+    usernameExists(username, function(err, exists) {
+      if (err) {
+        done(err);
+      } else if (exists) {
+        done(null, true);
+      } else {
+        password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+        var client = createDBClient();
+        var query = client.query('INSERT INTO login (username, password) VALUES($1, $2)', [username, password]);
+        query.on('end', function() {
+          client.end();
+          done(null, false);
+        })
+      }
+    });
+  } else {
+    done('Provide both username and password');
+  }
 };
 
 /**
@@ -177,18 +185,22 @@ exports.insertUsernameAndPassword = function(username, password, done) {
   @param callback function
 */
 exports.insertNewCategory = function(id, category, done) {
-  var client = createDBClient();
-  var queryString = 'INSERT INTO categories VALUES($1, $2)';
-  var query = client.query(queryString, [id, category]);
+  if (id && category) {
+    var client = createDBClient();
+    var queryString = 'INSERT INTO categories VALUES($1, $2)';
+    var query = client.query(queryString, [id, category]);
 
-  query.on('error', function(err) {
-    done(err);
-  });
+    query.on('error', function(err) {
+      done(err);
+    });
 
-  query.on('end', function() {
-    client.end();
-    done(null);
-  });
+    query.on('end', function() {
+      client.end();
+      done(null);
+    });
+  } else {
+    done('Need to provide both id and category');
+  }
 };
 
 /**
@@ -198,24 +210,27 @@ exports.insertNewCategory = function(id, category, done) {
   @param callback function
 */
 function getCategories(id, done) {
-  var client = createDBClient();
-  var categoryQueryString = 'SELECT category FROM categories WHERE id = 0 OR id = $1';
-  var categoryQuery = client.query(categoryQueryString, [id]);
-  var categories = [];
+ if (id) {
+    var client = createDBClient();
+    var categoryQueryString = 'SELECT category FROM categories WHERE id = 0 OR id = $1';
+    var categoryQuery = client.query(categoryQueryString, [id]);
+    var categories = [];
 
-  categoryQuery.on('error', function(err) {
-    done(err);
-  });
+    categoryQuery.on('error', function(err) {
+      done(err);
+    });
 
-  categoryQuery.on('row', function(row) {
-      categories.push(row.category);
-  });
+    categoryQuery.on('row', function(row) {
+        categories.push(row.category);
+    });
 
-  categoryQuery.on('end', function() {
-    client.end();
-    done(null, categories);
-  })
-
+    categoryQuery.on('end', function() {
+      client.end();
+      done(null, categories);
+    });
+ } else {
+   done('Need to provide an id');
+ }
 }
 
 /**

@@ -33,24 +33,23 @@ function UserHandler() {
     }
   };
 
-  /**
-   * Expecting post request to have params from and to properties for spending filtering
-   **/
   this.getUser = function(req, res) {
     if (req.session.passport && req.isAuthenticated()) {
-      var userId = req.session.passport.user.id || undefined;
-      var from = req.query.from || undefined;
-      var to = req.query.to || undefined;
-      db.getUser(userId, from, to, function(err, spending) {
-        if (!err) {
-          req.user.spending = spending;
-          var newUser = new User(userId, req.user.username, req.user.spending, req.user.categories);
-          newUser.total = newUser.getTotalSpending();
-          res.render('user', {user: newUser});
-        } else {
-          res.send('Database error');
-        }
-      });
+      //Check if spending dates need filtered
+      if (req.query.from && req.query.to) {
+        db.getSpending(req.user.id, req.query.from, req.query.to, function(err, spending, total) {
+          if (!err) {
+            req.user.spending = spending;
+            req.user.total = total;
+            res.render('user', {user: req.user});
+          } else {
+            res.status(500).send('Database error');
+          }
+        });  
+      } else {
+        res.render('user', {user: req.user});  
+      }
+      
     } else {
       res.render('needLogin');
     }

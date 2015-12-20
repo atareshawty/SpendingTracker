@@ -1,3 +1,4 @@
+/* global process */
 var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../public/javascripts/userModel.js');
@@ -19,7 +20,6 @@ function createDBClient() {
   @param done - callback
 */
 function createUserObj(id, username, done) {
-  console.log('\nCreating user');
   var client = createDBClient();
   var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
   var spending = [];
@@ -52,17 +52,21 @@ function createUserObj(id, username, done) {
   @param done - callback function
 */
 exports.insertTransaction = function(id, transaction, done) {
-  var client = createDBClient();
-  var queryString = 'INSERT INTO spending VALUES($1, $2, $3, $4, $5)';
-  var query = client.query(queryString,[id, transaction.cost, transaction.category, transaction.location, transaction.date]);
-  query.on('error', function(err) {
-    client.end();
-    done(err);
-  })
-  query.on('end', function(row) {
-    client.end();
-    done(null);
-  });
+  if (id && transaction.cost && transaction.category && transaction.location && transaction.date && done) {
+    var client = createDBClient();
+    var queryString = 'INSERT INTO spending VALUES($1, $2, $3, $4, $5)';
+    var query = client.query(queryString,[id, transaction.cost, transaction.category, transaction.location, transaction.date]);
+    query.on('error', function(err) {
+      client.end();
+      done(err);
+    });
+    query.on('end', function(row) {
+      client.end();
+      done(null);
+    });  
+  } else {
+    done('Not enough information provided');
+  }
 };
 
 /**
@@ -72,8 +76,7 @@ exports.insertTransaction = function(id, transaction, done) {
   @param cb
 */
 exports.findByUsername = function(username, done) {
-  console.log('Find by username');
-  process.nextTick(function() {
+  if (username) {  
     var client = createDBClient();
     var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
 
@@ -97,22 +100,25 @@ exports.findByUsername = function(username, done) {
         done(null, null);
       }
     });
-  });
+  } else {
+    done('Need to provide a username');
+  }
 };
 
 /**
   Gets all spending info from user {@id} between {@minDate} and {@maxDate}
-  Callback params are {@err} and {@spending} which is an array of transactions
+  Callback params are {@err}, {@spending} which is an array of transactions
+  and {@total} which is total spending (float)
   @param id - id of user for which information is requested
   @param minDate - minimum date for which information is requested
   @param maxDate - maximum date for which information is requested
   @param callback function
 */
-exports.getUser = function(id, minDate, maxDate, done) {
-  console.log('get user');
+exports.getSpending = function(id, minDate, maxDate, done) {
   var client = createDBClient();
   var queryString, query;
-  var spending = [];
+  var spending = []
+  var total = 0;
 
   if (minDate && maxDate) {
     queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3';
@@ -128,11 +134,13 @@ exports.getUser = function(id, minDate, maxDate, done) {
 
   query.on('row', function(row) {
     spending.push(new Transaction(row.cost, row.category, row.location, row.date));
+    total += row.cost;
   });
 
   query.on('end', function() {
     client.end();
-    done(null, spending);
+    total.toPrecision(2);
+    done(null, spending, total);
   });
 };
 
@@ -144,7 +152,6 @@ exports.getUser = function(id, minDate, maxDate, done) {
   @param callback function
 */
 exports.insertUsernameAndPassword = function(username, password, done) {
-  console.log('insert username and password');
   usernameExists(username, function(err, exists) {
     if (err) {
       done(err);
@@ -170,7 +177,6 @@ exports.insertUsernameAndPassword = function(username, password, done) {
   @param callback function
 */
 exports.insertNewCategory = function(id, category, done) {
-  console.log('Inserting new categories...');
   var client = createDBClient();
   var queryString = 'INSERT INTO categories VALUES($1, $2)';
   var query = client.query(queryString, [id, category]);
@@ -219,11 +225,9 @@ function getCategories(id, done) {
  * @param callback function
  */
 function usernameExists(username, done) {
-  console.log('Username exists');
   var client = createDBClient()
   var query;
   client.on('error', function(err) {
-    console.log('Error from username exists: ' + err.message);
     done(err);
   });
 

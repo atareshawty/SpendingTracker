@@ -55,17 +55,34 @@ describe('Database Interaction', function() {
         done();
       })
     });
+    
+    it('should return an error if username is not a string', function(done) {
+      db.findByUsername(15, function(err, user, password) {
+        assert(err != undefined, 'Should return an error');
+        assert(err != null, 'Should return an error');
+        done();  
+      });
+    });
+    
+    it('should not return a user or password if username.length is greater than 30', function(done) {
+      db.findByUsername('this string should be greater than 30 characters', function(err, user, password) {
+        assert.equal(user, null, 'User should be null');
+        assert.equal(password, null, 'Password should be null');
+        done();  
+      });
+    });
   });
   
   describe('Insert Transaction', function() {
-    var fake = {
-      "cost": 10.99,
-      "category": 'Entertainment',
-      "location": 'Cleveland Cavaliers', 
-      "date": '2015-12-25'
-    };
+
     
     it('should insert transaction when all parameters are given', function(done) {
+      var fake = {
+        "cost": 10.99,
+        "category": 'Entertainment',
+        "location": 'Cleveland Cavaliers', 
+        "date": '2015-12-25'
+      };
       db.insertTransaction(testUser.id, fake, function() {
         client.connect();
         var queryString = 'SELECT * FROM spending WHERE id=$1 AND cost=$2 AND category=$3 AND location=$4 AND date=$5';
@@ -86,8 +103,97 @@ describe('Database Interaction', function() {
       });
     });
     
-    it('should not insert transaction when all parameters are not present', function(done) {
-      fake.cost = null;
+    it('should not insert transaction when cost is not a number', function(done) {
+      var fake = {
+        "cost": '10.99',
+        "category": 'Entertainment',
+        "location": 'Cleveland Cavaliers', 
+        "date": '2015-12-25'
+      };
+      db.insertTransaction(testUser.id, fake, function(err) {
+        assert(err != undefined, 'function should give error');
+        assert(err != null, 'Function should give error');
+        done();
+      });
+    });
+    
+    it('should not insert transaction when category is not a string', function(done) {
+      var fake = {
+        "cost": '10.99',
+        "category": ['Entertainment'],
+        "location": 'Cleveland Cavaliers', 
+        "date": '2015-12-25'
+      };
+      db.insertTransaction(testUser.id, fake, function(err) {
+        assert(err != undefined, 'function should give error');
+        assert(err != null, 'Function should give error');
+        done();
+      });
+    });
+    
+    it('should not insert transaction when category.length > 20', function(done) {
+      var fake = {
+        "cost": '10.99',
+        "category": '123456789012345678921',
+        "location": 'Cleveland Cavaliers', 
+        "date": '2015-12-25'
+      };
+      db.insertTransaction(testUser.id, fake, function(err) {
+        assert(err != undefined, 'function should give error');
+        assert(err != null, 'Function should give error');
+        done();
+      });
+    });
+    
+    it('should not insert transaction when location is not a string', function(done) {
+      var fake = {
+        "cost": '10.99',
+        "category": 'Entertainment',
+        "location": ['Cleveland Cavaliers'], 
+        "date": '2015-12-25'
+      };
+      db.insertTransaction(testUser.id, fake, function(err) {
+        assert(err != undefined, 'function should give error');
+        assert(err != null, 'Function should give error');
+        done();
+      });
+    });
+    
+    it('should not insert transaction when location.length > 20', function(done) {
+      var fake = {
+        "cost": '10.99',
+        "category": 'Entertainment',
+        "location": 'Cleveland Cavaliers are the best!!!!!!!!!!!', 
+        "date": '2015-12-25'
+      };
+      db.insertTransaction(testUser.id, fake, function(err) {
+        assert(err != undefined, 'function should give error');
+        assert(err != null, 'Function should give error');
+        done();
+      });
+    });
+    
+    it('should not insert transaction when date is not well formed', function(done) {
+      var fake = {
+        "cost": '10.99',
+        "category": 'Entertainment',
+        "location": 'Cleveland Cavaliers', 
+        "date": '12/25/2015'
+      };
+      db.insertTransaction(testUser.id, fake, function(err) {
+        assert(err != undefined, 'function should give error');
+        assert(err != null, 'Function should give error');
+        done();
+      });
+    });
+    
+    it('should not insert transaction when date is not a string', function(done) {
+      var fake = {
+        "cost": '10.99',
+        "category": 'Entertainment',
+        "location": 'Cleveland Cavaliers', 
+        "date": /^\d{4}[-]\d{2}[-]\d{2}$/
+      };
       db.insertTransaction(testUser.id, fake, function(err) {
         assert(err != undefined, 'function should give error');
         assert(err != null, 'Function should give error');
@@ -201,6 +307,22 @@ describe('Database Interaction', function() {
         });
       });
     });
+    
+    it('should return an error when username.length > 30', function(done) {
+      db.insertUsernameAndPassword('testUser.username .length should be greather than 30', 'neat', function(err, alreadyExists) {
+        assert(err != undefined, 'Function should give error');
+        assert(err != null, 'Function should give error');
+        done();
+      });
+    });
+    
+    it('should return an error when password is not a string', function(done) {
+      db.insertUsernameAndPassword(testUser.username, 10, function(err, alreadyExists) {
+        assert(err != undefined, 'Function should give error');
+        assert(err != null, 'Function should give error');
+        done();
+      });
+    });
   });
   
   describe('Insert New Category', function() {
@@ -234,6 +356,132 @@ describe('Database Interaction', function() {
           });
         });
       });
+    });
+    
+    it('should return an error if category is not a string', function(done) {
+      db.insertNewCategory(testUser.id, ['Hi, I am an array!'], function(err) {
+        assert(err != undefined, 'Function should give an error');
+        assert(err != null, 'Function should give an error');
+        done();
+      });
+    });
+    
+    it('should return an error if category.length > 20', function(done) {
+      db.insertNewCategory(testUser.id, 'Hi, I am an string with length greater than 20!', function(err) {
+        assert(err != undefined, 'Function should give an error');
+        assert(err != null, 'Function should give an error');
+        done();
+      });
+    });  
+  });
+  
+  describe('Validate Date', function() {
+    it('should return true with 2015-12-01', function(done) {
+      assert(db.validateDate('2015-12-01'));
+      done();
+    });
+    
+    it('should return false with 2015/12/01', function(done) {
+      assert(!db.validateDate('2015/12/01'));
+      done();
+    });
+    
+    it('should return false with 2015.12.01', function(done) {
+      assert(!db.validateDate('2015.12.01'));
+      done();
+    });
+    
+    it('should return false with 2015-6-1', function(done) {
+      assert(!db.validateDate('2015-6-1'));
+      done();
+    });
+    
+    it('should return false with non string input', function(done) {
+      assert(!db.validateDate(['2015-12-06']));
+      done();
+    });
+    
+    it('should return false with [2015-12-06]', function(done) {
+      assert(!db.validateDate('[2015-12-06]'));
+      done();
     });    
+  });
+  
+  describe('Validate Transaction', function() {
+    it('should return true with all correct properties', function(done) {
+      var trans = {
+        "cost": 10.99,
+        "category": 'Food',
+        "location": 'Chipotle',
+        "date": '2015-11-09'
+      };
+      assert(db.validateTransaction(trans));
+      done();
+    });
+  
+    it('should return false if cost is not a number', function(done) {
+      var trans = {
+        "cost": '10.99',
+        "category": 'Food',
+        "location": 'Chipotle',
+        "date": '2015-11-09'
+      };
+      assert(!db.validateTransaction(trans));
+      done();
+    });
+    
+    it('should return false if cost is undefined', function(done) {
+      var trans = {
+        "category": 'Food',
+        "location": 'Chipotle',
+        "date": '2015-11-09'
+      };
+      assert(!db.validateTransaction(trans));
+      done();
+    });
+    
+    it('should return false if category is not a string', function(done) {
+      var trans = {
+        "cost": '10.99',
+        "category": ['Food'],
+        "location": 'Chipotle',
+        "date": '2015-11-09'
+      };
+      assert(!db.validateTransaction(trans));
+      done();
+    });
+    
+    it('should return false if location is not a string', function(done) {
+      var trans = {
+        "cost": '10.99',
+        "category": 'Food',
+        "location": ['Chipotle'],
+        "date": '2015-11-09'
+      };
+      assert(!db.validateTransaction(trans));
+      done();
+    });
+    
+    it('should return false if date is not well formed', function(done) {
+      var trans = {
+        "cost": '10.99',
+        "category": 'Food',
+        "location": 'Chipotle',
+        "date": ['2015-11-09']
+      };
+      assert(!db.validateTransaction(trans));
+      done();
+    });
+    
+    it('should return false if date is not well formed', function(done) {
+      var trans = {
+        "cost": '10.99',
+        "category": 'Food',
+        "location": 'Chipotle',
+        "date": '11/09/2015'
+      };
+      assert(!db.validateTransaction(trans));
+      done();
+    }); 
   });
 });

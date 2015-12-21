@@ -1,6 +1,7 @@
 module.exports = {
   "db": {
-    "postgres": 'postgres://localhost:5432/spending_tracker_development'
+    "postgres": 'postgres://localhost:5432/spending_tracker_development',
+    "tables": ['login', 'spending', 'categories']
   },
   "passport": {
     "secret": 'keyboard cat'
@@ -12,7 +13,7 @@ module.exports = {
     "user": {
       "username": 'testGuy',
       "password": 'testPassword',
-      "id": "29",
+      "id": 29,
 			"spending": [ {"cost": 100.23, "category": 'Utilities', "location": 'AEP Ohio', "date": '2015-10-01'},
                     {"cost": 10.95, "category": 'Entertainment', "location": 'Arcade', "date": '2015-11-03'},
                     {"cost": 1.99, "category": 'Food', "location": 'Kroger', "date": '2015-11-15'},

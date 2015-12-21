@@ -20,28 +20,32 @@ function createDBClient() {
   @param done - callback
 */
 function createUserObj(id, username, done) {
-  var client = createDBClient();
-  var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
-  var spending = [];
+  if (typeof id === 'number' && typeof username === 'string' && username.length <= 30) {
+    var client = createDBClient();
+    var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
+    var spending = [];
 
-  query.on('error', function(error) {
-      done(error);
-  });
-
-  query.on('row', function(row) {
-    spending.push(new Transaction(row.cost, row.category, row.location, row.date));
-  });
-
-  query.on('end', function() {
-    client.end();
-    getCategories(id, function(err, categories) {
-      if (err) {
-        done(err);
-      } else {
-        done(null, new User(id, username, spending, categories));
-      }
+    query.on('error', function(error) {
+        done(error);
     });
-  });
+
+    query.on('row', function(row) {
+      spending.push(new Transaction(row.cost, row.category, row.location, row.date));
+    });
+
+    query.on('end', function() {
+      client.end();
+      getCategories(id, function(err, categories) {
+        if (err) {
+          done(err);
+        } else {
+          done(null, new User(id, username, spending, categories));
+        }
+      });
+    });
+  } else {
+    done('Provied id (number) and username (string <= 30 chars)')
+  }
 };
 
 /**
@@ -52,7 +56,8 @@ function createUserObj(id, username, done) {
   @param done - callback function
 */
 exports.insertTransaction = function(id, transaction, done) {
-  if (id && transaction.cost && transaction.category && transaction.location && transaction.date) {
+  if (typeof id === 'number' && validateTransaction(transaction)) {
+    transaction.cost.toPrecision(2);
     var client = createDBClient();
     var queryString = 'INSERT INTO spending VALUES($1, $2, $3, $4, $5)';
     var query = client.query(queryString,[id, transaction.cost, transaction.category, transaction.location, transaction.date]);
@@ -76,7 +81,7 @@ exports.insertTransaction = function(id, transaction, done) {
   @param cb
 */
 exports.findByUsername = function(username, done) {
-  if (username) {  
+  if (username && typeof username === 'string') {  
     var client = createDBClient();
     var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
 
@@ -101,7 +106,7 @@ exports.findByUsername = function(username, done) {
       }
     });
   } else {
-    done('Need to provide a username');
+    done('Need to provide a username (string <= 30)');
   }
 };
 
@@ -115,13 +120,13 @@ exports.findByUsername = function(username, done) {
   @param callback function
 */
 exports.getSpending = function(id, minDate, maxDate, done) {
-  if (id) {
+  if (id && typeof id === 'number') {
     var client = createDBClient();
     var queryString, query;
     var spending = []
     var total = 0;
 
-    if (minDate && maxDate) {
+    if (validateDate(minDate) && validateDate(maxDate)) {
       queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3 ORDER BY date asc';
       query = client.query(queryString, [id, minDate, maxDate])
     } else {
@@ -156,7 +161,7 @@ exports.getSpending = function(id, minDate, maxDate, done) {
   @param callback function
 */
 exports.insertUsernameAndPassword = function(username, password, done) {
-  if (username && password) {
+  if (typeof username === 'string' && username.length <= 20 && typeof password === 'string') {
     usernameExists(username, function(err, exists) {
       if (err) {
         done(err);
@@ -173,7 +178,7 @@ exports.insertUsernameAndPassword = function(username, password, done) {
       }
     });
   } else {
-    done('Provide both username and password');
+    done('Provide both username(30 characters or less) and password');
   }
 };
 
@@ -185,7 +190,7 @@ exports.insertUsernameAndPassword = function(username, password, done) {
   @param callback function
 */
 exports.insertNewCategory = function(id, category, done) {
-  if (id && category) {
+  if (typeof id === 'number' && typeof category === 'string' && category.length <= 20) {
     var client = createDBClient();
     var queryString = 'INSERT INTO categories VALUES($1, $2)';
     var query = client.query(queryString, [id, category]);
@@ -199,10 +204,12 @@ exports.insertNewCategory = function(id, category, done) {
       done(null);
     });
   } else {
-    done('Need to provide both id and category');
+    done('Need to provide both id and category (20 characters or less)');
   }
 };
 
+exports.validateDate = validateDate;
+exports.validateTransaction = validateTransaction;
 /**
   Retrieves all categories (default and personalized) from db
   Callback function {@done} expects {@err} and {@categories} - an array of strings
@@ -210,7 +217,7 @@ exports.insertNewCategory = function(id, category, done) {
   @param callback function
 */
 function getCategories(id, done) {
- if (id) {
+ if (typeof id === 'number') {
     var client = createDBClient();
     var categoryQueryString = 'SELECT category FROM categories WHERE id = 0 OR id = $1';
     var categoryQuery = client.query(categoryQueryString, [id]);
@@ -240,15 +247,29 @@ function getCategories(id, done) {
  * @param callback function
  */
 function usernameExists(username, done) {
-  var client = createDBClient()
-  var query;
-  client.on('error', function(err) {
-    done(err);
-  });
+  if (typeof username === 'string') {
+    var client = createDBClient()
+    var query;
+    client.on('error', function(err) {
+      done(err);
+    });
 
-  query = client.query('SELECT * FROM login WHERE username = $1', [username]);
-  query.on('end', function(result) {
-    client.end();
-    done(null, result.rowCount > 0);
-  });
+    query = client.query('SELECT * FROM login WHERE username = $1', [username]);
+    query.on('end', function(result) {
+      client.end();
+      done(null, result.rowCount > 0);
+    });
+  } else {
+    done('Provide username to check');
+  }
+}
+
+function validateDate(date) {
+  return typeof date === 'string' && /^\d{4}[-]\d{2}[-]\d{2}$/.test(date);
+}
+
+function validateTransaction(transaction) {
+  return typeof transaction.cost === 'number' && typeof transaction.category === 'string' && 
+         typeof transaction.location === 'string' && validateDate(transaction.date) &&
+         transaction.category.length <= 20 && transaction.location.length <= 20;
 }

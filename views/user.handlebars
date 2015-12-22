@@ -1,5 +1,4 @@
 <h1>Welcome, {{user.username}}!</h1>
-<!-- <img class="avatar" src="https://avatars3.githubusercontent.com/u/9919?v=3&s=144" width="72" height="72"> -->
 <canvas class="chart"></canvas>
 <table class="spendingTable">
   <tr>
@@ -39,7 +38,7 @@
 <!-- Submit more spending data -->
 <form name="input" id="inputForm" method="post">
   <label>Cost</label>
-  <input id="POST-cost" type="text", name="cost" id="cost", placeholder="Ex: $10.99">
+  <input id="POST-cost" type="text", name="cost" id="cost", placeholder="Ex: 10.99">
   <label>Category</label>
   <select id="POST-category" name="category">
     {{#each user.categories}}
@@ -49,89 +48,11 @@
   <label>Location</label>
   <input id="POST-location" type="text", name="location", placeholder="Ex: AMC Theater">
   <label>Date</label>
-  <input id="POST-date" type="text", name="date", placeholder="2015-10-03">
+  <input id="POST-date" type="text", name="date", placeholder="Ex: 2015-10-03">
   <input id="submitData" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
 </form>
 
-<!-- Jquery fun -->
-<script>
-  $(document).ready(function() {
-    validateLogging();
-    createDateRange();
-    createSpendingDate();
-    validateDate();
-    validateCategories();
-    $('#POST-name, #POST-location, #POST-date').change(validateLogging);
-    $('#from, #to').change(validateDate);
-    $('#customCategory').change(validateCategories);
-  });
-
-  function createDateRange() {
-    $('#from').datepicker({
-      defaultDate: "-1m",
-      changeMonth: true,
-      numberOfMonths: 1,
-      dateFormat: "yy-mm-dd",
-      onClose: function(selectedDate) {
-        $('#from').datepicker("option", "minDate", selectedDate)
-      }
-    });
-
-    $('#to').datepicker({
-      defaultDate: "+0",
-      changeMonth: true,
-      numberOfMonths: 1,
-      dateFormat: "yy-mm-dd",
-      onClose: function(selectedDate) {
-        $('#from').datepicker("option", "maxDate", selectedDate)
-      }
-    });
-  }
-
-  function createSpendingDate() {
-    $('#POST-date').datepicker({
-      defaultDate: "+0",
-      changeMonth: true,
-      numberOfMonths: 1,
-      dateFormat: "yy-mm-dd",
-      altFormat: "yy-mm-dd",
-      onClose: function(selectedDate) {
-        $('#from').datepicker("option", "maxDate", selectedDate)
-      }
-    });
-  }
-
-  function validateLogging() {
-    var cost = $('#inputForm input[name=cost]').val();
-    var location = $('#inputForm input[name=location]').val();
-    var date = $('#POST-date').val();
-
-    if (cost.length > 0 && location.length > 0 && date.length > 0) {
-      $("input[id=submitData]").attr("disabled", false);
-    } else {
-      $("input[id=submitData]").attr("disabled", true);
-    }
-  }
-
-  function validateDate() {
-    var minDate = $('#from').val();
-    var maxDate = $('#to').val();
-
-    if (minDate.length > 0 && maxDate.length > 0) {
-      $("input[id=submitDate]").attr("disabled", false);
-    } else {
-      $("input[id=submitDate]").attr("disabled", true);
-    }
-  }
-
-  function validateCategories() {
-    var category = $('#customCategory').val();
-    if (category.length > 0) {
-      $("input[id=submitCategory]").attr("disabled", false);
-    } else {
-      $("input[id=submitCategory]").attr("disabled", true);
-    }
-  }
-
-</script>
+<script src="/javascripts/helpers/user/transaction.js"></script>
+<script src="/javascripts/helpers/user/category.js"></script>
+<script src="/javascripts/helpers/user/dateFilter.js"></script>
 <script src="/javascripts/data.js"></script>

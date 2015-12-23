@@ -22,7 +22,7 @@ function createDBClient() {
 function createUserObj(id, username, done) {
   if (typeof id === 'number' && typeof username === 'string' && username.length <= 30) {
     var client = createDBClient();
-    var query = client.query('SELECT * FROM spending WHERE id = $1', [id]);
+    var query = client.query('SELECT * FROM spending WHERE id = $1 ORDER BY date asc', [id]);
     var spending = [];
 
     query.on('error', function(error) {

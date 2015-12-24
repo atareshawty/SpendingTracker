@@ -2,18 +2,26 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 
-router.setup = function(app, handlers) {
-  app.get('/', handlers.staticPages.getHome);
-  app.get('/401', handlers.staticPages.get401);
-  app.get('/about', handlers.staticPages.getAbout);
-  app.get('/users', handlers.user.getSampleUser);
-  app.get('/users/login', handlers.user.getLogin);
-  app.get('/users/logout', handlers.user.getLogout);
-  app.get('/users/signup', handlers.user.getSignup);
-  app.get('/users/:id', handlers.user.getUser);
-  app.post('/users/signup', handlers.user.createUser);
-  app.post('/users/login', passport.authenticate('local', {failureRedirect: '/401'}), handlers.user.postLogin);
-  app.post('/users/:id', handlers.user.postUser);
+router.setup = function(app, controllers) {
+  //Static Pages Controller
+  app.get('/', controllers.staticPages.home);
+  app.get('/about', controllers.staticPages.about);
+  app.get('/401', controllers.staticPages.get401);
+
+  //Users Controller
+  app.get('/signup', controllers.users.new);
+  app.post('/users/create', controllers.users.create);
+  app.get('/users', controllers.users.show);
+  app.get('/users/:id', controllers.users.show);
+
+  //Sessions Controller
+  app.get('/login', controllers.session.loginPage);
+  app.post('/login', passport.authenticate('local', { failureRedirect: '/login' , failureFlash: true}), controllers.session.create);
+  app.post('/logout', controllers.session.destroy);
+
+  //Spending Controller
+  app.post('/spending/purchase', controllers.spending.newPurchase);
+  app.post('/spending/category', controllers.spending.newCategory);
 }
 
 module.exports = router;

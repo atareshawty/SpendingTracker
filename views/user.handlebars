@@ -20,7 +20,7 @@
 
 <!-- Get customized user categories -->
 <h2>Want your own Categories?</h2>
-<form name="categories" id="customize" method="post">
+<form name="categories" id="customize" method="post" action="/spending/category">
   <label>Category</label>
   <input type="text" id="customCategory", name="category", placeholder="Make your own!">
   <input id="submitCategory" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
@@ -36,7 +36,7 @@
 </form>
 
 <!-- Submit more spending data -->
-<form name="input" id="inputForm" method="post">
+<form name="input" id="inputForm" method="post" action="/spending/purchase">
   <label>Cost</label>
   <input id="POST-cost" type="text", name="cost" id="cost", placeholder="Ex: 10.99">
   <label>Category</label>

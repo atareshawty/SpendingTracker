@@ -2,38 +2,33 @@ var db = require('../db/users.js');
 var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
 var brcypt = require('bcrypt-nodejs');
+var passport = require('passport');
 
-function UserHandler() {
-  this.getSampleUser = function(req, res) {
-    if (req.isAuthenticated()) {
-      res.redirect('/users/' + req.session.passport.user.id);
-    } else {
-      res.render('users', { title: 'Sample User'});
-    }
-  };
-
-  this.getLogin = function(req, res) {
-    if (req.isAuthenticated()) {
-      res.redirect('/users/' + req.session.passport.user.id);
-    } else {
-      res.status(200).render('login');
-    }
-  };
-
-  this.getLogout = function(req, res) {
-    req.session.destroy();
-    res.redirect('/');
-  };
-
-  this.getSignup = function(req, res) {
-    if (req.isAuthenticated()) {
-      res.redirect('/users/' + req.session.passport.user.id);
+function UsersController() {
+  this.new = function(req, res) {
+    if (req.flash) {
+      res.status(200).render('signup', {message: req.flash('signup error')});
     } else {
       res.status(200).render('signup');
     }
-  };
+  }
+  
+  this.create = function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
 
-  this.getUser = function(req, res) {
+    db.createUser(username, password, function(err, id) {
+      if (err) {
+        req.flash('signup error', err.message);
+        res.redirect('/signup');  
+      } else {
+        passport.authenticate('local', { failureRedirect: "/401"});
+        res.status(200).redirect('/users/' + id); 
+      }
+    });    
+  }
+  
+  this.show = function(req, res) {
     if (req.session.passport && req.isAuthenticated()) {
       //Check if spending dates need filtered
       if (req.query.from && req.query.to) {
@@ -52,28 +47,8 @@ function UserHandler() {
       
     } else {
       res.render('needLogin');
-    }
-  };
-
-  this.createUser = function(req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
-
-    db.insertUsernameAndPassword(username, password, function(err, isUsernameInDB) {
-      if (err) {res.send('Whoops! Something went wrong with your signup');}
-      if (isUsernameInDB) {
-        console.log('Username is already in db');
-        res.status(403).render('signupFailure');
-      } else {
-        res.status(200).redirect('/users/login');
-      }
-    });
-  };
-
-  //See routes.js for authentication. Not handled here!
-  this.postLogin = function(req, res) {
-    res.status(200).redirect('/users/' + req.user.id);
-  };
+    }    
+  }
 
   this.postUser = function(req, res) {
     if (req.body.cost) {
@@ -105,4 +80,4 @@ function handleCategoryPost(req, res) {
   });
 }
 
-module.exports = UserHandler;
+module.exports = UsersController;

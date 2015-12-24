@@ -83,7 +83,7 @@ exports.insertTransaction = function(id, transaction, done) {
 exports.findByUsername = function(username, done) {
   if (username && typeof username === 'string') {  
     var client = createDBClient();
-    var query = client.query('SELECT * FROM login WHERE username = $1',[username]);
+    var query = client.query('SELECT * FROM users WHERE username = $1',[username]);
 
     query.on('error', function(error) {
       done(error);
@@ -155,31 +155,23 @@ exports.getSpending = function(id, minDate, maxDate, done) {
 
 /**
   Inserts new username and password into db
-  Callback function {@done} expects {@err} and {@isUsernameAlreadyInDB} - boolean
+  Callback function {@done} expects {@err} and {@id}
   @param username
   @param password
   @param callback function
 */
-exports.insertUsernameAndPassword = function(username, password, done) {
-  if (typeof username === 'string' && username.length <= 20 && typeof password === 'string') {
-    usernameExists(username, function(err, exists) {
-      if (err) {
-        done(err);
-      } else if (exists) {
-        done(null, true);
-      } else {
-        password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-        var client = createDBClient();
-        var query = client.query('INSERT INTO login (username, password) VALUES($1, $2)', [username, password]);
-        query.on('end', function() {
-          client.end();
-          done(null, false);
-        })
-      }
-    });
-  } else {
-    done('Provide both username(30 characters or less) and password');
-  }
+exports.createUser = function(username, password, done) {
+  var client = createDBClient();
+  var hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+  var queryString = 'INSERT INTO users (username, password) VALUES($1, $2) RETURNING id';
+  
+  client.query(queryString, [username, hashedPassword], function(err, result) {
+    if (err) {
+      done(err, null);
+    } else {
+      done(null, result.rows[0].id);
+    }
+  });
 };
 
 /**

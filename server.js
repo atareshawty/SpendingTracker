@@ -2,8 +2,10 @@
 /* global __dirname */
 var express = require('express');
 var app = express();
-var StaticHandler = require('./handlers/StaticHandler');
-var UserHandler = require('./handlers/UserHandler');
+var StaticPagesController = require('./controllers/StaticPagesController');
+var UsersController = require('./controllers/UsersController');
+var SessionsController = require('./controllers/SessionsController');
+var SpendingController = require('./controllers/SpendingController');
 var routes = require('./routes/routes');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
@@ -14,6 +16,7 @@ var bcrypt = require('bcrypt-nodejs');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var config = require('./config.js');
+var flash = require('connect-flash');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -25,6 +28,7 @@ app.use(passport.session());
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 app.use('/', routes);
+app.use(flash());
 
 passport.use(new Strategy(
   function(username, password, cb) {
@@ -46,15 +50,17 @@ passport.deserializeUser(function(sessionUser, done) {
   done(null, sessionUser);
 });
 
-var handlers = {
-  staticPages: new StaticHandler(),
-  user: new UserHandler() 
+var controllers = {
+  staticPages: new StaticPagesController(),
+  users: new UsersController(),
+  session: new SessionsController(),
+  spending: new SpendingController() 
 };
 
 var server;
 
 function start() {
-  routes.setup(app, handlers);
+  routes.setup(app, controllers);
   var port = config.server.port;
   server = app.listen(port);
   console.log("Express server listening on port %d in %s mode", port, app.settings.env);

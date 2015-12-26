@@ -1,6 +1,6 @@
 function StaticPagesController() {
 	this.home = function(req, res) {
-		res.status(200).render('Home');
+		res.status(200).render('home');
 	};
 	
 	this.get401 = function(req, res) {

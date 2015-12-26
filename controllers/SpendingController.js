@@ -5,7 +5,7 @@ function SpendingController() {
 	this.newPurchase = function(req, res) {
     var purchase = new Transaction(parseFloat(req.body.cost), req.body.category, req.body.location, req.body.date);
     console.log(purchase);
-    db.insertTransaction(req.user.id, purchase, function(err) {
+    db.insertSpending(req.user.id, purchase, function(err) {
       if (err) {
         //put flash message - redirect is temporary
         console.log(err);

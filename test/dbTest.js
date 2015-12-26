@@ -48,18 +48,18 @@ describe('Database Interaction', function() {
       });
     });
     
-    it('should return an error if not provided a username', function(done) {
+    it('should return an empty user if not provided a username', function(done) {
       db.findByUsername(null, function(err, user, password) {
-        assert(err != undefined, 'Should return an error');
-        assert(err != null, 'Should return an error');
+        assert.equal(user, undefined, 'Should not return a user');
+        assert.equal(user, undefined, 'Should not return a password');
         done();
       })
     });
     
-    it('should return an error if username is not a string', function(done) {
+    it('should return an empty user if username is not a string', function(done) {
       db.findByUsername(15, function(err, user, password) {
-        assert(err != undefined, 'Should return an error');
-        assert(err != null, 'Should return an error');
+        assert.equal(user, undefined, 'Should not return a user');
+        assert.equal(user, undefined, 'Should not return a password');
         done();  
       });
     });
@@ -73,7 +73,7 @@ describe('Database Interaction', function() {
     });
   });
   
-  describe('Insert Transaction', function() {
+  describe('Insert Purchase', function() {
 
     
     it('should insert transaction when all parameters are given', function(done) {
@@ -83,7 +83,7 @@ describe('Database Interaction', function() {
         "location": 'Cleveland Cavaliers', 
         "date": '2015-12-25'
       };
-      db.insertTransaction(testUser.id, fake, function() {
+      db.insertPurchase(testUser.id, fake, function() {
         client.connect();
         var queryString = 'SELECT * FROM spending WHERE id=$1 AND cost=$2 AND category=$3 AND location=$4 AND date=$5';
         var deleteQueryString = 'DELETE FROM spending WHERE id=$1 AND cost=$2 AND category=$3 AND location=$4 AND date=$5';
@@ -103,76 +103,6 @@ describe('Database Interaction', function() {
       });
     });
     
-    it('should not insert transaction when cost is not a number', function(done) {
-      var fake = {
-        "cost": '10.99',
-        "category": 'Entertainment',
-        "location": 'Cleveland Cavaliers', 
-        "date": '2015-12-25'
-      };
-      db.insertTransaction(testUser.id, fake, function(err) {
-        assert(err != undefined, 'function should give error');
-        assert(err != null, 'Function should give error');
-        done();
-      });
-    });
-    
-    it('should not insert transaction when category is not a string', function(done) {
-      var fake = {
-        "cost": '10.99',
-        "category": ['Entertainment'],
-        "location": 'Cleveland Cavaliers', 
-        "date": '2015-12-25'
-      };
-      db.insertTransaction(testUser.id, fake, function(err) {
-        assert(err != undefined, 'function should give error');
-        assert(err != null, 'Function should give error');
-        done();
-      });
-    });
-    
-    it('should not insert transaction when category.length > 20', function(done) {
-      var fake = {
-        "cost": '10.99',
-        "category": '123456789012345678921',
-        "location": 'Cleveland Cavaliers', 
-        "date": '2015-12-25'
-      };
-      db.insertTransaction(testUser.id, fake, function(err) {
-        assert(err != undefined, 'function should give error');
-        assert(err != null, 'Function should give error');
-        done();
-      });
-    });
-    
-    it('should not insert transaction when location is not a string', function(done) {
-      var fake = {
-        "cost": '10.99',
-        "category": 'Entertainment',
-        "location": ['Cleveland Cavaliers'], 
-        "date": '2015-12-25'
-      };
-      db.insertTransaction(testUser.id, fake, function(err) {
-        assert(err != undefined, 'function should give error');
-        assert(err != null, 'Function should give error');
-        done();
-      });
-    });
-    
-    it('should not insert transaction when location.length > 20', function(done) {
-      var fake = {
-        "cost": '10.99',
-        "category": 'Entertainment',
-        "location": 'Cleveland Cavaliers are the best!!!!!!!!!!!', 
-        "date": '2015-12-25'
-      };
-      db.insertTransaction(testUser.id, fake, function(err) {
-        assert(err != undefined, 'function should give error');
-        assert(err != null, 'Function should give error');
-        done();
-      });
-    });
-    
     it('should not insert transaction when date is not well formed', function(done) {
       var fake = {
         "cost": '10.99',
@@ -180,7 +110,7 @@ describe('Database Interaction', function() {
         "location": 'Cleveland Cavaliers', 
         "date": '12/25/2015'
       };
-      db.insertTransaction(testUser.id, fake, function(err) {
+      db.insertPurchase(testUser.id, fake, function(err) {
         assert(err != undefined, 'function should give error');
         assert(err != null, 'Function should give error');
         done();
@@ -194,7 +124,7 @@ describe('Database Interaction', function() {
         "location": 'Cleveland Cavaliers', 
         "date": /^\d{4}[-]\d{2}[-]\d{2}$/
       };
-      db.insertTransaction(testUser.id, fake, function(err) {
+      db.insertPurchase(testUser.id, fake, function(err) {
         assert(err != undefined, 'function should give error');
         assert(err != null, 'Function should give error');
         done();
@@ -203,10 +133,10 @@ describe('Database Interaction', function() {
   });
   
   describe('Get Spending', function() {
-    it('should return an error when not given id', function(done) {
+    it('should not return spending or total when not given id', function(done) {
       db.getSpending(null, null, null, function(err, spending, total) {
-        assert(err != undefined, 'Function should give error');
-        assert(err != null, 'Function should give error');
+        assert.deepEqual(spending, [], 'Spending should be empty array');
+        assert.equal(total, 0, 'Total should be 0');
         done();
       });
     });
@@ -262,62 +192,28 @@ describe('Database Interaction', function() {
     });  
   });
   
-  describe('Insert Username And Password', function() {
-    it('should return true if the username already exists', function(done) {
-      db.insertUsernameAndPassword(testUser.username, testUser.password, function(err, alreadyExists) {
-        assert(alreadyExists, 'alreadyExists should be true');
+  describe('Create User', function() {
+    it('should return error if the username already exists', function(done) {
+      db.createUser(testUser.username, testUser.password, function(err, id) {
+        assert(err != undefined, 'Should return an error');
+        assert(err != null, 'Should return an error');
         done();
       });
     });
     
-    it('should return an error when not given username', function(done) {
-      db.insertUsernameAndPassword(null, testUser.password, function(err, alreadyExists) {
-        assert(err != undefined, 'Function should give error');
-        assert(err != null, 'Function should give error');
-        done();
-      });
-    });
-    
-    it('should return an error when not given password', function(done) {
-      db.insertUsernameAndPassword(testUser.username, null, function(err, alreadyExists) {
-        assert(err != undefined, 'Function should give error');
-        assert(err != null, 'Function should give error');
-        done();
-      });
-    });
-    
-    it('should insert insert user info and already exists should be false', function(done) {
-      var fake = {
-        "username": 'notInDbYet',
-        "password": 'password'
-      };
-      var insertClient = new pg.Client(connectionString);
-      //Will need to change if real user is inserted with username 'notInDbYet'
-      db.insertUsernameAndPassword(fake.username, fake.password, function(err, alreadyExists) {
-        assert.equal(alreadyExists, false, 'Already exists should be false');
-        insertClient.connect();
-        var query = insertClient.query('SELECT * FROM login WHERE username=$1', [fake.username]);
-        query.on('end', function(result) {
-          assert.equal(result.rowCount, 1, 'Should have inserted only one user');
-          var deleteQuery = insertClient.query('DELETE FROM login WHERE username=$1', [fake.username]);
-          deleteQuery.on('end', function() {
-            insertClient.end();
-            done();
-          });
+    it('should return an id for new user', function(done) {
+      var fake = 'ThisGuyIsNotAUser';
+      db.createUser(fake, 'password', function(err, id) {
+        assert(id != undefined, 'Should return an id');
+        var client = createDBClient();
+        client.query('DELETE FROM users WHERE username = $1',[fake], function(err, result) {
+          done(err);
         });
       });
     });
-    
+
     it('should return an error when username.length > 30', function(done) {
-      db.insertUsernameAndPassword('testUser.username .length should be greather than 30', 'neat', function(err, alreadyExists) {
-        assert(err != undefined, 'Function should give error');
-        assert(err != null, 'Function should give error');
-        done();
-      });
-    });
-    
-    it('should return an error when password is not a string', function(done) {
-      db.insertUsernameAndPassword(testUser.username, 10, function(err, alreadyExists) {
+      db.createUser('testUser.username .length should be greather than 30', 'neat', function(err, alreadyExists) {
         assert(err != undefined, 'Function should give error');
         assert(err != null, 'Function should give error');
         done();
@@ -326,22 +222,7 @@ describe('Database Interaction', function() {
   });
   
   describe('Insert New Category', function() {
-    it('should return an error if not given id', function(done) {
-      db.insertNewCategory(null, 'Test', function(err) {
-        assert(err != undefined, 'Function should give an error');
-        assert(err != null, 'Function should give an error');
-        done();
-      });
-    });
-    
-    it('should return an error if not given category', function(done) {
-      db.insertNewCategory(testUser.id, null, function(err) {
-        assert(err != undefined, 'Function should give an error');
-        assert(err != null, 'Function should give an error');
-        done();
-      });
-    });
-    
+
     it('should insert category', function(done) {
       var insertClient = new pg.Client(connectionString);
       db.insertNewCategory(testUser.id, 'test', function(err) {
@@ -485,3 +366,10 @@ describe('Database Interaction', function() {
     }); 
   });
 });
+
+function createDBClient() {
+  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development';
+  var client = new pg.Client(connectionString);
+  client.connect();
+  return client;
+};

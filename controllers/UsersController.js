@@ -20,6 +20,7 @@ function UsersController() {
     db.createUser(username, password, function(err, id) {
       if (err) {
         req.flash('signup error', err.message);
+        req.session.save();
         res.redirect('/signup');  
       } else {
         passport.authenticate('local', { failureRedirect: "/401"});
@@ -30,21 +31,17 @@ function UsersController() {
   
   this.show = function(req, res) {
     if (req.session.passport && req.isAuthenticated()) {
-      //Check if spending dates need filtered
-      if (req.query.from && req.query.to) {
-        db.getSpending(req.user.id, req.query.from, req.query.to, function(err, spending, total) {
-          if (!err) {
-            req.user.spending = spending;
-            req.user.total = total;
-            res.render('user', {user: req.user});
-          } else {
-            res.status(500).send('Database error');
-          }
-        });  
-      } else {
-        res.render('user', {user: req.user});  
-      }
-      
+      db.getSpending(req.user.id, req.query.from, req.query.to, function(err, spending, total) {
+        if (!err) {
+          req.user.spending = spending;
+          req.user.total = total;
+          req.user.errorMessage = req.flash('DB error');
+          res.render('user', {user: req.user});
+        } else {
+          req.flash('DB error', err.message);
+          res.status(500).redirect('/users/' + res.user.id);
+        }
+      });
     } else {
       res.render('needLogin');
     }    

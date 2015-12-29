@@ -52,7 +52,7 @@ function createUserObj(id, username, done) {
   @param done - callback function
 */
 exports.insertPurchase = function(id, purchase, done) {
-  if (validateDate(purchase.date)) {
+  if (validateDate(purchase.date) && !isNaN(parseFloat(purchase.cost))) {
     purchase.cost.toPrecision(2);
     var client = createDBClient();
     var queryString = 'INSERT INTO spending VALUES($1, $2, $3, $4, $5)';
@@ -66,7 +66,7 @@ exports.insertPurchase = function(id, purchase, done) {
       done(null);
     });  
   } else {
-    done('Date isn\'t in proper form (yyyy-mm-dd)');
+    done({message: 'Improper purchase formatting'});
   }
 };
 

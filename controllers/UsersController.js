@@ -20,6 +20,7 @@ function UsersController() {
     db.createUser(username, password, function(err, id) {
       if (err) {
         req.flash('signup error', err.message);
+        req.session.save();
         res.redirect('/signup');  
       } else {
         passport.authenticate('local', { failureRedirect: "/401"});

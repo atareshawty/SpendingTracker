@@ -1,4 +1,4 @@
-# Spending
+# Spending Tracker
 [![Build Status](https://travis-ci.org/atareshawty/SpendingTracker.svg?branch=master)](https://travis-ci.org/atareshawty/SpendingTracker)
 
 Sign up, login, and track your spending. Manually input your spending information and see it tracked graphically for you.

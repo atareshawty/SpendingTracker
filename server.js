@@ -6,6 +6,7 @@ var StaticPagesController = require('./controllers/StaticPagesController');
 var UsersController = require('./controllers/UsersController');
 var SessionsController = require('./controllers/SessionsController');
 var SpendingController = require('./controllers/SpendingController');
+var APIController = require('./controllers/APIController');
 var routes = require('./routes/routes');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
@@ -30,6 +31,7 @@ app.set('view engine', 'handlebars');
 app.use('/', routes);
 app.use(flash());
 
+//Local Authentication Strategy
 passport.use(new Strategy(
   function(username, password, cb) {
     db.findByUsername(username, function(err, user, userPassword) {
@@ -54,7 +56,8 @@ var controllers = {
   staticPages: new StaticPagesController(),
   users: new UsersController(),
   session: new SessionsController(),
-  spending: new SpendingController() 
+  spending: new SpendingController(),
+  api: new APIController()
 };
 
 var server;

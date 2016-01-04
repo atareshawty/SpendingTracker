@@ -22,6 +22,9 @@ router.setup = function(app, controllers) {
   //Spending Controller
   app.post('/spending/purchase', controllers.spending.newPurchase);
   app.post('/spending/category', controllers.spending.newCategory);
+  
+  //API Controller
+  app.get('/api/users/:id', passport.authenticate('local', {session: false}), controllers.api.getUser);
 }
 
 module.exports = router;

@@ -152,7 +152,7 @@ describe('Database Interaction', function() {
     it('should return correct subset and correct total when provided filter dates', function(done) {
       var filterTotal = testUser.spending[1].cost + testUser.spending[2].cost;
       var filterSpending = [testUser.spending[1], testUser.spending[2]];
-      db.getSpending(testUser.id, config.test.user.filterDates.from, config.test.user.filterDates.to, function(err, spending, total) {
+      db.getSpending(testUser.id, config.test.filterDates.from, config.test.filterDates.to, function(err, spending, total) {
         assert.equal(total, filterTotal, 'Totals should match');
         assert.deepEqual(spending, filterSpending, 'Spending arrays should pass deep equals (be in same order)');
         done();
@@ -160,7 +160,7 @@ describe('Database Interaction', function() {
     });
     
     it('should return full spending when only given from filter date', function(done) {
-      db.getSpending(testUser.id, config.test.user.filterDates.from, null, function(err, spending, total) {
+      db.getSpending(testUser.id, config.test.filterDates.from, null, function(err, spending, total) {
         assert.deepEqual(spending, testUser.spending, 'Spending arrays should pass deep equals (be in same order)');
         assert.equal(total, testSpendingTotal, 'Totals should match');
         done();
@@ -168,7 +168,7 @@ describe('Database Interaction', function() {
     });
     
     it('should return full spending when only given to filter date', function(done) {
-      db.getSpending(testUser.id, null, config.test.user.filterDates.to, function(err, spending, total) {
+      db.getSpending(testUser.id, null, config.test.filterDates.to, function(err, spending, total) {
         assert.deepEqual(spending, testUser.spending, 'Spending arrays should pass deep equals (be in same order)');
         assert.equal(total, testSpendingTotal, 'Totals should match');
         done();

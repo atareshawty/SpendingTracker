@@ -1,5 +1,3 @@
-var passport = require('passport');
-
 function SessionsController() {
 	this.loginPage = function(req,res) {
     if (req.flash) {

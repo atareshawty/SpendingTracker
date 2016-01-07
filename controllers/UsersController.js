@@ -27,8 +27,16 @@ function UsersController() {
         req.session.save();
         res.redirect('/signup');  
       } else {
-        passport.authenticate('local', { failureRedirect: "/401"})(req, res);
-        res.status(200).redirect('/users/' + id); 
+        var user = {id: id, username: username};
+        req.logIn(user, function(err) {
+          if (err) {
+            console.log(err);
+            res.send(err.message);
+          } else {
+            res.status(200).redirect('/users/' + id);
+          }
+        });
+        
       }
     });    
   }

@@ -6,10 +6,14 @@ var passport = require('passport');
 
 function UsersController() {
   this.new = function(req, res) {
-    if (req.flash) {
-      res.status(200).render('signup', {message: req.flash('signup error')});
+    if (!req.isAuthenticated()) {
+      if (req.flash('signup error')) {
+        res.status(200).render('signup', {message: req.flash('signup error')});
+      } else {
+        res.status(200).render('signup');
+      }
     } else {
-      res.status(200).render('signup');
+      res.redirect('/users/' + req.user.id);
     }
   }
   
@@ -23,14 +27,14 @@ function UsersController() {
         req.session.save();
         res.redirect('/signup');  
       } else {
-        passport.authenticate('local', { failureRedirect: "/401"});
+        passport.authenticate('local', { failureRedirect: "/401"})(req, res);
         res.status(200).redirect('/users/' + id); 
       }
     });    
   }
   
   this.show = function(req, res) {
-    if (req.session.passport && req.isAuthenticated()) {
+    if (req.isAuthenticated()) {
       db.getSpending(req.user.id, req.query.from, req.query.to, function(err, spending, total) {
         if (!err) {
           req.user.spending = spending;

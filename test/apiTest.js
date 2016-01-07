@@ -27,7 +27,7 @@ describe('API', function() {
       delete testUser.filterDates;
       delete testUser.password;
       
-      request(url).get('/api/users/' + testUser.id).send(requestObj).expect('Content-Type', /json/).end(function(err, res) {
+      request(url).get('/api/users/' + testUser.username).send(requestObj).expect('Content-Type', /json/).end(function(err, res) {
         assert.deepEqual(res.body, testUser, 'Returned User should equal testUser');
         done(err);
       });
@@ -39,11 +39,10 @@ describe('API', function() {
         password: config.test.user.password + 'bad'
       };
       
-      request(url).get('/api/users/' + config.test.user.id).send(requestObj).expect(401).end(function(err) {
+      request(url).get('/api/users/' + config.test.user.username).send(requestObj).expect(401).end(function(err, res) {
         done(err);
       });
     });
-    
   });
 });
 

@@ -2,33 +2,54 @@
 /* global __dirname */
 var express = require('express');
 var app = express();
+//Controllers
 var StaticPagesController = require('./controllers/StaticPagesController');
 var UsersController = require('./controllers/UsersController');
 var SessionsController = require('./controllers/SessionsController');
 var SpendingController = require('./controllers/SpendingController');
 var APIController = require('./controllers/APIController');
+//Routes
 var routes = require('./routes/routes');
+//Passport for authentication
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
+//Handlebars View Engine
 var exphbs = require('express-handlebars');
+//Database interaction
 var db = require('./db/users.js');
 var path = require('path');
 var bcrypt = require('bcrypt-nodejs');
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var config = require('./config.js');
 var flash = require('connect-flash');
+var session = require('express-session');
 
+//Uses json and url encoded form body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+
+//Session configuration
+app.use(session( {
+  secret: process.env.PASSPORT_SECRET || config.passport.secret,
+  resave: false,
+  saveUninitialized: false  
+}));
+
+//Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(require('express-session')({ secret: process.env.PASSPORT_SECRET || config.passport.secret, resave: false, saveUninitialized: false }));
+
+//Set up passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+//Sets handlebars view engine for server side html rendering
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
+
+//Routes
 app.use('/', routes);
+
+//Flash messages
 app.use(flash());
 
 //Local Authentication Strategy
@@ -45,6 +66,7 @@ passport.use(new Strategy(
 
 passport.serializeUser(function(user, done) {
   user.total = user.getTotalSpending();
+  user.total.toPrecision(2);
   done(null, user);
 });
 

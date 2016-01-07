@@ -16,7 +16,7 @@ router.setup = function(app, controllers) {
 
   //Sessions Controller
   app.get('/login', controllers.session.loginPage);
-  app.post('/login', passport.authenticate('local', { failureRedirect: '/login' , failureFlash: true}), controllers.session.create);
+  app.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true}), controllers.session.create);
   app.post('/logout', controllers.session.destroy);
 
   //Spending Controller
@@ -24,7 +24,7 @@ router.setup = function(app, controllers) {
   app.post('/spending/category', controllers.spending.newCategory);
   
   //API Controller
-  app.get('/api/users/:id', passport.authenticate('local', {session: false}), controllers.api.getUser);
+  app.get('/api/users/:username', controllers.api.getUser);
 }
 
 module.exports = router;

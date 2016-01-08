@@ -1,5 +1,7 @@
 <script>
-  var result = fetch('/api/users/atareshawty', {
+  var href = document.URL;
+  var username = href.substring(href.lastIndexOf('/') + 1);
+  var result = fetch('/api/users/' + username, {
     credentials: 'same-origin'
   });
   result.then(function(response) {
@@ -7,7 +9,11 @@
     console.log('header', response.headers.get('Content-Type'));
     return response.json();
   }).then(function(text) {
-    document.write(Object.keys(text));
+    var username = text.username;
+    var usernameHeader = document.createElement('h1');
+    var headerText = document.createTextNode('Welcome, ' + username + '!');
+    usernameHeader.appendChild(headerText);
+    document.body.appendChild(usernameHeader);    
   }).catch(function(err) {
     console.log('failed', err);
   });

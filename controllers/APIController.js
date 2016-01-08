@@ -76,14 +76,4 @@ function replySIDMatchesCookieSID(reply, cookie) {
   return cookie.includes(reply);
 }
 
-function respondJSON(username, response) {
-  db.findByUsername(username, function(err, user) {
-    if (err) {
-      response.send(err.message);
-    } else {
-      response.json(user);
-    }
-  });
-}
-
 module.exports = APIController;

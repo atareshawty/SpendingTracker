@@ -22,7 +22,7 @@ function SessionsController() {
       console.log('Reply from redis set for session id', reply);
       RedisClient.end();
     });
-    res.status(200).redirect('/users/' + req.user.id);
+    res.status(200).redirect('/users/' + req.user.username);
   }
   
   this.destroy = function(req, res) {

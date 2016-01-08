@@ -12,7 +12,7 @@ router.setup = function(app, controllers) {
   app.get('/signup', controllers.users.new);
   app.post('/users/create', controllers.users.create);
   app.get('/users', controllers.users.show);
-  app.get('/users/:id', controllers.users.show);
+  app.get('/users/:username', controllers.users.show);
 
   //Sessions Controller
   app.get('/login', controllers.session.loginPage);

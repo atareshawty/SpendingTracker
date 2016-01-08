@@ -42,7 +42,7 @@ function UsersController() {
   }
   
   this.show = function(req, res) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.params.username === req.user.username) {
       db.getSpending(req.user.id, req.query.from, req.query.to, function(err, spending, total) {
         if (!err) {
           req.user.spending = spending;

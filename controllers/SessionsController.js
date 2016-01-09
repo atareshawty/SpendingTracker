@@ -10,7 +10,7 @@ function SessionsController() {
         res.render('login');
       }
     } else {
-      res.redirect('/users/' + req.user.id);
+      res.redirect('/users/' + req.user.username);
     }
   }
   

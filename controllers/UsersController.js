@@ -33,16 +33,15 @@ function UsersController() {
             console.log(err);
             res.send(err.message);
           } else {
-            res.status(200).redirect('/users/' + id);
+            res.status(200).redirect('/users/' + username);
           }
         });
-        
       }
     });    
   }
   
   this.show = function(req, res) {
-    if (req.isAuthenticated() && req.params.username === req.user.username) {
+    if (req.isAuthenticated() && req.params.username) {
       db.getSpending(req.user.id, req.query.from, req.query.to, function(err, spending, total) {
         if (!err) {
           req.user.spending = spending;
@@ -51,9 +50,11 @@ function UsersController() {
           res.render('fetchTest');
         } else {
           req.flash('DB error', err.message);
-          res.status(500).redirect('/users/' + res.user.id);
+          res.status(500).redirect('/users/' + res.user.username);
         }
       });
+    } else if (req.isAuthenticated()) {
+      res.redirect('/users/' + req.user.username);
     } else {
       res.render('needLogin');
     }    

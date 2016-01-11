@@ -3,6 +3,7 @@ var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
 var brcypt = require('bcrypt-nodejs');
 var passport = require('passport');
+var path = require('path');
 
 function UsersController() {
   this.new = function(req, res) {
@@ -47,7 +48,7 @@ function UsersController() {
           req.user.spending = spending;
           req.user.total = total;
           req.user.errorMessage = req.flash('DB error');
-          res.sendfile('views/user.html');
+          res.sendFile(path.join(__dirname + '/../views/user.html'));
         } else {
           req.flash('DB error', err.message);
           res.status(500).redirect('/users/' + res.user.username);

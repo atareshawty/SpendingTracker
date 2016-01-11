@@ -1,8 +1,9 @@
-function User(id, username, spending, categories) {
+function User(id, username, spending, categories, total) {
   this.id = id;
   this.username = username;
   this.spending = spending;
   this.categories = categories;
+  this.total = total;
 }
 
 User.prototype.getId = function() {

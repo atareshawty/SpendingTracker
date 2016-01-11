@@ -1,69 +1,39 @@
-window.onload = function() {
-  var canvas = $(".chart").get(0);
-  var context = canvas.getContext("2d");
-  var transactions = getTransactions();
-  buildChart(transactions, context);
-}
-
-/**
-  Gets builds pie chart from transactions array and html canvas contect
-  @param transactions - map of key (category) , value (dollar value) to go into chart
-  @param context - context of html canvas element
-*/
-function buildChart(transactions, context) {
+function buildChart(purchases) {
+  var canvas = $('.chart').get(0).getContext('2d');
   var chartData = [];
-  transactions.forEach(function(value, key, map) {
-    value *= 100;
-    value /= 100;
-    var dataPoint = {
-      value: value,
+  var purchaseMap = buildPurchasesMapFromSpending(purchases);
+  //chartData object determined by pie chart from Chart.js
+  purchaseMap.forEach(function(value, key, map) {
+    chartData.push({
+      value: parseFloat(value).toFixed(2),
       color: randomColor(),
-      highlight: "#FF5A5E",
+      highlight: '#FF5A5E',
       label: key
-    }
-    chartData.push(dataPoint);
-  })
-
-  return new Chart(context).Pie(chartData);
-}
-
-/**
-  Gets element(s) on page with class name {@elementClass}
-  @param elementClass - identifier of element
-  @return array of elements found
-*/
-function getElementsByClass(elementClass) {
-  var classToFind = '.' + elementClass;
-  var elementsFound = [];
-  $(classToFind).each(function() {
-    elementsFound.push($(this).text());
+    });
   });
-  return elementsFound;
+  return new Chart(canvas).Pie(chartData);
 }
 
-/**
-  Complies together all user transactions into map and returns
-  @return map of key (category) and value (dollar value) for each transaction on page
-*/
-function getTransactions() {
-  var costs = [], categories = [];
-  var transactionMap = new Map();
-  costs = getElementsByClass('cost');
-  categories = getElementsByClass('category');
-
-  for (var i = 0; i < costs.length; i++) {
-    if (transactionMap.has(categories[i])) {
-      var oldCost = transactionMap.get(categories[i]);
-      var newCost = costs[i];
-      newCost = newCost.substring(1, newCost.length);
-      transactionMap.set(categories[i], oldCost + parseFloat(newCost));
+//Expect spending to be array of: 
+// {
+//   cost: number,
+//   location: string,
+//   category: string,
+//   date: string
+// }
+//Creates map of category and total spending from category
+function buildPurchasesMapFromSpending(spending) {
+  var uniquePurchases = new Map();
+  spending.forEach(function(value, index, array) {
+    if (uniquePurchases.has(value.category)) {
+      var oldValue = parseFloat(uniquePurchases.get(value.category));
+      var newValue = oldValue + parseFloat(value.cost);
+      uniquePurchases.set(value.category, newValue);
     } else {
-      var cost = costs[i];
-      cost = cost.substring(1, cost.length);
-      transactionMap.set(categories[i], parseFloat(cost));
+      uniquePurchases.set(value.category, value.cost);
     }
-  }
-  return transactionMap;
+  });
+  return uniquePurchases;
 }
 
 /**

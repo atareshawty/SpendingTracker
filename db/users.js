@@ -23,13 +23,15 @@ function createUserObj(id, username, done) {
   var client = createDBClient();
   var query = client.query('SELECT * FROM spending WHERE id = $1 ORDER BY date asc', [id]);
   var spending = [];
+  var total = 0;
 
   query.on('error', function(error) {
       done(error);
   });
 
   query.on('row', function(row) {
-    spending.push(new Transaction(row.cost, row.category, row.location, row.date));
+    total += row.cost;
+    spending.push(new Transaction(row.cost.toFixed(2), row.category, row.location, row.date));
   });
 
   query.on('end', function() {
@@ -38,7 +40,7 @@ function createUserObj(id, username, done) {
       if (err) {
         done(err);
       } else {
-        done(null, new User(id, username, spending, categories));
+        done(null, new User(id, username, spending, categories, total));
       }
     });
   });
@@ -53,7 +55,7 @@ function createUserObj(id, username, done) {
 */
 exports.insertPurchase = function(id, purchase, done) {
   if (validateDate(purchase.date) && !isNaN(parseFloat(purchase.cost))) {
-    purchase.cost.toPrecision(2);
+    purchase.cost.toFixed(2);
     var client = createDBClient();
     var queryString = 'INSERT INTO spending VALUES($1, $2, $3, $4, $5)';
     var query = client.query(queryString,[id, purchase.cost, purchase.category, purchase.location, purchase.date]);
@@ -136,7 +138,7 @@ exports.getSpending = function(id, minDate, maxDate, done) {
 
   query.on('end', function() {
     client.end();
-    total.toPrecision(2);
+    total.toFixed(2);
     done(null, spending, total);
   });
 };

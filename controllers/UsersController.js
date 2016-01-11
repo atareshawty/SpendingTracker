@@ -47,7 +47,7 @@ function UsersController() {
           req.user.spending = spending;
           req.user.total = total;
           req.user.errorMessage = req.flash('DB error');
-          res.render('fetchTest');
+          res.sendfile('views/user.html');
         } else {
           req.flash('DB error', err.message);
           res.status(500).redirect('/users/' + res.user.username);

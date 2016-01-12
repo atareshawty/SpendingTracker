@@ -5,7 +5,6 @@ var passport = require('passport');
 router.setup = function(app, controllers) {
   //Static Pages Controller
   app.get('/', controllers.staticPages.home);
-  app.get('/about', controllers.staticPages.about);
   app.get('/401', controllers.staticPages.get401);
 
   //Users Controller

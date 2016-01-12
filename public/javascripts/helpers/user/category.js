@@ -1,4 +1,4 @@
-$(document).ready(function() {
+function validateCategories() {
   $('#customCategory').on('keyup', function() {
     var category = $('#customCategory').val();
     if (0 < category.length && category.length <= 20) {
@@ -7,4 +7,4 @@ $(document).ready(function() {
       $("input[id=submitCategory]").attr("disabled", true);
     }
   });
-});
+}

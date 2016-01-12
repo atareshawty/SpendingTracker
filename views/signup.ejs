@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% include ../views/partials/head %>
+</head>
+<body>
+  <% include ../views/partials/tab %>
+  <h2>Sign Up</h2>
+  <form name="inputForm" id="inputForm" action="/users/create" method="post">
+    <label>Email</label>
+    <input type="text", name='username', placeholder="Less than 20 characters" autofocus>
+    <label>Password</label>
+    <input type="password", name='password', placeholder="password">
+    <input type="submit", value="Submit" class="btn btn-primary" disabled="true">
+  </form>
+  <footer>
+    <% include ../views/partials/footer %>
+  </footer>
+</body>
+  <script src="/javascripts/helpers/signup.js"></script>
+</html>

@@ -12,6 +12,9 @@ result.then(function(response) {
   var compiledHTML = handleBarsTemplate(user);
   $('.user-content-placeholder').html(compiledHTML);
   buildChart(user.spending);
+  validateCategories();
+  validateAndCreateDateRange();
+  validateAndCreatePurchaseInput();
 }).catch(function(err) {
   console.log('failed', err);
 });

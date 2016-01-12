@@ -45,10 +45,7 @@ function UsersController() {
     if (req.isAuthenticated() && req.params.username) {
       db.getSpending(req.user.id, req.query.from, req.query.to, function(err, spending, total) {
         if (!err) {
-          req.user.spending = spending;
-          req.user.total = total;
-          req.user.errorMessage = req.flash('DB error');
-          res.sendFile(path.join(__dirname + '/../views/user.html'));
+          res.render('user');
         } else {
           req.flash('DB error', err.message);
           res.status(500).redirect('/users/' + res.user.username);

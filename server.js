@@ -56,8 +56,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Sets handlebars view engine for server side html rendering
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
-app.set('view engine', 'handlebars');
+app.set('view engine', 'ejs');
 
 //Routes
 app.use('/', routes);

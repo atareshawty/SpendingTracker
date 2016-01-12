@@ -20,7 +20,8 @@ module.exports = {
                     {"cost": 19.99, "category": 'Food', "location": 'TV', "date": '2015-12-01'},
 										{"cost": 530.00, "category": 'Rent', "location": 'Commons On Kinnear', "date": '2015-12-01'}																				
 									],
-      "categories": ['Food', 'Entertainment', 'Rent', 'Utilities', 'Gas', 'Clothing']
+      "categories": ['Food', 'Entertainment', 'Rent', 'Utilities', 'Gas', 'Clothing'],
+      "total": 663.16
       },
     "filterDates": {
       "from": '2015-11-01',

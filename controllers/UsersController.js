@@ -1,9 +1,6 @@
 var db = require('../db/users.js');
-var User = require('../public/javascripts/userModel.js');
-var Transaction = require('../public/javascripts/transactionModel.js');
-var brcypt = require('bcrypt-nodejs');
-var passport = require('passport');
-var path = require('path');
+var RedisClient
+var redis = require('redis');
 
 function UsersController() {
   this.new = function(req, res) {
@@ -34,6 +31,11 @@ function UsersController() {
             console.log(err);
             res.send(err.message);
           } else {
+            RedisClient = redis.createClient();
+            RedisClient.set(username, req.sessionID, function(err, reply) {
+              console.log('Reply from redis set for session id', reply);
+              RedisClient.end();
+            });
             res.status(200).redirect('/users/' + username);
           }
         });
@@ -42,6 +44,7 @@ function UsersController() {
   }
   
   this.show = function(req, res) {
+    //If user is logged in and at users/:username
     if (req.isAuthenticated() && req.params.username) {
       db.getSpending(req.user.id, req.query.from, req.query.to, function(err, spending, total) {
         if (!err) {
@@ -57,35 +60,6 @@ function UsersController() {
       res.render('needLogin');
     }    
   }
-
-  this.postUser = function(req, res) {
-    if (req.body.cost) {
-      handleTransactionPost(req, res);
-    } else if (req.body.category) {
-      handleCategoryPost(req, res);
-    } else {
-      res.redirect('back');
-    }
-  };
-}
-
-function handleTransactionPost(req, res) {
-  var transaction = new Transaction(req.body.cost, req.body.category, req.body.location, req.body.date);
-  db.insertTransaction(req.user.id, transaction, function(err) {
-    if (err) {
-      console.log('Error: ' + err + '. From db.insertTransaction()');
-    }
-    res.redirect('back');
-  });
-}
-
-function handleCategoryPost(req, res) {
-  db.insertNewCategory(req.user.id, req.body.category, function(err) {
-    if (err) {
-      console.log('Error: ' + err + '. From insertNewCategory()');
-    }
-    res.redirect('back');
-  });
 }
 
 module.exports = UsersController;

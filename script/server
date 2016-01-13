@@ -5,8 +5,4 @@
 
 set -e
 
-cd "$(dirname "$0")/.."
-
-redis-server --daemonize yes
-node index.js
-
+heroku local -p 3000 -f Procfile.dev

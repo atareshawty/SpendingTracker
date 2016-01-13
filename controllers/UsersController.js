@@ -26,6 +26,7 @@ function UsersController() {
         res.redirect('/signup');  
       } else {
         var user = {id: id, username: username};
+        //Login, store session id, and redirect to profile page
         req.logIn(user, function(err) {
           if (err) {
             console.log(err);

@@ -7,4 +7,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-heroku local -p 3000 -f Procfile.dev
+forego start -p 3000 -f Procfile.dev

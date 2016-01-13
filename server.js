@@ -13,8 +13,6 @@ var routes = require('./routes/routes');
 //Passport for authentication
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
-//Handlebars View Engine
-var exphbs = require('express-handlebars');
 //Database interaction
 var db = require('./db/users.js');
 var path = require('path');

@@ -31,7 +31,7 @@ function createUserObj(id, username, done) {
 
   query.on('row', function(row) {
     total += row.cost;
-    spending.push(new Transaction(row.cost.toFixed(2), row.category, row.location, row.date));
+    spending.push(new Transaction(parseFloat(row.cost.toFixed(2)), row.category, row.location, row.date));
   });
 
   query.on('end', function() {

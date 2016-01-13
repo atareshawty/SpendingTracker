@@ -1,17 +1,8 @@
-$(document).ready(function() {
+function validateAndCreateDateRange() {
   createDateRange();
-  var regex = /^\d{4}[-]\d{2}[-]\d{2}$/;
-  
-  $('#from, #to').change(function() {
-    var minDate = $('#from').val();
-    var maxDate = $('#to').val();
-    if (regex.test(minDate) && regex.test(maxDate)) {
-      $("input[id=submitDate]").attr("disabled", false);
-    } else {
-      $("input[id=submitDate]").attr("disabled", true);
-    }
-  });
-});
+  $('#from, #to').change(validateDateRange);
+  $('#from, #to').on('keyup', validateDateRange);
+}
 
 function createDateRange() {
   $('#from').datepicker({
@@ -33,4 +24,15 @@ function createDateRange() {
       $('#from').datepicker("option", "maxDate", selectedDate)
     }
   });  
+}
+
+function validateDateRange() {
+  var regex = /^\d{4}[-]\d{2}[-]\d{2}$/;
+  var minDate = $('#from').val();
+  var maxDate = $('#to').val();
+  if (regex.test(minDate) && regex.test(maxDate)) {
+    $("input[id=submitDate]").attr("disabled", false);
+  } else {
+    $("input[id=submitDate]").attr("disabled", true);
+  }
 }

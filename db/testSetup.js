@@ -16,6 +16,7 @@ client.on('error', function(err) {
 var testUsername = config.test.user.username;
 var testPassword = bcrypt.hashSync(config.test.user.password, bcrypt.genSaltSync(10));
 var testSpending = config.test.user.spending;
+var testCategories = config.test.user.categories;
 var testId = config.test.user.id;
 var finalQuery;
 console.log('Creating tables...');
@@ -26,9 +27,13 @@ client.query('INSERT INTO users VALUES($1,$2,$3)',[testId, testUsername, testPas
 
 for (var i = 0; i < testSpending.length; i++) {
 	var insert = testSpending[i];
-	finalQuery = client.query('INSERT INTO spending VALUES($1,$2,$3,$4,$5)', [testId, insert.cost, insert.category, insert.location, insert.date]);
+	client.query('INSERT INTO spending VALUES($1,$2,$3,$4,$5)', [testId, insert.cost, insert.category, insert.location, insert.date]);
 }
 
+for (var i = 0; i < testCategories.length; i++) {
+  var insertCategory = testCategories[i];
+  var finalQuery = client.query('INSERT INTO categories VALUES($1, $2)', [testId, insertCategory]);
+}
 
 finalQuery.on('end', function() {
   console.log('Done!');

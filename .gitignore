@@ -11,3 +11,4 @@ Thumbs.db
 npm-debug.log
 /*.env
 /pubilc/javascripts/templates.js
+*.rdb

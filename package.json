@@ -4,7 +4,7 @@
   "description": "Track your spending visually",
   "private": true,
   "scripts": {
-    "start": "node index.js",
+    "start": "script/server",
     "test": "mocha"
   },
   "dependencies": {

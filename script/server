@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# script/server: Launch the application and any extra required processes
+#                locally.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+if ps x | grep -v grep | grep -c redis-server; then
+  echo "Shutting down previous instance if redis"
+  redis-cli shutdown
+fi
+
+echo "Starting spending tracker!"
+forego start -p 3000 -f Procfile.dev

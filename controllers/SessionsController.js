@@ -4,12 +4,11 @@ var redis = require('redis');
 function SessionsController() {
 	this.loginPage = function(req,res) {
     if (!req.isAuthenticated()) {
-      // if (req.flash('error')) {
-      //   res.render('login', {message: req.flash('error')});
-      // } else {
-      //   res.render('login');
-      // }
-      res.render('login');
+      if (req.flash('error')) {
+        res.render('login', {message: req.flash('error')});
+      } else {
+        res.render('login');
+      }
     } else {
       res.redirect('/users/' + req.user.username);
     }

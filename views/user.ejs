@@ -4,68 +4,14 @@
   <% include ../views/partials/head %>
 </head>
 <body>
-    <% include ../views/partials/tab %>
-  <script id="user-template" type="text/x-handlebars-template">
-    <h1>Welcome, {{username}}!</h1>
-    <canvas class="chart"></canvas>
-    <table class="spending-table">
-      <tr>
-        <th>Cost</th>
-        <th>Category</th>
-        <th>Location</th>
-        <th>Date</th>
-      </tr>
-      {{#each spending}}
-      <tr>
-        <td class="cost">${{this.cost}}</td>
-        <td class="category">{{this.category}}</td>
-        <td class="location">{{this.location}}</td>
-        <td class="date">{{this.date}}</td>
-      </tr>
-      {{/each}}
-    </table>
-    <h3>Total Spending: ${{total}}</h3>
-    
-    <!-- Get customized user categories -->
-    <h2>Want your own Categories?</h2>
-    <form name="categories" id="customize" method="post" action="/spending/category">
-      <label>Category</label>
-      <input type="text" id="customCategory", name="category", placeholder="Make your own!">
-      <input id="submitCategory" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
-    </form>
-    
-    <!-- Date Range Filter Selector -->
-    <form name="filter" id="filter" method="get">
-      <label>From</label>
-      <input type="text" id="from" name="from", placeholder="2015-01-01">
-      <label>To</label>
-      <input type="text" id="to" name="to", placeholder="2015-01-31">
-      <input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
-    </form>
-    
-    <!-- Submit more spending data -->
-    <form name="input" id="inputForm" method="post" action="/spending/purchase">
-      <label>Cost</label>
-      <input id="POST-cost" type="text", name="cost" id="cost", placeholder="Ex: 10.99">
-      <label>Category</label>
-      <select id="POST-category" name="category">
-        {{#each categories}}
-          <option>{{this}}</option>
-        {{/each}}
-      </select>
-      <label>Location</label>
-      <input id="POST-location" type="text", name="location", placeholder="Ex: AMC Theater">
-      <label>Date</label>
-      <input id="POST-date" type="text", name="date", placeholder="Ex: 2015-10-03">
-      <input id="submitData" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
-    </form>
-  </script>
+  <% include ../views/partials/tab %>
   <div class="user-content-placeholder"></div>
   <footer>
     <% include ../views/partials/footer %>
   </footer>
 </body>
 
+<script src="/javascripts/templates.js"></script>
 <script src="/javascripts/userFetch.js"></script>
 <script src="/javascripts/helpers/user/transaction.js"></script>
 <script src="/javascripts/helpers/user/category.js"></script>

@@ -7,6 +7,9 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+echo "Precompiling Handlebars templates..."
+handlebars views/handlebars_templates/*.handlebars -f public/javascripts/templates.js
+
 if ps x | grep -v grep | grep -c redis-server; then
   echo "Shutting down previous instance if redis"
   redis-cli shutdown

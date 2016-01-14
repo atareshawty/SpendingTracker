@@ -9,7 +9,7 @@ result.then(function(response) {
   user.total = user.total.toFixed(2);
   var userTemplate = Handlebars.templates['user_template'];
   var compiledHTML = userTemplate(user);
-  console.log(compiledHTML);
+  $('.user-content-placeholder').html(compiledHTML);
   buildChart(user.spending);
   validateCategories();
   validateAndCreateDateRange();

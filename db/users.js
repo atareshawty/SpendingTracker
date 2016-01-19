@@ -149,7 +149,7 @@ exports.getSpending = function(id, minDate, maxDate, done) {
   });
 };
 
-exports.getSpendingFromUsername = function(username, minDate, maxDate, done) {
+exports.getSpendingWithUsername = function(username, minDate, maxDate, done) {
   if (typeof minDate === 'function') {
     done = minDate,
     minDate = {},

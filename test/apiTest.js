@@ -26,6 +26,7 @@ describe('API', function() {
       };
       
       request(url).get('/api/users/' + testUser.username).send(requestObj).expect('Content-Type', /json/).end(function(err, res) {
+        console.log('Response body: ', res.body);
         assert.deepEqual(res.body, testUser, 'Returned User should equal testUser');
         done(err);
       });

@@ -192,7 +192,7 @@ describe('Database Interaction', function() {
     });  
   });
   
-  describe('Get Spending From Username', function() {
+  describe('Get Spending With Username', function() {
     var username = config.test.user.username;
     var testSpending = config.test.user.spending;
     var testFilteredSpending = config.test.filterSpending;
@@ -202,7 +202,7 @@ describe('Database Interaction', function() {
     var to = config.test.filterDates.to;
     
     it('should return correct spending from username alone', function(done) {
-      db.getSpendingFromUsername(username, function(err, spending, total) {
+      db.getSpendingWithUsername(username, function(err, spending, total) {
         assert.deepEqual(spending, testSpending, 'Spending should be the same');
         assert.equal(total, testTotal, 'Totals should be equal');
         done(err);
@@ -210,7 +210,7 @@ describe('Database Interaction', function() {
     });
     
     it('should return filtered spending when provided dates', function(done) {
-      db.getSpendingFromUsername(username, from, to, function(err, spending, total) {
+      db.getSpendingWithUsername(username, from, to, function(err, spending, total) {
         assert.deepEqual(spending, testFilteredSpending, 'Spending should be the same');
         assert.equal(total, testFilteredTotal, 'Totals should be equal');
         done(err);

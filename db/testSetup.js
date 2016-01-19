@@ -14,7 +14,7 @@ client.on('error', function(err) {
 });
 
 var testUsername = config.test.user.username;
-var testPassword = bcrypt.hashSync(config.test.user.password, bcrypt.genSaltSync(10));
+var testPassword = bcrypt.hashSync(config.test.password, bcrypt.genSaltSync(10));
 var testSpending = config.test.user.spending;
 var testCategories = config.test.user.categories;
 var testId = config.test.user.id;

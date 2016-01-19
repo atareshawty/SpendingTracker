@@ -11,14 +11,12 @@ function APIController() {
     authenticate(req, function(err, authenticated) {
       if (err) {res.status(500).send(err);}
       if (authenticated) {
-        console.log('User is authenticated');
         var username = req.params.username || req.body.username;
         db.findByUsername(username, function(err, user) {
           if (err) {res.status(500).send(err);}
           res.json(user);
         });
       } else {
-        console.log('User is not authenticated');
         res.status(401).send('You can\t access that data!');
       }
     });

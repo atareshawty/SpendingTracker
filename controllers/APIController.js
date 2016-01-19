@@ -8,61 +8,57 @@ var secret = process.env.PASSPORT_SECRET || config.passport.secret;
 
 function APIController() {
   this.getUser = function(req, res) {
-    if (req.params.username && req.headers.cookie) {
-      authThroughRedisStore(req.params.username, req.headers.cookie, function(err, user) {
-        if (err) {
-          res.send(err);
-        } else {
+    authenticate(req, function(err, authenticated) {
+      if (err) {res.status(500).send(err);}
+      if (authenticated) {
+        var username = req.params.username || req.body.username;
+        db.findByUsername(username, function(err, user) {
+          if (err) {res.status(500).send(err);}
           res.json(user);
-        }
-      });
-      
-    } else if (req.body.username && req.body.password) {
-      authThroughDB(req.body.username, req.body.password, function(err, user) {
-        if (err) {
-          res.status(401).send(err);
-        } else {
-          res.json(user);
-        }
-      });
-      
-    } else {
-      res.status(401).send('Woah there! You can\'t have that data...');
-      res.end();
-    }
+        });
+      } else {
+        res.status(401).send('You can\t access that data!');
+      }
+    });
   };
 }
 
-//Returns json if authentication works
+function authenticate(req, done) {
+  if (req.params.username && req.headers.cookie) {
+    authThroughRedisStore(req.params.username, req.headers.cookie, function(err, auth) {
+      if (err) {done(err);}
+      else {done(null, auth);}
+    });
+  } else if (req.body.username && req.body.password) {
+    authThroughDB(req.body.username, req.body.password, function(err, auth) {
+      if (err) {done(err);} 
+      else {done(null, auth);}
+    });
+  } else {
+    done(null, false);
+  }
+}
+
 function authThroughRedisStore(username, cookie, done) {
   var RedisClient = redis.createClient();
   RedisClient.get(username, function(err, reply) {
     if (err) {RedisClient.end(); done(err);}
     if (replySIDMatchesCookieSID(reply, cookie)) {
-      db.findByUsername(username, function(err, user) {
-        if (err) {RedisClient.end(); done(err);}
-        RedisClient.end();
-        done(null, user);
-      })
+      RedisClient.end();
+      done(null, true);
     } else {
       RedisClient.end();
-      done(null, undefined);
+      done(null, false);
     }
   });
 }
 
-//Returns json if authentication works
 function authThroughDB(username, password, done) {
   db.findByUsername(username, function(err, user, userPassword) {
-    if (err) {
-      done(err);
-    } else if (!user) {
-      done(null, undefined);
-    } else if (!bcrypt.compareSync(password, userPassword)) {
-      done({auth: false});
-    } else {
-      done(null, user);
-    } 
+    if (err) {done(err);} 
+    else if (!user) {done(null, false);} 
+    else if (!bcrypt.compareSync(password, userPassword)) {done(null, false);} 
+    else {done(null, true);} 
   });
 }
 

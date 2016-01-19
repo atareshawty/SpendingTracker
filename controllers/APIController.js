@@ -21,6 +21,20 @@ function APIController() {
       }
     });
   };
+  
+  this.getSpending = function(req, res) {
+    authenticate(req, function(err, authenticated) {
+      if (err) {res.status(500).send(err);}
+      if (authenticated) {
+        var username = req.params.username || req.body.username;
+        db.getSpendingFromUsername(username, req.body.from, req.body.to, function(err, spending, total) {
+          res.json({'spending': spending, 'total': total});
+        });
+      } else {
+        res.status(401).send('You can\t access that data!');
+      }
+    });
+  }
 }
 
 function authenticate(req, done) {
@@ -31,7 +45,7 @@ function authenticate(req, done) {
     });
   } else if (req.body.username && req.body.password) {
     authThroughDB(req.body.username, req.body.password, function(err, auth) {
-      if (err) {done(err);} 
+      if (err) {done(err);}
       else {done(null, auth);}
     });
   } else {

@@ -12,7 +12,6 @@ module.exports = {
   "test": {
     "user": {
       "username": 'testGuy',
-      "password": 'testPassword',
       "id": 29,
 			"spending": [ {"cost": 100.23, "category": 'Utilities', "location": 'AEP Ohio', "date": '2015-10-01'},
                     {"cost": 10.95, "category": 'Entertainment', "location": 'Arcade', "date": '2015-11-03'},
@@ -26,6 +25,11 @@ module.exports = {
     "filterDates": {
       "from": '2015-11-01',
       "to": '2015-11-16'
-    }
+    },
+    "filterSpending": [ {"cost": 10.95, "category": 'Entertainment', "location": 'Arcade', "date": '2015-11-03'},
+                        {"cost": 1.99, "category": 'Food', "location": 'Kroger', "date": '2015-11-15'}
+                      ],
+    "filteredTotal": 12.94,
+    "password": 'testPassword'
   }
 };

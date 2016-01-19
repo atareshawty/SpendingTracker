@@ -192,6 +192,32 @@ describe('Database Interaction', function() {
     });  
   });
   
+  describe('Get Spending From Username', function() {
+    var username = config.test.user.username;
+    var testSpending = config.test.user.spending;
+    var testFilteredSpending = config.test.filterSpending;
+    var testTotal = config.test.user.total;
+    var testFilteredTotal = config.test.filteredTotal;
+    var from = config.test.filterDates.from;
+    var to = config.test.filterDates.to;
+    
+    it('should return correct spending from username alone', function(done) {
+      db.getSpendingFromUsername(username, function(err, spending, total) {
+        assert.deepEqual(spending, testSpending, 'Spending should be the same');
+        assert.equal(total, testTotal, 'Totals should be equal');
+        done(err);
+      });
+    });
+    
+    it('should return filtered spending when provided dates', function(done) {
+      db.getSpendingFromUsername(username, from, to, function(err, spending, total) {
+        assert.deepEqual(spending, testFilteredSpending, 'Spending should be the same');
+        assert.equal(total, testFilteredTotal, 'Totals should be equal');
+        done(err);
+      });
+    })
+  });
+  
   describe('Create User', function() {
     it('should return error if the username already exists', function(done) {
       db.createUser(testUser.username, testUser.password, function(err, id) {

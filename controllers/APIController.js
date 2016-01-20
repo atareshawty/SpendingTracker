@@ -27,7 +27,9 @@ function APIController() {
       if (err) {res.status(500).send(err);}
       if (authenticated) {
         var username = req.params.username || req.body.username;
-        db.getSpendingWithUsername(username, req.body.from, req.body.to, function(err, spending, total) {
+        var from = req.body.from || req.query.from;
+        var to = req.body.to || req.query.to;
+        db.getSpendingWithUsername(username, from, to, function(err, spending, total) {
           res.json({'spending': spending, 'total': total});
         });
       } else {

@@ -75,7 +75,6 @@ describe('Database Interaction', function() {
   
   describe('Insert Purchase', function() {
 
-    
     it('should insert transaction when all parameters are given', function(done) {
       var fake = {
         "cost": 10.99,
@@ -83,7 +82,7 @@ describe('Database Interaction', function() {
         "location": 'Cleveland Cavaliers', 
         "date": '2015-12-25'
       };
-      db.insertPurchase(testUser.id, fake, function() {
+      db.insertPurchase(testUser.username, fake, function() {
         client.connect();
         var queryString = 'SELECT * FROM spending WHERE id=$1 AND cost=$2 AND category=$3 AND location=$4 AND date=$5';
         var deleteQueryString = 'DELETE FROM spending WHERE id=$1 AND cost=$2 AND category=$3 AND location=$4 AND date=$5';
@@ -110,7 +109,7 @@ describe('Database Interaction', function() {
         "location": 'Cleveland Cavaliers', 
         "date": '12/25/2015'
       };
-      db.insertPurchase(testUser.id, fake, function(err) {
+      db.insertPurchase(testUser.username, fake, function(err) {
         assert(err != undefined, 'function should give error');
         assert(err != null, 'Function should give error');
         done();
@@ -124,7 +123,7 @@ describe('Database Interaction', function() {
         "location": 'Cleveland Cavaliers', 
         "date": /^\d{4}[-]\d{2}[-]\d{2}$/
       };
-      db.insertPurchase(testUser.id, fake, function(err) {
+      db.insertPurchase(testUser.username, fake, function(err) {
         assert(err != undefined, 'function should give error');
         assert(err != null, 'Function should give error');
         done();

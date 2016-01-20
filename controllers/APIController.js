@@ -36,7 +36,28 @@ function APIController() {
         res.status(401).send('You can\t access that data!');
       }
     });
-  }
+  };
+  
+  this.newSpending = function(req, res) {
+    authenticate(req, function(err, authenticated) {
+      if (err) {res.status(500).send(err);}
+      if (authenticated) {
+        var username = req.params.username || req.body.username;
+        var purchase = {
+          cost: req.body.cost || req.query.cost,
+          category: req.body.category || req.query.category,
+          location: req.body.location || req.query.location,
+          date: req.body.date || req.query.date
+        };
+        db.insertPurchase(username, purchase, function(err) {
+          if (err) {res.status(500).send(err);}
+          else {res.status(200).send();}
+        });
+      } else {
+        res.status(401).send('You can\t access that data!');
+      }
+    });
+  };
 }
 
 function authenticate(req, done) {

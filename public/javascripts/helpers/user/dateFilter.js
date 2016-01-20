@@ -47,8 +47,8 @@ function getSpendingBetweenDates() {
     alert('Invalid date format!');    
   }
   $("input[id=submitDate]").attr("disabled", true);
-  $('#from').text('');
-  $('#to').text('');
+  $('#from').val('');
+  $('#to').val('');
 }
 
 function fetchAndReplaceSpending(minDate, maxDate) {

@@ -1,7 +1,8 @@
 var App = (function() {
   'use strict';
   var user = {};
-  
+  var filteredSpending = [];
+  var filteredSpendingTotal = 0;
   return {
     getUser: function() {
       return user;
@@ -20,18 +21,32 @@ var App = (function() {
     },
     
     getFilteredSpending: function(minDate, maxDate) {
-      // var begin = 0, end = user.spending.length;
-      // while (user.spending[begin] < minDate) {
-      //   begin++;
-      // }
-      // while (user.spending[end] > maxDate) {
-      //   end--;
-      // }
-      // if (begin <= end) {
-      //   return user.spending.slice(begin, ++end);  
-      // } else {
-      //   return user.spending;
-      // }
+      var begin = 0, end = user.spending.length - 1;
+      while (user.spending[begin].date.localeCompare(minDate) < 0 ) {
+        begin++;
+      }
+      while (user.spending[end].date.localeCompare(maxDate) > 0 ) {
+        end--;
+      }
+      if (begin <= end) {
+        filteredSpending =  user.spending.slice(begin, ++end);
+      } else {
+        filteredSpending = user.spending;
+      }
+      return filteredSpending;
+    },
+    
+    getFilteredSpendingTotal: function() {
+      if (user.spending.length === filteredSpending.length) {
+        return filteredSpendingTotal;
+      } else {
+        filteredSpendingTotal = 0;
+        filteredSpending.forEach(function(value) {
+          filteredSpendingTotal += value.cost;
+        });
+        filteredSpendingTotal = parseFloat(filteredSpendingTotal.toFixed(2));
+        return filteredSpendingTotal;
+      }
     },
     
     getUserId: function() {
@@ -40,6 +55,8 @@ var App = (function() {
     
     setUser: function(newUser) {
       user = newUser;
+      filteredSpending = newUser.spending;
+      filteredSpendingTotal = newUser.total;
     },
     
     addUserCategory: function(category) {

@@ -118,6 +118,12 @@ exports.getSpending = function(id, minDate, maxDate, done) {
   var queryString, query;
   var spending = []
   var total = 0;
+  
+  if (typeof minDate == 'function') {
+    done = minDate;
+    minDate = {};
+    maxDate = {};
+  }
 
   if (validateDate(minDate) && validateDate(maxDate)) {
     queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3 ORDER BY date asc';
@@ -138,11 +144,45 @@ exports.getSpending = function(id, minDate, maxDate, done) {
 
   query.on('end', function() {
     client.end();
-    total.toFixed(2);
+    total = parseFloat(total.toFixed(2));
     done(null, spending, total);
   });
 };
 
+exports.getSpendingWithUsername = function(username, minDate, maxDate, done) {
+  if (typeof minDate === 'function') {
+    done = minDate,
+    minDate = {},
+    maxDate = {}
+  }
+  var client = createDBClient();
+  var queryString, query, spending = [], total = 0;
+  
+  if (validateDate(minDate) && validateDate(maxDate)) {
+    queryString = 'SELECT * FROM spending WHERE date BETWEEN $1 and $2 AND id = (SELECT id from users WHERE username = $3) ORDER BY date';
+    query = client.query(queryString, [minDate, maxDate, username]);
+  } else {
+    queryString = 'SELECT * FROM spending WHERE id = (SELECT id FROM users WHERE username = $1) ORDER BY date';
+    query = client.query(queryString, [username]);
+  }
+  
+  query.on('error', function(err) {
+    client.end();
+    console.log('Error from getSpendingFromUsername', err);
+    done(err);
+  });
+  
+  query.on('row', function(row) {
+    spending.push(new Transaction(row.cost, row.category, row.location, row.date));
+    total += row.cost;
+  });
+  
+  query.on('end', function() {
+    client.end();
+    total = parseFloat(total.toFixed(2));
+    done(undefined, spending, total);
+  })
+}
 /**
   Inserts new username and password into db
   Callback function {@done} expects {@err} and {@id}

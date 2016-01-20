@@ -1,23 +1,24 @@
 <h1>Welcome, {{username}}!</h1>
 <canvas class="chart"></canvas>
-<table class="spending-table">
-  <tr>
-    <th>Cost</th>
-    <th>Category</th>
-    <th>Location</th>
-    <th>Date</th>
-  </tr>
-  {{#each spending}}
-  <tr>
-    <td class="cost">${{this.cost}}</td>
-    <td class="category">{{this.category}}</td>
-    <td class="location">{{this.location}}</td>
-    <td class="date">{{this.date}}</td>
-  </tr>
-  {{/each}}
-</table>
-<h3>Total Spending: ${{total}}</h3>
-
+<div class="spending-table-placeholder">
+  <table class="spending-table">
+    <tr>
+      <th>Cost</th>
+      <th>Category</th>
+      <th>Location</th>
+      <th>Date</th>
+    </tr>
+    {{#each spending}}
+    <tr>
+      <td class="cost">${{this.cost}}</td>
+      <td class="category">{{this.category}}</td>
+      <td class="location">{{this.location}}</td>
+      <td class="date">{{this.date}}</td>
+    </tr>
+    {{/each}}
+  </table>
+  <h3>Total Spending: ${{total}}</h3>
+</div>
 <!-- Get customized user categories -->
 <h2>Want your own Categories?</h2>
 <form name="categories" id="customize" method="post" action="/spending/category">
@@ -27,13 +28,11 @@
 </form>
 
 <!-- Date Range Filter Selector -->
-<form name="filter" id="filter" method="get">
-  <label>From</label>
-  <input type="text" id="from" name="from", placeholder="2015-01-01">
-  <label>To</label>
-  <input type="text" id="to" name="to", placeholder="2015-01-31">
-  <input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
-</form>
+<label>From</label>
+<input type="text" id="from" name="from", placeholder="2015-01-01">
+<label>To</label>
+<input type="text" id="to" name="to", placeholder="2015-01-31">
+<input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
 
 <!-- Submit more spending data -->
 <form name="input" id="inputForm" method="post" action="/spending/purchase">

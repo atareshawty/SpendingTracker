@@ -22,10 +22,10 @@ var App = (function() {
     
     getFilteredSpending: function(minDate, maxDate) {
       var begin = 0, end = user.spending.length - 1;
-      while (user.spending[begin].date.localeCompare(minDate) < 0 ) {
+      while ( user.spending[begin].date.localeCompare(minDate) < 0 ) {
         begin++;
       }
-      while (user.spending[end].date.localeCompare(maxDate) > 0 ) {
+      while ( user.spending[end].date.localeCompare(maxDate) > 0 ) {
         end--;
       }
       if (begin <= end) {
@@ -53,8 +53,13 @@ var App = (function() {
       return user.id;
     },
     
+    getUserTotalSpending: function() {
+      return user.total;  
+    },
+    
     setUser: function(newUser) {
       user = newUser;
+      user.total = parseFloat(user.total);
       filteredSpending = newUser.spending;
       filteredSpendingTotal = newUser.total;
     },
@@ -64,7 +69,13 @@ var App = (function() {
     },
     
     addUserPurchase: function(purchase) {
-      //We'll add to this later
+      var newPurchaseIndex = 0;
+      while ( newPurchaseIndex < user.spending.length && user.spending[newPurchaseIndex].date.localeCompare(purchase.date) < 0) {
+        newPurchaseIndex++;
+      }
+      user.spending.splice(newPurchaseIndex, 0, purchase);
+      user.total += purchase.cost;
+      user.total = parseFloat(user.total.toFixed(2));
     }
   }
 }());

@@ -57,6 +57,5 @@ function filterAndReplaceSpending(minDate, maxDate) {
   console.log('total', total);
   var userTemplate = Handlebars.templates['spending_table_template'];
   var compiledHTML = userTemplate({'spending': spending, 'total': total});
-  console.log('Compiled HTML', compiledHTML);
   $('.spending-table-placeholder').html(compiledHTML);
 }

@@ -55,7 +55,7 @@ function createUserObj(id, username, done) {
 */
 exports.insertPurchase = function(username, purchase, done) {
   if (validateDate(purchase.date) && !isNaN(parseFloat(purchase.cost))) {
-    purchase.cost.toFixed(2);
+    purchase.cost = parseFloat(purchase.cost.toFixed(2));
     var client = createDBClient();
     var queryString = 'INSERT INTO spending (id, cost, category, location, date) VALUES((select id from users where username=$1), $2, $3, $4, $5)';
     var query = client.query(queryString,[username, purchase.cost, purchase.category, purchase.location, purchase.date]);

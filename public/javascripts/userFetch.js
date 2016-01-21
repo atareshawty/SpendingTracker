@@ -11,7 +11,7 @@ result.then(function(response) {
   var userTemplate = Handlebars.templates['user_template'];
   var compiledHTML = userTemplate(user);
   $('.user-content-placeholder').html(compiledHTML);
-  buildChart(user.spending);
+  App.buildPieChart();
   validateCategories();
   validateAndCreateDateRange();
   validateAndCreatePurchaseInput();

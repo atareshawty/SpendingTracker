@@ -81,14 +81,12 @@ var App = (function() {
     
     buildPieChart: function(spending) {
       spending = spending || user.spending;
-      debugger;
       var canvas = $('.chart');
       var context = $('.chart').get(0).getContext('2d');
       //Clear potentially old chart before drawing a new one
       context.clearRect(0,0,canvas.width(), canvas.height());
       var chartData = [];
       var purchaseMap = buildPurchasesMapFromSpending(spending);
-      console.log('Purchase Map', purchaseMap);
       //chartData object determined by pie chart from Chart.js
       purchaseMap.forEach(function(value, key, map) {
         chartData.push({

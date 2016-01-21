@@ -26,6 +26,7 @@ router.setup = function(app, controllers) {
   app.get('/api/users/:username', controllers.api.getUser);
   app.get('/api/spending/:username', controllers.api.getSpending);
   app.post('/api/spending/:username', controllers.api.newSpending);
+  app.post('/api/category/:username', controllers.api.newCategory);
 }
 
 module.exports = router;

@@ -12,7 +12,7 @@ var config = require('../config.js');
 var server = require('../server.js');
 var db = require('../db/users.js');
 var pg = require('pg');
-var client = new pg.Client(process.env.DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development');
+var dbConnectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development';
 
 server.start();
 
@@ -124,6 +124,7 @@ describe('API', function() {
           assert.equal(total, expectedTotal, 'Totals should be equal');
           
           //Clean up post data from database
+          var client = new pg.Client(dbConnectionString);
           client.connect();
           var queryString = 'DELETE FROM spending WHERE id=$1 AND date=$2';
           var query = client.query(queryString, [config.test.user.id, postObject.date]);
@@ -151,5 +152,49 @@ describe('API', function() {
     
   });
   
+  describe('Post Category', function() {
+    it('Should enter category in the database when request is correct', function(done) {
+      var postObject = {
+        username: config.test.user.username,
+        password: config.test.password,
+        category: 'New Test Category'
+      };
+      
+      request(url).post('/api/category/' + config.test.user.username).send(postObject).end(function(err, result) {
+        assert.equal(result.status, 200, 'Should get back 200 code');
+        var client = new pg.Client(dbConnectionString);
+        client.connect();
+        var queryString = 'SELECT category FROM categories WHERE id=(SELECT id FROM users WHERE username=$1)'
+        var deleteQueryString = 'DELETE FROM categories WHERE category=$1';
+        //Get new category from db to see if it matches the one sent
+        var query = client.query(queryString, [config.test.user.username]);
+ 
+        query.on('error', function(err) {done(err);});
+        query.on('row', function(row) {
+          assert.equal(row.category, postObject.category, 'Categories should match');
+        });
+        query.on('end', function() {
+          //Remove new category so test can run again
+          var deleteQuery = client.query(deleteQueryString, [postObject.category]);
+          deleteQuery.on('error', function(err) {done(err);});
+          deleteQuery.on('end', function() {done()});
+        });
+      });
+    });
+    
+    it('Should give a 401 when not provided correct credentials', function(done) {
+      var postObject = {
+        username: config.test.user.username,
+        password: config.test.password + 'bad',
+        category: 'Does not matter'
+      };
+      
+      request(url).post('/api/category/' + config.test.user.username).send(postObject).end(function(err, result) {
+        assert.equal(result.status, 401, 'Should give a 401');
+        done(err);
+      });
+    });
+    
+  });
 });
 

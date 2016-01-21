@@ -250,7 +250,7 @@ describe('Database Interaction', function() {
 
     it('should insert category', function(done) {
       var insertClient = new pg.Client(connectionString);
-      db.insertNewCategory(testUser.id, 'test', function(err) {
+      db.insertNewCategory(testUser.username, 'test', function(err) {
         insertClient.connect();
         var query = insertClient.query('SELECT * FROM categories WHERE id=$1 AND category=$2', [testUser.id, 'test']);
         query.on('end', function(result) {
@@ -265,7 +265,7 @@ describe('Database Interaction', function() {
     });
     
     it('should return an error if category is not a string', function(done) {
-      db.insertNewCategory(testUser.id, ['Hi, I am an array!'], function(err) {
+      db.insertNewCategory(testUser.username, ['Hi, I am an array!'], function(err) {
         assert(err != undefined, 'Function should give an error');
         assert(err != null, 'Function should give an error');
         done();
@@ -273,7 +273,7 @@ describe('Database Interaction', function() {
     });
     
     it('should return an error if category.length > 20', function(done) {
-      db.insertNewCategory(testUser.id, 'Hi, I am an string with length greater than 20!', function(err) {
+      db.insertNewCategory(testUser.username, 'Hi, I am an string with length greater than 20!', function(err) {
         assert(err != undefined, 'Function should give an error');
         assert(err != null, 'Function should give an error');
         done();

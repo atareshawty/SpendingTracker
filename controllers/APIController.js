@@ -58,6 +58,22 @@ function APIController() {
       }
     });
   };
+  
+  this.newCategory = function(req, res) {
+    authenticate(req, function(err, authenticated) {
+      if (err) {res.status(500).send(err);}
+      if (authenticated) {
+        var username = req.params.username || req.body.username;
+        var category = req.body.category || req.query.category;
+        db.insertNewCategory(username, category, function(err) {
+          if (err) {res.status(500).send(err);}
+          else {res.status(200).send();}
+        });
+      } else {
+        res.status(401).send('You can/t make that unauthenticated request!');
+      }
+    });
+  }
 }
 
 function authenticate(req, done) {

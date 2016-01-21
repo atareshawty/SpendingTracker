@@ -213,10 +213,10 @@ exports.createUser = function(username, password, done) {
   @param string
   @param callback function
 */
-exports.insertNewCategory = function(id, category, done) {
+exports.insertNewCategory = function(username, category, done) {
   var client = createDBClient();
-  var queryString = 'INSERT INTO categories VALUES($1, $2)';
-  var query = client.query(queryString, [id, category]);
+  var queryString = 'INSERT INTO categories (id, category) VALUES((SELECT id FROM users WHERE username=$1), $2)';
+  var query = client.query(queryString, [username, category]);
 
   query.on('error', function(err) {
     done(err);

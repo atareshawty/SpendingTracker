@@ -47,7 +47,6 @@ function sendAndInsertNewPurchase() {
     var url = '/api/spending/' + username + '/?cost=' + purchase.cost 
               + '&location=' + purchase.location + '&category=' + purchase.category
               + '&date=' + purchase.date;
-    console.log(url);
     fetch(url,  {
       credentials: 'same-origin',
       method: 'post'

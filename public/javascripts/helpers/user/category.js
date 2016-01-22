@@ -32,5 +32,11 @@ function clearNewCategory() {
 }
 
 function sendNewCategoryWithFetch(category) {
-  //Add endpoint later!
+  var href = document.URL;
+  var username = href.substring(href.lastIndexOf('/') + 1);
+  var url = '/api/category/' + username + '/?category=' + category;
+  fetch(url, {
+    credentials: 'same-origin',
+    method: 'post'
+  });
 }

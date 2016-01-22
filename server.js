@@ -6,7 +6,6 @@ var app = express();
 var StaticPagesController = require('./controllers/StaticPagesController');
 var UsersController = require('./controllers/UsersController');
 var SessionsController = require('./controllers/SessionsController');
-var SpendingController = require('./controllers/SpendingController');
 var APIController = require('./controllers/APIController');
 //Routes
 var routes = require('./routes/routes');
@@ -86,7 +85,6 @@ var controllers = {
   staticPages: new StaticPagesController(),
   users: new UsersController(),
   session: new SessionsController(),
-  spending: new SpendingController(),
   api: new APIController()
 };
 

@@ -7,10 +7,11 @@ result.then(function(response) {
   return response.json();
 }).then(function(user) {
   user.total = user.total.toFixed(2);
+  App.setUser(user);
   var userTemplate = Handlebars.templates['user_template'];
   var compiledHTML = userTemplate(user);
   $('.user-content-placeholder').html(compiledHTML);
-  buildChart(user.spending);
+  App.buildPieChart();
   validateCategories();
   validateAndCreateDateRange();
   validateAndCreatePurchaseInput();

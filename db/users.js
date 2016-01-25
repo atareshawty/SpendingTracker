@@ -49,16 +49,16 @@ function createUserObj(id, username, done) {
 /**
   Inserts transaction {@transaction} into db, for user with id = {@id}
   Callback function {@done} expects {@err}
-  @param id - user id
+  @param username - username
   @param transaction - inserted into db
   @param done - callback function
 */
-exports.insertPurchase = function(id, purchase, done) {
+exports.insertPurchase = function(username, purchase, done) {
   if (validateDate(purchase.date) && !isNaN(parseFloat(purchase.cost))) {
-    purchase.cost.toFixed(2);
+    purchase.cost = parseFloat(purchase.cost.toFixed(2));
     var client = createDBClient();
-    var queryString = 'INSERT INTO spending VALUES($1, $2, $3, $4, $5)';
-    var query = client.query(queryString,[id, purchase.cost, purchase.category, purchase.location, purchase.date]);
+    var queryString = 'INSERT INTO spending (id, cost, category, location, date) VALUES((select id from users where username=$1), $2, $3, $4, $5)';
+    var query = client.query(queryString,[username, purchase.cost, purchase.category, purchase.location, purchase.date]);
     query.on('error', function(err) {
       client.end();
       done(err);
@@ -183,6 +183,8 @@ exports.getSpendingWithUsername = function(username, minDate, maxDate, done) {
     done(undefined, spending, total);
   })
 }
+
+
 /**
   Inserts new username and password into db
   Callback function {@done} expects {@err} and {@id}
@@ -211,10 +213,10 @@ exports.createUser = function(username, password, done) {
   @param string
   @param callback function
 */
-exports.insertNewCategory = function(id, category, done) {
+exports.insertNewCategory = function(username, category, done) {
   var client = createDBClient();
-  var queryString = 'INSERT INTO categories VALUES($1, $2)';
-  var query = client.query(queryString, [id, category]);
+  var queryString = 'INSERT INTO categories (id, category) VALUES((SELECT id FROM users WHERE username=$1), $2)';
+  var query = client.query(queryString, [username, category]);
 
   query.on('error', function(err) {
     done(err);

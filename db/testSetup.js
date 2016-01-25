@@ -27,12 +27,12 @@ client.query('INSERT INTO users VALUES($1,$2,$3)',[testId, testUsername, testPas
 
 for (var i = 0; i < testSpending.length; i++) {
 	var insert = testSpending[i];
-	client.query('INSERT INTO spending VALUES($1,$2,$3,$4,$5)', [testId, insert.cost, insert.category, insert.location, insert.date]);
+	finalQuery = client.query('INSERT INTO spending VALUES($1,$2,$3,$4,$5)', [testId, insert.cost, insert.category, insert.location, insert.date]);
 }
 
 for (var i = 0; i < testCategories.length; i++) {
   var insertCategory = testCategories[i];
-  var finalQuery = client.query('INSERT INTO categories VALUES($1, $2)', [testId, insertCategory]);
+  var finalQuery = client.query('INSERT INTO categories VALUES($1, $2)', [0, insertCategory]);
 }
 
 finalQuery.on('end', function() {

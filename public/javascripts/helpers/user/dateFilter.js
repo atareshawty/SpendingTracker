@@ -42,7 +42,7 @@ function validateDateRange() {
 
 function getSpendingBetweenDates() {
   if (validateDateRange) {
-    fetchAndReplaceSpending($('#from').val(), $('#to').val());
+    filterAndReplaceSpending($('#from').val(), $('#to').val());
   } else {
     alert('Invalid date format!');    
   }
@@ -51,21 +51,12 @@ function getSpendingBetweenDates() {
   $('#to').val('');
 }
 
-function fetchAndReplaceSpending(minDate, maxDate) {
-  var href = document.URL;
-  var username = href.substring(href.lastIndexOf('/') + 1);
-  var url = '/api/spending/' + username  + '?from=' + minDate  + '&to=' + maxDate;
-  console.log(url);
-  var result = fetch(url, {
-    credentials: 'same-origin'
-  });
-  result.then(function(response) {
-    return response.json();
-  }).then(function(spending) {
-    var userTemplate = Handlebars.templates['spending_table_template'];
-    var compiledHTML = userTemplate(spending);
-    $('.spending-table-placeholder').html(compiledHTML);
-  }).catch(function(err) {
-    console.log('failed', err);
-  });
+function filterAndReplaceSpending(minDate, maxDate) {
+  var spending = App.getFilteredSpending(minDate, maxDate);
+  var total = App.getFilteredSpendingTotal();
+  var userTemplate = Handlebars.templates['spending_table_template'];
+  var compiledHTML = userTemplate({'spending': spending, 'total': total});
+  $('.spending-table-placeholder').html(compiledHTML);
+  console.log('Spending', spending);
+  App.buildPieChart(spending);
 }

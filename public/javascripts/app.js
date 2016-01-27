@@ -82,9 +82,8 @@ var App = (function() {
     buildPieChart: function(spending) {
       spending = spending || user.spending;
       var canvas = $('.chart');
+      canvas.replaceWith($('<canvas/>', {class: 'chart'}));
       var context = $('.chart').get(0).getContext('2d');
-      //Clear potentially old chart before drawing a new one
-      context.clearRect(0,0,canvas.width(), canvas.height());
       var chartData = [];
       var purchaseMap = buildPurchasesMapFromSpending(spending);
       //chartData object determined by pie chart from Chart.js

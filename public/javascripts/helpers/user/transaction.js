@@ -56,6 +56,7 @@ function sendAndInsertNewPurchase() {
     var newTotal = App.getUserTotalSpending();
     var newHTML = Handlebars.templates['spending_table_template']({spending: newSpending, total: newTotal});
     $('.spending-table-placeholder').html(newHTML);
+    App.buildPieChart();
     clearPurchaseForm();  
   } else {
     clearPurchaseForm();

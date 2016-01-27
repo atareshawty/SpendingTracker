@@ -15,15 +15,30 @@ function validateNewCategory() {
 }
 
 function addNewCategory() {
-  if (validateNewCategory()) {
+  if (validateNewCategory() && !checkForDuplicateCategory()) {
     var category = $('.category-form #customCategory').val();
     sendNewCategoryWithFetch(category);
     App.addUserCategory(category);
     $('#POST-category').append($('<option>', {value: category, text: category}));
-  } else {
-    alert('That was bad!');
+  } else if (!validateNewCategory()) {
+    alert('The length of your new category should be <= 20');
+  } else if (checkForDuplicateCategory()) {
+    alert('That category already exists');
   }
   clearNewCategory();
+}
+
+function checkForDuplicateCategory() {
+  var category = $('.category-form #customCategory').val();
+  var hasDuplicate = false;
+  $("select[name='category'] > option").each(function () {
+    if (category.toLowerCase() === this.text.toLowerCase()) {
+      hasDuplicate = true;
+      //break out of loop
+      return false;
+    }
+  });
+  return hasDuplicate; 
 }
 
 function clearNewCategory() {

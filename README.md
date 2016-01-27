@@ -19,7 +19,7 @@ That's it! All your dependencies are ready to go
 
 ## Start the app
 ```bash
-npm start
+PORT=(desired port) npm start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) and enjoy!

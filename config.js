@@ -1,13 +1,13 @@
 module.exports = {
   "db": {
-    "postgres": 'postgres://localhost:5432/spending_tracker_development',
+    "postgres": process.env.SPENDING_TRACKER_DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development',
     "tables": ['login', 'spending', 'categories']
   },
   "passport": {
     "secret": 'keyboard cat'
   },
   "server": {
-    "port": 3000
+    "port": process.env.PORT || 3000
   },
   "test": {
     "user": {

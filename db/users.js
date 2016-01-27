@@ -3,9 +3,10 @@ var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../public/javascripts/userModel.js');
 var Transaction = require('../public/javascripts/transactionModel.js');
+var config = require('../config.js');
 
 function createDBClient() {
-  var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development';
+  var connectionString = config.db.postgres;
   var client = new pg.Client(connectionString);
   client.connect();
   return client;

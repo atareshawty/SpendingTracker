@@ -16,4 +16,4 @@ if ps x | grep -v grep | grep -c redis-server; then
 fi
 
 echo "Starting spending tracker!"
-forego start -p 3000 -f Procfile.dev
+forego start -p $PORT -f Procfile

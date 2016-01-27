@@ -19,7 +19,7 @@ function addNewCategory() {
     var category = $('.category-form #customCategory').val();
     sendNewCategoryWithFetch(category);
     App.addUserCategory(category);
-    $('#POST-category').append($('<option>', {value: 1, text: category}));
+    $('#POST-category').append($('<option>', {value: category, text: category}));
   } else {
     alert('That was bad!');
   }

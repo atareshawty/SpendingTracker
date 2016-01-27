@@ -12,3 +12,4 @@ npm-debug.log
 /*.env
 /public/javascripts/templates.js
 *.rdb
+nohup.out

@@ -5,13 +5,13 @@ var redis = require('redis');
 function UsersController() {
   this.new = function(req, res) {
     if (!req.isAuthenticated()) {
-      if (req.flash('signup error')) {
-        res.status(200).render('signup', {message: req.flash('signup error')});
+      if (req.query.usernametaken) {
+        res.status(200).render('signup', {message: 'Whoops! That username is alread taken'});
       } else {
-        res.status(200).render('signup');
+        res.status(200).render('signup', {message: ''});
       }
     } else {
-      res.redirect('/users/' + req.user.id);
+      res.redirect('/users/' + req.user.username);
     }
   }
   
@@ -21,9 +21,8 @@ function UsersController() {
 
     db.createUser(username, password, function(err, id) {
       if (err) {
-        req.flash('signup error', err.message);
         req.session.save();
-        res.redirect('/signup');  
+        res.redirect('/signup?usernametaken=true');  
       } else {
         var user = {id: id, username: username};
         //Login, store session id, and redirect to profile page

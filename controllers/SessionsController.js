@@ -4,10 +4,10 @@ var redis = require('redis');
 function SessionsController() {
 	this.loginPage = function(req,res) {
     if (!req.isAuthenticated()) {
-      if (req.flash('error')) {
-        res.render('login', {message: req.flash('error')});
+      if (req.query.auth) {
+        res.render('login', {message: 'Username or password was incorrect. Try again'});
       } else {
-        res.render('login');
+        res.render('login', {message: ''});
       }
     } else {
       res.redirect('/users/' + req.user.username);

@@ -6,12 +6,15 @@
 <body>
   <% include ../views/partials/tab %>
   <h2>Sign Up</h2>
+  <% if (message.length > 0) { %>
+    <p class="flash"><%=message %></p>
+  <% }%>
   <form name="inputForm" id="inputForm" action="/users/create" method="post">
     <label>Username</label>
     <input type="text", name='username', placeholder="Less than 20 characters" autofocus>
     <label>Password</label>
     <input type="password", name='password', placeholder="password">
-    <input type="submit", value="Submit" class="btn btn-primary" disabled="true">
+    <input id="signup-submit", type="submit", value="SignUp" class="btn btn-primary" disabled="true">
   </form>
   <footer>
     <% include ../views/partials/footer %>

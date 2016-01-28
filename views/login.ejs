@@ -6,6 +6,9 @@
 <body>
   <% include ../views/partials/tab %>
   <h2>Login</h2>
+  <% if (message.length > 0) { %>
+    <p class="flash"><%=message %></p>
+  <% }%>
   <form name="inputForm" id="inputForm" action="/login" method="post">
     <label for='POST-username')>Username</label>
     <input id="POST-name" type="text", name='username', placeholder="Username" autofocus>

@@ -15,7 +15,7 @@ router.setup = function(app, controllers) {
 
   //Sessions Controller
   app.get('/login', controllers.session.loginPage);
-  app.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true}), controllers.session.create);
+  app.post('/login', passport.authenticate('local', { failureRedirect: '/login?auth=false', failureFlash: true}), controllers.session.create);
   app.post('/logout', controllers.session.destroy);
   
   //API Controller

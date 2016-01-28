@@ -19,7 +19,6 @@ var bcrypt = require('bcrypt-nodejs');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var config = require('./config.js');
-var flash = require('connect-flash');
 var session = require('express-session');
 //Session store
 var RedisStore = require('connect-redis')(session);
@@ -57,9 +56,6 @@ app.set('view engine', 'ejs');
 
 //Routes
 app.use('/', routes);
-
-//Flash messages
-app.use(flash());
 
 //Local Authentication Strategy
 passport.use(new Strategy(

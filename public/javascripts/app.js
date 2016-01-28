@@ -81,21 +81,27 @@ var App = (function() {
     
     buildPieChart: function(spending) {
       spending = spending || user.spending;
-      var canvas = $('.chart');
-      canvas.replaceWith($('<canvas/>', {class: 'chart'}));
-      var context = $('.chart').get(0).getContext('2d');
-      var chartData = [];
-      var purchaseMap = buildPurchasesMapFromSpending(spending);
-      //chartData object determined by pie chart from Chart.js
-      purchaseMap.forEach(function(value, key, map) {
-        chartData.push({
-          value: parseFloat(value).toFixed(2),
-          color: randomColor(),
-          highlight: '#FF5A5E',
-          label: key
+      if (spending.length === 0) {
+        emptySpendingTable();
+        addBlankSlate();
+      } else {
+        $('.chart-container').html('<canvas class="chart"></canvas>');
+        var canvas = $('.chart-container .chart');
+        canvas.replaceWith($('<canvas/>', {class: 'chart'}));
+        var context = $('.chart').get(0).getContext('2d');
+        var chartData = [];
+        var purchaseMap = buildPurchasesMapFromSpending(spending);
+        //chartData object determined by pie chart from Chart.js
+        purchaseMap.forEach(function(value, key, map) {
+          chartData.push({
+            value: parseFloat(value).toFixed(2),
+            color: randomColor(),
+            highlight: '#FF5A5E',
+            label: key
+          });
         });
-      });
-      return new Chart(context).Pie(chartData);
+        return new Chart(context).Pie(chartData);  
+      }
     }
   }
   
@@ -120,6 +126,15 @@ var App = (function() {
       }
     });
     return uniquePurchases;
+  }
+  
+  function addBlankSlate() {
+    var blankSlate = '<h2 class="blankslate">' + 'Looks like you haven\'t added any spending yet</h2>'
+    $('.chart-container').html(blankSlate);
+  }
+  
+  function emptySpendingTable() {
+    $('.spending-table-placeholder').html('');
   }
 
 }());

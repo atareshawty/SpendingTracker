@@ -74,6 +74,27 @@ function APIController() {
       }
     });
   }
+  
+  this.deletePurchase = function(req, res) {
+    authenticate(req, function(err, authenticated) {
+      if (err) {res.status(500).send(err);}
+      if (authenticated){
+        var username = req.params.username || req.body.username;
+        var purchase = {
+          cost: req.body.cost || req.query.cost,
+          category: req.body.category || req.query.category,
+          location: req.body.location || req.query.location,
+          date: req.body.date || req.query.date
+        };
+        db.deleteIndividualPurchase(username, purchase, function(err, deleted) {
+          if (err || !deleted) {res.status(400).send(err);}
+          else {res.status(200).end();}
+        });
+      } else {
+        res.status(401).send('You can/t make that unauthenticated request!');
+      }
+    });
+  }
 }
 
 function authenticate(req, done) {

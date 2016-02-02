@@ -229,6 +229,25 @@ exports.insertNewCategory = function(username, category, done) {
   });
 };
 
+exports.deleteIndividualPurchase = function(username, purchase, done) {
+  if (validateTransaction(purchase)) {
+    var client = createDBClient();
+    var queryString = 'DELETE FROM spending WHERE ctid = (SELECT ctid FROM spending WHERE id = (SELECT id FROM users WHERE username = $1) AND cost = $2 AND category = $3 AND location = $4 AND date = $5 LIMIT 1)';
+    var query = client.query(queryString, [username, purchase.cost, purchase.category, purchase.location, purchase.date]);
+    
+    query.on('error', function(err) {
+      done(err);
+    });
+    
+    query.on('end', function() {
+      client.end();
+      done(null, true);
+    });
+  } else {
+    done("Bad purchase format");
+  }
+}
+
 exports.validateDate = validateDate;
 exports.validateTransaction = validateTransaction;
 

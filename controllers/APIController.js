@@ -81,7 +81,7 @@ function APIController() {
       if (authenticated){
         var username = req.params.username || req.body.username;
         var purchase = {
-          cost: req.body.cost || req.query.cost,
+          cost: req.body.cost || parseFloat(req.query.cost),
           category: req.body.category || req.query.category,
           location: req.body.location || req.query.location,
           date: req.body.date || req.query.date

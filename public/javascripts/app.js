@@ -79,6 +79,11 @@ var App = (function() {
       user.total = parseFloat(user.total.toFixed(2));
     },
     
+    removeUserPurchase: function(indexToRemove) {
+      user.total -= user.spending[indexToRemove].cost;
+      user.spending.splice(indexToRemove, 1);
+    },
+    
     buildPieChart: function(spending) {
       spending = spending || user.spending;
       if (spending.length == 0) {
@@ -102,6 +107,11 @@ var App = (function() {
         });
         return new Chart(context).Pie(chartData);
         }
+      },
+      
+      buildTable: function() {
+        var newHTML = Handlebars.templates['spending_table_template']({spending: user.spending, total: user.total});
+        $('.spending-table-placeholder').html(newHTML);
       }
   }
   

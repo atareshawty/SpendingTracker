@@ -3,6 +3,7 @@ function validateAndCreatePurchaseInput() {
   $('#POST-cost, #POST-location, #POST-date').on('keyup', validatePurchase);
   $('#POST-date').change(validatePurchase);
   $('#submitData').on('click', sendAndInsertNewPurchase);
+  $('body').on('click', '.purchase-delete-button', deletePurchase);
 }
 
 function createSpendingDate() {
@@ -52,10 +53,7 @@ function sendAndInsertNewPurchase() {
       method: 'post'
     });
     App.addUserPurchase(purchase);
-    var newSpending = App.getUserSpending();
-    var newTotal = App.getUserTotalSpending();
-    var newHTML = Handlebars.templates['spending_table_template']({spending: newSpending, total: newTotal});
-    $('.spending-table-placeholder').html(newHTML);
+    App.buildTable();
     App.buildPieChart();
     clearPurchaseForm();  
   } else {
@@ -64,6 +62,40 @@ function sendAndInsertNewPurchase() {
   }
 }
 
+function deletePurchase() {
+  //Get row number of button being clicked and remove it client side
+  var rowIndex = parseInt($(this)[0].id);
+  var costColumnNo = rowIndex + (rowIndex * 4);
+  var costQueryString = 'td:eq(' + costColumnNo + ')';
+  var categoryQueryString = 'td:eq(' + (costColumnNo + 1) + ')';
+  var locationQueryString = 'td:eq(' + (costColumnNo + 2) + ')';
+  var dateQueryString = 'td:eq(' + (costColumnNo + 3) + ')';
+  var cost = $(costQueryString).text();
+  cost = parseFloat(cost.substring(1));
+  var purchaseToDelete = {
+    cost: cost,
+    category: $(categoryQueryString).text(),
+    location: $(locationQueryString).text(),
+    date: $(dateQueryString).text()
+  }
+  console.log('purchase to delete', purchaseToDelete);
+  App.removeUserPurchase(rowIndex);
+  App.buildPieChart();
+  App.buildTable();
+  sendDeletePurchaseFetch(purchaseToDelete);
+}
+
+function sendDeletePurchaseFetch(purchase) {
+  var href = document.URL;
+  var username = href.substring(href.lastIndexOf('/') + 1);
+  var url = '/api/spending/' + username + '/?cost=' + purchase.cost 
+          + '&location=' + purchase.location + '&category=' + purchase.category
+          + '&date=' + purchase.date;
+  fetch(url, {
+    credentials: 'same-origin',
+    method: 'delete'
+  });
+}
 function clearPurchaseForm() {
   $('.purchase-form #POST-cost').val('');
   $('.purchase-form #POST-location').val('');

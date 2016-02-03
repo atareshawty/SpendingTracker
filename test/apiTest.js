@@ -194,7 +194,65 @@ describe('API', function() {
         done(err);
       });
     });
+  });
+  
+  describe('Delete Spending', function() {
+    it('should delete spending given all details of the purchase', function(done) {
+      var fakePurchase = {
+        "cost": 10.99,
+        "category": 'Entertainment',
+        "location": 'Cleveland Cavaliers', 
+        "date": '2015-12-25'
+      };
+      var deleteObject = {
+        username: config.test.user.username,
+        password: config.test.password,
+        cost: fakePurchase.cost,
+        category: fakePurchase.category,
+        location: fakePurchase.location,
+        date: fakePurchase.date
+      };
+      db.insertPurchase(config.test.user.username, fakePurchase, function(err) {
+        if (err) {done(err);}
+        request(url).delete('/api/spending/' + config.test.user.username).send(deleteObject).end(function(err, result) {
+          if (err) {done(err);}
+          db.getSpendingWithUsername(config.test.user.username, function(err, spending, total) {
+            if (err) {done(err);}
+            assert.deepEqual(spending, config.test.user.spending);
+            done();
+          });
+        })
+      })
+    });
     
+    it('should return a 401 when the request is not authenticated', function(done) {
+      var deleteObject = {
+        username: config.test.user.username,
+        password: config.test.password + 'bad'
+      };
+      
+      request(url).delete('/api/spending/' + config.test.user.username).send(deleteObject).end(function(err, result) {
+        if (err) {done(err);}
+        assert.equal(result.status, 401, 'Should give back a 401');
+        done();
+      })
+    });
+    
+    it('should return a 400 with bad purchase form', function(done) {
+      var deleteObject = {
+        username: config.test.user.username,
+        password: config.test.password,
+        cost: 10.99,
+        category: 'category',
+        date: 'bad format',
+        location: 'Kroger'
+      };
+      
+      request(url).delete('/api/spending/' + config.test.user.username).send(deleteObject).end(function(err, result) {
+        assert.equal(result.status, 400, 'Should return a 400');
+        done(err);
+      });
+    });
   });
 });
 

@@ -390,6 +390,30 @@ describe('Database Interaction', function() {
       done();
     }); 
   });
+  
+  describe('Delete Individual Purchase', function() {
+    var fake = {
+      "cost": 10.99,
+      "category": 'Entertainment',
+      "location": 'Cleveland Cavaliers', 
+      "date": '2015-12-25'
+    };
+    
+    it('should delete one instance of the spending', function(done) {
+      db.insertPurchase(testUser.username, fake, function(err) {
+        if (err) {done(err);}
+        db.deleteIndividualPurchase(testUser.username, fake, function(err) {
+          if (err) {done(err);}
+          var client = createDBClient();
+          db.getSpendingWithUsername(testUser.username, function(err, spending) {
+            if (err) {done(err);}
+            assert.deepEqual(spending, testUser.spending, 'Spending should match');
+            done();
+          });
+        });  
+      });
+    });
+  })
 });
 
 function createDBClient() {

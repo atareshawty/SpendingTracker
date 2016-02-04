@@ -54,9 +54,7 @@ function getSpendingBetweenDates() {
 function filterAndReplaceSpending(minDate, maxDate) {
   var spending = App.getFilteredSpending(minDate, maxDate);
   var total = App.getFilteredSpendingTotal();
-  var userTemplate = Handlebars.templates['spending_table_template'];
-  var compiledHTML = userTemplate({'spending': spending, 'total': total});
-  $('.spending-table-placeholder').html(compiledHTML);
-  console.log('Spending', spending);
-  App.buildPieChart(spending);
+  debugger;
+  App.buildPieChart(spending)
+  App.buildTable(spending, total);
 }

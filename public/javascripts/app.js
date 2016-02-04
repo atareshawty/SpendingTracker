@@ -22,15 +22,18 @@ var App = (function() {
     },
     
     getFilteredSpending: function(minDate, maxDate) {
+      debugger;
       var begin = 0, end = user.spending.length - 1;
-      while ( user.spending[begin].date.localeCompare(minDate) < 0 ) {
+      while ( begin < user.spending.length && user.spending[begin].date.localeCompare(minDate) < 0) {
         begin++;
       }
-      while ( user.spending[end].date.localeCompare(maxDate) > 0 ) {
+      while ( end >= 0 && user.spending[end].date.localeCompare(maxDate) > 0 ) {
         end--;
       }
       if (begin <= end) {
         filteredSpending =  user.spending.slice(begin, ++end);
+      } else if (begin > end){
+        filteredSpending = [];
       } else {
         filteredSpending = user.spending;
       }
@@ -109,9 +112,17 @@ var App = (function() {
         }
       },
       
-      buildTable: function() {
-        var newHTML = Handlebars.templates['spending_table_template']({spending: user.spending, total: user.total});
-        $('.spending-table-placeholder').html(newHTML);
+      buildTable: function(filteredSpending, filteredTotal) {
+        debugger;
+        var spending = filteredSpending || user.spending;
+        var total = filteredTotal || user.total;
+        if (spending.length > 0) {
+          var newHTML = Handlebars.templates['spending_table_template']({spending: spending, total: total});
+          $('.spending-table-placeholder').html(newHTML);  
+        } else {
+          removeSpendingTable();
+        }
+        
       }
   }
   

@@ -24,5 +24,7 @@ PORT=(desired port) npm start
 
 Open [http://localhost:3000](http://localhost:3000) and enjoy!
 
+## Or [Try it Live!](http://ec2-54-172-168-185.compute-1.amazonaws.com/)
+
 ## Credits
 Author: Alex Tareshawty

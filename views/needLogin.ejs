@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <% include ../views/partials/head %>
-</head>
-<body>
-  <% include ../views/partials/tab %>
-  <h2>You need to login before you can do what you tried to do!</h2>
-  <p>So <a href="/login">Log In</a>!</p>
+  <head>
+    <% include ../views/partials/head %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="columns">
+        <div class="column centered">
+          <% include ../views/partials/tab %>
+        </div>
+      </div>
+      <h2>You need to login before you can do what you tried to do!</h2>
+      <p>So <a href="/login">Log In</a>!</p>
 
-  <footer>
-    <% include ../views/partials/footer %>
-  </footer>
-</body>
+      <footer>
+        <% include ../views/partials/footer %>
+      </footer>
+    </div>
+  </body>
 </html>

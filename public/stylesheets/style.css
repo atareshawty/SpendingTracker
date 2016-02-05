@@ -11,3 +11,7 @@ a {
   width: 40%;
   text-align: left;
 }
+
+.label-button-padding {
+  padding-top: 15px;
+}

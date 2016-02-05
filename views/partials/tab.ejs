@@ -4,9 +4,11 @@
     <a href="/users" class="tabnav-tab">Profile</a>
     <a href="/login" class="tabnav-tab">Login</a>
     <a href="/signup" class="tabnav-tab">Sign Up</a>
-    <form method="post" action="/logout" class="tabnav-tab">
-      <input type="submit" value="Logout"></input>
-    </form>
+    <%if (typeof loggedIn != 'undefined') { %>
+      <form method="post" action="/logout" class="tabnav-tab">
+        <input type="submit" value="Logout"></input>
+      </form>
+    <% } %>
   </nav>
 </div>
 <h1>Visualize your Spending</h1>

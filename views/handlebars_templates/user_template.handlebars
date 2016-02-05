@@ -3,26 +3,7 @@
   <div class="chart-container">
     <canvas class="chart"></canvas>
   </div>
-  <div class="spending-table-placeholder">
-    <table class="spending-table">
-      <tr>
-        <th>Cost</th>
-        <th>Category</th>
-        <th>Location</th>
-        <th>Date</th>
-      </tr>
-      {{#each spending}}
-      <tr>
-        <td class="cost">${{this.cost}}</td>
-        <td class="category">{{this.category}}</td>
-        <td class="location">{{this.location}}</td>
-        <td class="date">{{this.date}}</td>
-        <td><button class="purchase-delete-button btn btn-sm btn-danger" id={{@index}}>Delete</button></td>
-      </tr>
-      {{/each}}
-    </table>
-    <h3>Total Spending: ${{total}}</h3>
-  </div>
+  <div class="spending-table-placeholder"></div>
 </div>
 
 <hr />

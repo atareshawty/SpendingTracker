@@ -8,19 +8,19 @@ var App = (function() {
     getUser: function() {
       return user;
     },
-    
+
     getUserSpending: function() {
       return user.spending;
     },
-    
+
     getUsername: function() {
       return user.username;
     },
-    
+
     getUserCategories: function() {
       return user.categories;
     },
-    
+
     getFilteredSpending: function(minDate, maxDate) {
       debugger;
       var begin = 0, end = user.spending.length - 1;
@@ -39,7 +39,7 @@ var App = (function() {
       }
       return filteredSpending;
     },
-    
+
     getFilteredSpendingTotal: function() {
       if (user.spending.length === filteredSpending.length) {
         return filteredSpendingTotal;
@@ -52,26 +52,26 @@ var App = (function() {
         return filteredSpendingTotal;
       }
     },
-    
+
     getUserId: function() {
       return user.id;
     },
-    
+
     getUserTotalSpending: function() {
-      return user.total;  
+      return user.total;
     },
-    
+
     setUser: function(newUser) {
       user = newUser;
       user.total = parseFloat(user.total);
       filteredSpending = newUser.spending;
       filteredSpendingTotal = newUser.total;
     },
-    
+
     addUserCategory: function(category) {
       user.categories.push(category);
     },
-    
+
     addUserPurchase: function(purchase) {
       var newPurchaseIndex = 0;
       while ( newPurchaseIndex < user.spending.length && user.spending[newPurchaseIndex].date.localeCompare(purchase.date) < 0) {
@@ -81,12 +81,12 @@ var App = (function() {
       user.total += purchase.cost;
       user.total = parseFloat(user.total.toFixed(2));
     },
-    
+
     removeUserPurchase: function(indexToRemove) {
       user.total -= user.spending[indexToRemove].cost;
       user.spending.splice(indexToRemove, 1);
     },
-    
+
     buildPieChart: function(spending) {
       spending = spending || user.spending;
       if (spending.length == 0) {
@@ -109,23 +109,22 @@ var App = (function() {
           });
         });
         return new Chart(context).Pie(chartData);
-        }
-      },
-      
-      buildTable: function(filteredSpending, filteredTotal) {
-        debugger;
-        var spending = filteredSpending || user.spending;
-        var total = filteredTotal || user.total;
-        if (spending.length > 0) {
-          var newHTML = Handlebars.templates['spending_table_template']({spending: spending, total: total});
-          $('.spending-table-placeholder').html(newHTML);  
-        } else {
-          removeSpendingTable();
-        }
-        
       }
+    },
+
+    buildTable: function(filteredSpending, filteredTotal) {
+      debugger;
+      var spending = filteredSpending || user.spending;
+      var total = filteredTotal || user.total;
+      if (spending.length > 0) {
+        var newHTML = Handlebars.templates['spending_table_template']({spending: spending, total: total});
+        $('.spending-table-placeholder').html(newHTML);
+      } else {
+        removeSpendingTable();
+      }
+    }
   }
-  
+
   function randomColor() {
     var letters = '0123456789ABCDEF'.split('');
     var color = '#';
@@ -134,7 +133,7 @@ var App = (function() {
     }
     return color;
   }
-  
+
   function buildPurchasesMapFromSpending(spending) {
     var uniquePurchases = new Map();
     spending.forEach(function(value, index, array) {
@@ -153,7 +152,7 @@ var App = (function() {
     var blankSlate = '<h2 class="blankslate">' + 'Looks like you haven\'t added any spending yet</h2>'
     $('.chart-container').html(blankSlate);
   }
-  
+
   function removeSpendingTable() {
     $('.spending-table-placeholder').html('');
   }

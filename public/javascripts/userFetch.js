@@ -12,6 +12,7 @@ result.then(function(response) {
   var compiledHTML = userTemplate(user);
   $('.user-content-placeholder').html(compiledHTML);
   App.buildPieChart();
+  App.buildTable();
   validateCategories();
   validateAndCreateDateRange();
   validateAndCreatePurchaseInput();

@@ -46,14 +46,7 @@ function UsersController() {
   this.show = function(req, res) {
     //If user is logged in and at users/:username
     if (req.isAuthenticated() && req.params.username) {
-      db.getSpending(req.user.id, req.query.from, req.query.to, function(err, spending, total) {
-        if (!err) {
-          res.render('user');
-        } else {
-          req.flash('DB error', err.message);
-          res.status(500).redirect('/users/' + res.user.username);
-        }
-      });
+      res.render('user', {loggedIn: true});
     } else if (req.isAuthenticated()) {
       res.redirect('/users/' + req.user.username);
     } else {

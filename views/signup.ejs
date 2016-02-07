@@ -1,24 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <% include ../views/partials/head %>
-</head>
-<body>
-  <% include ../views/partials/tab %>
-  <h2>Sign Up</h2>
-  <% if (message.length > 0) { %>
-    <p class="flash"><%=message %></p>
-  <% }%>
-  <form name="inputForm" id="inputForm" action="/users/create" method="post">
-    <label>Username</label>
-    <input type="text", name='username', placeholder="Less than 20 characters" autofocus>
-    <label>Password</label>
-    <input type="password", name='password', placeholder="password">
-    <input id="signup-submit", type="submit", value="SignUp" class="btn btn-primary" disabled="true">
-  </form>
-  <footer>
-    <% include ../views/partials/footer %>
-  </footer>
-</body>
+  <head>
+    <% include ../views/partials/head %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="columns">
+        <div class="column centered">
+          <% include ../views/partials/tab %>
+        </div>
+      </div>
+      <h2>Sign Up</h2>
+      <% if (message.length > 0) { %>
+        <p class="flash"><%=message %></p>
+      <% }%>
+      <form name="inputForm" id="inputForm" action="/users/create" method="post">
+        <label>Username</label>
+        <input type="text", name='username', placeholder="Less than 20 characters" autofocus>
+        <label>Password</label>
+        <input type="password", name='password', placeholder="password">
+        <input id="signup-submit", type="submit", value="SignUp" class="btn btn-primary" disabled="true">
+      </form>
+      <footer>
+        <% include ../views/partials/footer %>
+      </footer>
+    </div>
+  </body>
+
   <script src="/javascripts/helpers/signup.js"></script>
 </html>

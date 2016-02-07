@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <% include ../views/partials/head %>
-</head>
-<body>
-  <% include ../views/partials/tab %>
-  <div class="user-content-placeholder"></div>
-  <footer>
-    <% include ../views/partials/footer %>
-  </footer>
-</body>
+  <head>
+    <% include ../views/partials/head %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="columns">
+        <div class="column centered">
+          <% include ../views/partials/tab %>
+        </div>
+      </div>
+      <div class="user-content-placeholder columns"></div>
+      <footer>
+        <% include ../views/partials/footer %>
+      </footer>
+    </div>
+  </body>
 
-<script src="/javascripts/templates.js"></script>
-<script src="/javascripts/userFetch.js"></script>
-<script src="/javascripts/helpers/user/transaction.js"></script>
-<script src="/javascripts/helpers/user/category.js"></script>
-<script src="/javascripts/helpers/user/dateFilter.js"></script>
+  <script src="/javascripts/templates.js"></script>
+  <script src="/javascripts/userFetch.js"></script>
+  <script src="/javascripts/helpers/user/transaction.js"></script>
+  <script src="/javascripts/helpers/user/category.js"></script>
+  <script src="/javascripts/helpers/user/dateFilter.js"></script>
 </html>

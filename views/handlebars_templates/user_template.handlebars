@@ -1,55 +1,59 @@
-<h1>Welcome, {{username}}!</h1>
-<div class="chart-container">
-  <canvas class="chart"></canvas>
-</div>
-<div class="spending-table-placeholder">
-  <table class="spending-table">
-    <tr>
-      <th>Cost</th>
-      <th>Category</th>
-      <th>Location</th>
-      <th>Date</th>
-    </tr>
-    {{#each spending}}
-    <tr>
-      <td class="cost">${{this.cost}}</td>
-      <td class="category">{{this.category}}</td>
-      <td class="location">{{this.location}}</td>
-      <td class="date">{{this.date}}</td>
-      <td><button class="purchase-delete-button btn btn-sm btn-danger" id={{@index}}>Delete</button></td>
-    </tr>
-    {{/each}}
-  </table>
-  <h3>Total Spending: ${{total}}</h3>
-</div>
-<!-- Get customized user categories -->
-<h2>Want your own Categories?</h2>
-<div class="category-form">
-  <label>Category</label>
-  <input type="text" id="customCategory", name="category", placeholder="Make your own!">
-  <input id="submitCategory" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
+<div class="column centered">
+  <h1>Welcome, {{username}}!</h1>
+  <div class="chart-container">
+    <canvas class="chart"></canvas>
+  </div>
+  <div class="spending-table-placeholder"></div>
 </div>
 
-<!-- Date Range Filter Selector -->
-<label>From</label>
-<input type="text" id="from" name="from", placeholder="2015-01-01">
-<label>To</label>
-<input type="text" id="to" name="to", placeholder="2015-01-31">
-<input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
+<hr />
 
-<!-- Submit more spending data -->
-<div class="purchase-form">
-  <label>Cost</label>
-  <input id="POST-cost" type="text", name="cost" id="cost", placeholder="Ex: 10.99">
-  <label>Category</label>
-  <select id="POST-category" name="category">
-    {{#each categories}}
-      <option>{{this}}</option>
-    {{/each}}
-  </select>
-  <label>Location</label>
-  <input id="POST-location" type="text", name="location", placeholder="Ex: AMC Theater">
-  <label>Date</label>
-  <input id="POST-date" type="text", name="date", placeholder="Ex: 2015-10-03">
-  <input id="submitData" type="submit" value="Submit" class="btn btn-primary" disabled="disabled">
+<div class="columns">
+  <div class="one-half column">
+    <!-- Get customized user categories -->
+    <div class="category-form">
+      <dl class="form">
+        <dt><h3>Create a Category</h3></dt>
+        <dd><label>Category</label></dd>
+        <dd><input type="text" id="customCategory", name="category", placeholder="Make your own!"></dd>
+        <dd class="label-button-padding"><input id="submitCategory" type="submit" value="Submit" class="btn btn-primary" disabled="disabled"></dd>
+      </dl>
+    </div>
+
+    <hr />
+
+    <!-- Date Range Filter Selector -->
+    <dl class="form">
+      <dt><h3>Filter Your Spending</h3></dt>
+      <dd><label>From</label></dd>
+      <dd><input type="text" id="from" name="from", placeholder="2015-01-01"></dd>
+      <dd class="label-button-padding"><label>To</label></dd>
+      <dd><input type="text" id="to" name="to", placeholder="2015-01-31"></dd>
+      <dd class="label-button-padding"><input id="submitDate" type="submit" value="Submit" class="btn btn-primary" disabled="disabled"></dd>
+    </dl>
+  </div>
+
+  <div class="one-half column">
+    <!-- Submit more spending data -->
+    <div class="purchase-form">
+      <dl class="form">
+        <dt><h3>Add a Purchase</h3></dt>
+        <dd><label>Cost</label></dd>
+        <dd><input id="POST-cost" type="text", name="cost" id="cost", placeholder="Ex: 10.99"></dd>
+        <dd class="label-button-padding"><label>Category</label></dd>
+        <dd>
+          <select id="POST-category" name="category">
+          {{#each categories}}
+            <option>{{this}}</option>
+          {{/each}}
+          </select>
+        </dd>
+        <dd class="label-button-padding"><label>Location</label></dd>
+        <dd><input id="POST-location" type="text", name="location", placeholder="Ex: AMC Theater"></dd>
+        <dd class="label-button-padding"><label>Date</label></dd>
+        <dd><input id="POST-date" type="text", name="date", placeholder="Ex: 2015-10-03"></dd>
+        <dd class="label-button-padding"><input id="submitData" type="submit" value="Submit" class="btn btn-primary" disabled="disabled"></dd>
+      </dl>
+    </div>
+  </div>
 </div>

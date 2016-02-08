@@ -77,7 +77,7 @@ describe('Database Interaction', function() {
 
     it('should insert transaction when all parameters are given', function(done) {
       var fake = {
-        "cost": 10.99,
+        "cost": 1099,
         "category": 'Entertainment',
         "location": 'Cleveland Cavaliers', 
         "date": '2015-12-25'
@@ -393,7 +393,7 @@ describe('Database Interaction', function() {
   
   describe('Delete Individual Purchase', function() {
     var fake = {
-      "cost": 10.99,
+      "cost": 1099,
       "category": 'Entertainment',
       "location": 'Cleveland Cavaliers', 
       "date": '2015-12-25'

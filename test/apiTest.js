@@ -102,15 +102,15 @@ describe('API', function() {
       var postObject = {
         username: config.test.user.username,
         password: config.test.password,
-        cost: 10.99,
+        cost: 1099,
         category: 'Food', 
         location: 'McDonalds',
         date: '2016-02-03'
       };
       var expectedSpending = config.test.user.spending.slice();
-      var expectedTotal = parseFloat((config.test.user.total + 10.99).toFixed(2));
+      var expectedTotal = config.test.user.total + postObject.cost;
       expectedSpending.push({
-        cost: 10.99,
+        cost: 1099,
         category: 'Food',
         location: 'McDonalds',
         date: '2016-02-03'
@@ -138,7 +138,7 @@ describe('API', function() {
       var postObject = {
         username: config.test.user.username,
         password: config.test.password + 'bad',
-        cost: 10.99,
+        cost: 1099,
         category: 'Food', 
         location: 'McDonalds',
         date: '2016-02-03'
@@ -199,7 +199,7 @@ describe('API', function() {
   describe('Delete Spending', function() {
     it('should delete spending given all details of the purchase', function(done) {
       var fakePurchase = {
-        "cost": 10.99,
+        "cost": 1099,
         "category": 'Entertainment',
         "location": 'Cleveland Cavaliers', 
         "date": '2015-12-25'
@@ -242,7 +242,7 @@ describe('API', function() {
       var deleteObject = {
         username: config.test.user.username,
         password: config.test.password,
-        cost: 10.99,
+        cost: 1099,
         category: 'category',
         date: 'bad format',
         location: 'Kroger'

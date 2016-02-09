@@ -7,7 +7,7 @@
   </tr>
   {{#each spending}}
   <tr>
-    <td class="cost">${{this.cost}}</td>
+    <td class="cost">{{this.formattedCost}}</td>
     <td class="category">{{this.category}}</td>
     <td class="location">{{this.location}}</td>
     <td class="date">{{this.date}}</td>
@@ -15,4 +15,4 @@
   </tr>
   {{/each}}
 </table>
-<h3>Total Spending: ${{total}}</h3>
+<h3>Total Spending: {{total}}</h3>

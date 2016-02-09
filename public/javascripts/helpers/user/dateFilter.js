@@ -54,7 +54,6 @@ function getSpendingBetweenDates() {
 function filterAndReplaceSpending(minDate, maxDate) {
   var spending = App.getFilteredSpending(minDate, maxDate);
   var total = App.getFilteredSpendingTotal();
-  debugger;
   App.buildPieChart(spending)
   App.buildTable(spending, total);
 }

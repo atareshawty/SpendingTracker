@@ -39,8 +39,10 @@ function sendAndInsertNewPurchase() {
   if (validatePurchase()) {
     var href = document.URL;
     var username = href.substring(href.lastIndexOf('/') + 1);
+    var cost = $('.purchase-form #POST-cost').val();
+    cost = cost.slice(0, cost.length - 3) + cost.slice(cost.length - 2);
     var purchase = {
-      cost: parseFloat($('.purchase-form #POST-cost').val()),
+      cost: parseInt(cost),
       location: $('.purchase-form #POST-location').val(),
       category: $('.purchase-form #POST-category').val(),
       date: $('.purchase-form #POST-date').val()
@@ -63,6 +65,7 @@ function sendAndInsertNewPurchase() {
 }
 
 function deletePurchase() {
+  debugger;
   //Get row number of button being clicked and remove it client side
   var rowIndex = parseInt($(this)[0].id);
   var costColumnNo = rowIndex + (rowIndex * 4);
@@ -71,7 +74,8 @@ function deletePurchase() {
   var locationQueryString = 'td:eq(' + (costColumnNo + 2) + ')';
   var dateQueryString = 'td:eq(' + (costColumnNo + 3) + ')';
   var cost = $(costQueryString).text();
-  cost = parseFloat(cost.substring(1));
+  cost = numeral().unformat(cost);
+  cost *= 100
   var purchaseToDelete = {
     cost: cost,
     category: $(categoryQueryString).text(),

@@ -1,9 +1,12 @@
+/* global numeral */
 var App = (function() {
   'use strict';
   var user = {};
   var filteredSpending = [];
-  var filteredSpendingTotal = 0;
-
+  var formattedFilteredSpendingTotal = '$0.00';
+  var unformattedFilteredSpendingTotal = 0;
+  var moneyFormatString = '$0,0.00';
+  
   return {
     getUser: function() {
       return user;
@@ -22,7 +25,6 @@ var App = (function() {
     },
 
     getFilteredSpending: function(minDate, maxDate) {
-      debugger;
       var begin = 0, end = user.spending.length - 1;
       while ( begin < user.spending.length && user.spending[begin].date.localeCompare(minDate) < 0) {
         begin++;
@@ -31,7 +33,7 @@ var App = (function() {
         end--;
       }
       if (begin <= end) {
-        filteredSpending =  user.spending.slice(begin, ++end);
+        filteredSpending =  user.spending.slice(begin, end + 1);
       } else if (begin > end){
         filteredSpending = [];
       } else {
@@ -42,14 +44,14 @@ var App = (function() {
 
     getFilteredSpendingTotal: function() {
       if (user.spending.length === filteredSpending.length) {
-        return filteredSpendingTotal;
+        return user.formattedTotal;
       } else {
-        filteredSpendingTotal = 0;
+        unformattedFilteredSpendingTotal = 0;
         filteredSpending.forEach(function(value) {
-          filteredSpendingTotal += value.cost;
+          unformattedFilteredSpendingTotal += value.cost;
         });
-        filteredSpendingTotal = parseFloat(filteredSpendingTotal.toFixed(2));
-        return filteredSpendingTotal;
+        formattedFilteredSpendingTotal = numeral(unformattedFilteredSpendingTotal / 100).format(moneyFormatString);
+        return formattedFilteredSpendingTotal;
       }
     },
 
@@ -63,9 +65,12 @@ var App = (function() {
 
     setUser: function(newUser) {
       user = newUser;
-      user.total = parseFloat(user.total);
-      filteredSpending = newUser.spending;
-      filteredSpendingTotal = newUser.total;
+      user.filteredTotal = numeral(user.total / 100).format(moneyFormatString);
+      user.spending.forEach(function(value) {
+        value.formattedCost = numeral(value.cost / 100).format(moneyFormatString);
+      });
+      filteredSpending = user.spending;
+      user.formattedTotal = numeral(user.total / 100).format(moneyFormatString);
     },
 
     addUserCategory: function(category) {
@@ -73,17 +78,19 @@ var App = (function() {
     },
 
     addUserPurchase: function(purchase) {
+      user.total += purchase.cost;
+      purchase.formattedCost = numeral(purchase.cost / 100).format(moneyFormatString);
       var newPurchaseIndex = 0;
       while ( newPurchaseIndex < user.spending.length && user.spending[newPurchaseIndex].date.localeCompare(purchase.date) < 0) {
         newPurchaseIndex++;
       }
       user.spending.splice(newPurchaseIndex, 0, purchase);
-      user.total += purchase.cost;
-      user.total = parseFloat(user.total.toFixed(2));
+      user.formattedTotal = numeral(user.total / 100).format(moneyFormatString);
     },
 
     removeUserPurchase: function(indexToRemove) {
       user.total -= user.spending[indexToRemove].cost;
+      user.formattedTotal = numeral(user.total / 100).format(moneyFormatString);
       user.spending.splice(indexToRemove, 1);
     },
 
@@ -102,7 +109,7 @@ var App = (function() {
         //chartData object determined by pie chart from Chart.js
         purchaseMap.forEach(function(value, key, map) {
           chartData.push({
-            value: parseFloat(value).toFixed(2),
+            value: (value / 100).toFixed(2),
             color: randomColor(),
             highlight: '#FF5A5E',
             label: key
@@ -113,9 +120,8 @@ var App = (function() {
     },
 
     buildTable: function(filteredSpending, filteredTotal) {
-      debugger;
       var spending = filteredSpending || user.spending;
-      var total = filteredTotal || user.total;
+      var total = (filteredTotal || user.formattedTotal);
       if (spending.length > 0) {
         var newHTML = Handlebars.templates['spending_table_template']({spending: spending, total: total});
         $('.spending-table-placeholder').html(newHTML);
@@ -138,8 +144,8 @@ var App = (function() {
     var uniquePurchases = new Map();
     spending.forEach(function(value, index, array) {
       if (uniquePurchases.has(value.category)) {
-        var oldValue = parseFloat(uniquePurchases.get(value.category));
-        var newValue = oldValue + parseFloat(value.cost);
+        var oldValue = uniquePurchases.get(value.category);
+        var newValue = oldValue + value.cost;
         uniquePurchases.set(value.category, newValue);
       } else {
         uniquePurchases.set(value.category, value.cost);

@@ -6,10 +6,9 @@ var result = fetch('/api/users/' + username, {
 result.then(function(response) {
   return response.json();
 }).then(function(user) {
-  user.total = user.total.toFixed(2);
   App.setUser(user);
   var userTemplate = Handlebars.templates['user_template'];
-  var compiledHTML = userTemplate(user);
+  var compiledHTML = userTemplate(App.getUser());
   $('.user-content-placeholder').html(compiledHTML);
   App.buildPieChart();
   App.buildTable();

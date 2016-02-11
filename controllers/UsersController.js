@@ -6,7 +6,7 @@ function UsersController() {
   this.new = function(req, res) {
     if (!req.isAuthenticated()) {
       if (req.query.usernametaken) {
-        res.status(200).render('signup', {message: 'Whoops! That username is alread taken'});
+        res.status(200).render('signup', {message: 'That username is alread taken! Try again'});
       } else {
         res.status(200).render('signup', {message: ''});
       }

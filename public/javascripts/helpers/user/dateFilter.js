@@ -2,7 +2,7 @@ function validateAndCreateDateRange() {
   createDateRange();
   $('#from, #to').change(validateDateRange);
   $('#from, #to').on('keyup', validateDateRange);
-  $('#submitDate').on('click', getSpendingBetweenDates);
+  $('#submitDate').on('click', getInfoBetweenDates);
 }
 
 function createDateRange() {
@@ -40,7 +40,7 @@ function validateDateRange() {
   }
 }
 
-function getSpendingBetweenDates() {
+function getInfoBetweenDates() {
   if (validateDateRange) {
     filterAndReplaceSpending($('#from').val(), $('#to').val());
   } else {
@@ -53,7 +53,11 @@ function getSpendingBetweenDates() {
 
 function filterAndReplaceSpending(minDate, maxDate) {
   var spending = App.getFilteredSpending(minDate, maxDate);
-  var total = App.getFilteredSpendingTotal();
+  var income = App.getFilteredIncome(minDate, maxDate);
+  var spendingTotal = App.getFilteredSpendingTotal();
+  var incomeTotal = App.getFilteredIncomeTotal();
   App.buildPieChart(spending)
-  App.buildTable(spending, total);
+  App.buildTable(spending, spendingTotal);
+  App.buildCompareChart(incomeTotal, spendingTotal);
+  App.buildIncomeTable(income, incomeTotal);
 }

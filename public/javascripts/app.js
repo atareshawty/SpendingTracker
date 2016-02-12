@@ -71,6 +71,24 @@ var App = (function() {
       }
       return filteredSpending;
     },
+    
+    getFilteredIncome: function(minDate, maxDate) {
+      var begin = 0, end = user.income.length - 1;
+      while ( begin < user.income.length && user.income[begin].date.localeCompare(minDate) < 0) {
+        begin++;
+      }
+      while ( end >= 0 && user.income[end].date.localeCompare(maxDate) > 0 ) {
+        end--;
+      }
+      if (begin <= end) {
+        filteredIncome =  user.income.slice(begin, end + 1);
+      } else if (begin > end){
+        filteredIncome = [];
+      } else {
+        filteredIncome = user.income;
+      }
+      return filteredIncome;
+    },
 
     getFilteredSpendingTotal: function() {
       if (user.spending.length === filteredSpending.length) {
@@ -85,6 +103,19 @@ var App = (function() {
       }
     },
 
+    getFilteredIncomeTotal: function() {
+      if (user.income.length === filteredIncome.length) {
+        return user.formattedTotalIncome;
+      } else {
+        filteredIncomeTotal = 0;
+        filteredIncome.forEach(function(value) {
+          filteredIncomeTotal += value.cost;
+        });
+        formattedFilteredIncomeTotal = numeral(filteredIncomeTotal / 100).format(moneyFormatString);
+        return formattedFilteredIncomeTotal;
+      }
+    },
+    
     getUserId: function() {
       return user.id;
     },
@@ -173,12 +204,18 @@ var App = (function() {
       if (income.length > 0) {
         var newHTML = Handlebars.templates['income_tracker_template']({income: income, total: total});
         $('.income-table-placeholder').html(newHTML);
+      } else {
+        removeIncomeTable();
       }
     },
     
     buildCompareChart: function(incomeTotal, spendingTotal) {
-      incomeTotal = incomeTotal || user.totalIncome;
-      spendingTotal = spendingTotal || user.totalSpending;
+      incomeTotal = incomeTotal ? numeral().unformat(incomeTotal) : user.totalIncome;
+      spendingTotal = spendingTotal ? numeral().unformat(spendingTotal) : user.totalSpending;
+      if (incomeTotal === 0 && spendingTotal === 0) {
+        replaceCompareChartWithBlankSlate();
+        return;
+      }
       $('.income-chart-container').html('<canvas class="income-chart"></canvas>');
       var canvas = $('.income-chart-container .income-chart');
       canvas.replaceWith($('<canvas/>', {class: 'income-chart'}));
@@ -232,15 +269,20 @@ var App = (function() {
   }
 
   function replaceSpendingChartWithBlankSlate() {
-    var blankSlate = '<h2 class="blankslate">' + 'Looks like you haven\'t added any spending yet</h2>'
+    var blankSlate = '<h2 class="blankslate">' + 'Looks like you didn\'t spend money here!</h2>';
     $('.chart-container').html(blankSlate);
+  }
+  
+  function replaceCompareChartWithBlankSlate() {
+    var blankSlate = '<h2 class="blankslate">' + 'Looks like you didn\'t add income here!</h2>'
+    $('.income-chart-container').html(blankSlate);
   }
 
   function removeSpendingTable() {
-    $('.spending-table-placeholder').html('');
+    $('.spending-table-placeholder').html('<h3>Total Spending: $0.00</h3>');
   }
 
   function removeIncomeTable() {
-    $('.income-table-placeholder').html('');
+    $('.income-table-placeholder').html('<h3>Total Income: $0.00</h3>');
   }
 }());

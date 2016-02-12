@@ -12,6 +12,8 @@ result.then(function(response) {
   $('.user-content-placeholder').html(compiledHTML);
   App.buildPieChart();
   App.buildTable();
+  App.buildIncomeTable();
+  App.buildCompareChart();
   validateCategories();
   validateAndCreateDateRange();
   validateAndCreatePurchaseInput();

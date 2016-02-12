@@ -1,13 +1,43 @@
 /* global numeral */
 var App = (function() {
   'use strict';
+  //user has spending, income, totalSpending, totalIncome, formattedTotalSpending, formattedTotalIncome
+  //non user variables are filteredSpending, filteredIncome, formattedFilteredSpendingTotal, formattedFilteredIncomeTotal, filteredSpendingTotal, filteredIncomeTotal
+    
   var user = {};
-  var filteredSpending = [];
-  var formattedFilteredSpendingTotal = '$0.00';
-  var unformattedFilteredSpendingTotal = 0;
   var moneyFormatString = '$0,0.00';
+  var filteredSpending = [];
+  var filteredIncome = [];
+  var formattedFilteredSpendingTotal = '$0.00';
+  var formattedFilteredIncomeTotal = '$0.00';
+  var filteredSpendingTotal = 0;
+  var filteredIncomeTotal = 0;
   
   return {
+    setUser: function(newUser) {
+      user.spending = [];
+      user.income = [];
+      user.totalSpending = 0;
+      user.totalIncome = 0;
+      user.categories = newUser.categories;
+      
+      newUser.spending.forEach(function(value) {
+        value.formattedCost = numeral(value.cost / 100).format(moneyFormatString);
+        if (value.category === 'Income') {
+          user.totalIncome += value.cost;
+          user.income.push(value);
+        } else {
+          user.totalSpending += value.cost;
+          user.spending.push(value);
+        }
+      });
+      
+      filteredSpending = user.spending;
+      filteredIncome = user.income;
+      user.formattedTotalSpending = numeral(user.totalSpending / 100).format(moneyFormatString);
+      user.formattedTotalIncome = numeral(user.totalIncome / 100).format(moneyFormatString);
+    },    
+    
     getUser: function() {
       return user;
     },
@@ -44,13 +74,13 @@ var App = (function() {
 
     getFilteredSpendingTotal: function() {
       if (user.spending.length === filteredSpending.length) {
-        return user.formattedTotal;
+        return user.formattedTotalSpending;
       } else {
-        unformattedFilteredSpendingTotal = 0;
+        filteredSpendingTotal = 0;
         filteredSpending.forEach(function(value) {
-          unformattedFilteredSpendingTotal += value.cost;
+          filteredSpendingTotal += value.cost;
         });
-        formattedFilteredSpendingTotal = numeral(unformattedFilteredSpendingTotal / 100).format(moneyFormatString);
+        formattedFilteredSpendingTotal = numeral(filteredSpendingTotal / 100).format(moneyFormatString);
         return formattedFilteredSpendingTotal;
       }
     },
@@ -61,16 +91,6 @@ var App = (function() {
 
     getUserTotalSpending: function() {
       return user.total;
-    },
-
-    setUser: function(newUser) {
-      user = newUser;
-      user.filteredTotal = numeral(user.total / 100).format(moneyFormatString);
-      user.spending.forEach(function(value) {
-        value.formattedCost = numeral(value.cost / 100).format(moneyFormatString);
-      });
-      filteredSpending = user.spending;
-      user.formattedTotal = numeral(user.total / 100).format(moneyFormatString);
     },
 
     addUserCategory: function(category) {
@@ -85,12 +105,12 @@ var App = (function() {
         newPurchaseIndex++;
       }
       user.spending.splice(newPurchaseIndex, 0, purchase);
-      user.formattedTotal = numeral(user.total / 100).format(moneyFormatString);
+      user.formattedTotalSpending = numeral(user.total / 100).format(moneyFormatString);
     },
 
     removeUserPurchase: function(indexToRemove) {
       user.total -= user.spending[indexToRemove].cost;
-      user.formattedTotal = numeral(user.total / 100).format(moneyFormatString);
+      user.formattedTotalSpending = numeral(user.total / 100).format(moneyFormatString);
       user.spending.splice(indexToRemove, 1);
     },
 
@@ -98,7 +118,7 @@ var App = (function() {
       spending = spending || user.spending;
       if (spending.length == 0) {
         removeSpendingTable();
-        replaceChartWithBlankSlate();
+        replaceSpendingChartWithBlankSlate();
       } else {
         $('.chart-container').html('<canvas class="chart"></canvas>');
         var canvas = $('.chart-container .chart');
@@ -121,13 +141,54 @@ var App = (function() {
 
     buildTable: function(filteredSpending, filteredTotal) {
       var spending = filteredSpending || user.spending;
-      var total = (filteredTotal || user.formattedTotal);
+      var total = (filteredTotal || user.formattedTotalSpending);
       if (spending.length > 0) {
         var newHTML = Handlebars.templates['spending_table_template']({spending: spending, total: total});
         $('.spending-table-placeholder').html(newHTML);
       } else {
         removeSpendingTable();
       }
+    },
+    
+    buildIncomeTable: function(filteredIncome, filteredTotal) {
+      var income = filteredIncome || user.income;
+      var total = filteredTotal || user.formattedTotalIncome;
+      if (income.length > 0) {
+        var newHTML = Handlebars.templates['income_tracker_template']({income: income, total: total});
+        $('.income-table-placeholder').html(newHTML);
+      }
+    },
+    
+    buildCompareChart: function(incomeTotal, spendingTotal) {
+      debugger;
+      incomeTotal = incomeTotal || user.totalIncome;
+      spendingTotal = spendingTotal || user.totalSpending;
+      $('.income-chart-container').html('<canvas class="income-chart"></canvas>');
+      var canvas = $('.income-chart-container .income-chart');
+      canvas.replaceWith($('<canvas/>', {class: 'income-chart'}));
+      var context = $('.income-chart').get(0).getContext('2d');
+      var data = {
+        labels: ["Compare"],
+        datasets: [
+            {
+              label: "Income",
+              fillColor: "rgba(220,220,220,0.5)",
+              strokeColor: "rgba(220,220,220,0.8)",
+              highlightFill: "rgba(220,220,220,0.75)",
+              highlightStroke: "rgba(220,220,220,1)",
+              data: [incomeTotal / 100]
+            },
+            {
+              label: "Spending",
+              fillColor: "rgba(151,187,205,0.5)",
+              strokeColor: "rgba(151,187,205,0.8)",
+              highlightFill: "rgba(151,187,205,0.75)",
+              highlightStroke: "rgba(151,187,205,1)",
+              data: [spendingTotal / 100]
+            }
+        ]
+    };      
+      return new Chart(context).Bar(data);
     }
   }
 
@@ -154,12 +215,16 @@ var App = (function() {
     return uniquePurchases;
   }
 
-  function replaceChartWithBlankSlate() {
+  function replaceSpendingChartWithBlankSlate() {
     var blankSlate = '<h2 class="blankslate">' + 'Looks like you haven\'t added any spending yet</h2>'
     $('.chart-container').html(blankSlate);
   }
 
   function removeSpendingTable() {
     $('.spending-table-placeholder').html('');
+  }
+
+  function removeIncomeTable() {
+    $('.income-table-placeholder').html('');
   }
 }());

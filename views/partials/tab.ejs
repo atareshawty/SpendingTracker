@@ -11,4 +11,8 @@
     <% } %>
   </nav>
 </div>
+<%if (typeof username != 'undefined') { %>
+<h1>Visualize your Spending, <%= username %></h1>
+<% } else { %>
 <h1>Visualize your Spending</h1>
+<% } %>

@@ -46,7 +46,7 @@ function UsersController() {
   this.show = function(req, res) {
     //If user is logged in and at users/:username
     if (req.isAuthenticated() && req.params.username) {
-      res.render('user', {loggedIn: true});
+      res.render('user', {loggedIn: true, username: req.params.username});
     } else if (req.isAuthenticated()) {
       res.redirect('/users/' + req.user.username);
     } else {

@@ -8,10 +8,23 @@ a {
 }
 
 .spending-table {
-  width: 50%;
+  width: 100%;
   text-align: left;
 }
 
 .label-button-padding {
   padding-top: 15px;
+}
+
+.spending-table-header {
+  text-align: center;
+  padding-bottom: 1%;
+}
+
+.chart {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }

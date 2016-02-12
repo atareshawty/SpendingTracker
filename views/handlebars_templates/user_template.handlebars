@@ -1,13 +1,30 @@
-<div class="column centered">
-  <h1>Welcome, {{username}}!</h1>
-  <div class="chart-container">
-    <canvas class="chart"></canvas>
+<h2 class="spending-table-header">Spending</h2>
+<div class="columns">
+  <div class="one-half column">
+    <div class="chart-container">
+      <canvas class="chart"></canvas>
+    </div>
   </div>
-  <div class="spending-table-placeholder"></div>
+  <div class="one-half column">
+      <div class="spending-table-placeholder"></div>
+  </div>
 </div>
 
 <hr />
 
+<h2 class="spending-table-header">Income</h2>
+<div class="columns">
+  <div class="one-half column">
+    <div class="income-chart-container">
+      <canvas class="income-chart"></canvas>
+    </div>
+  </div>
+  <div class="one-half column">
+      <div class="income-table-placeholder"></div>
+  </div>
+</div>
+
+<hr />
 <div class="columns">
   <div class="one-half column">
     <!-- Get customized user categories -->
@@ -37,7 +54,7 @@
     <!-- Submit more spending data -->
     <div class="purchase-form">
       <dl class="form">
-        <dt><h3>Add a Purchase</h3></dt>
+        <dt><h3>Add a Purchase or Income</h3></dt>
         <dd><label>Cost</label></dd>
         <dd><input id="POST-cost" type="text", name="cost" id="cost", placeholder="Ex: 10.99"></dd>
         <dd class="label-button-padding"><label>Category</label></dd>

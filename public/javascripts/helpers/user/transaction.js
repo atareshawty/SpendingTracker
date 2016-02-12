@@ -4,6 +4,7 @@ function validateAndCreatePurchaseInput() {
   $('#POST-date').change(validatePurchase);
   $('#submitData').on('click', sendAndInsertNewPurchase);
   $('body').on('click', '.purchase-delete-button', deletePurchase);
+  $('body').on('click', '.income-delete-button', deleteIncome);
 }
 
 function createSpendingDate() {
@@ -54,9 +55,16 @@ function sendAndInsertNewPurchase() {
       credentials: 'same-origin',
       method: 'post'
     });
-    App.addUserPurchase(purchase);
-    App.buildTable();
-    App.buildPieChart();
+    if (purchase.category != 'Income') {
+      App.addUserPurchase(purchase);    
+      App.buildTable();
+      App.buildPieChart();
+    } else {
+      App.addUserIncome(purchase);
+      App.buildIncomeTable();
+    }
+
+    App.buildCompareChart();
     clearPurchaseForm();  
   } else {
     clearPurchaseForm();
@@ -65,7 +73,6 @@ function sendAndInsertNewPurchase() {
 }
 
 function deletePurchase() {
-  debugger;
   //Get row number of button being clicked and remove it client side
   var rowIndex = parseInt($(this)[0].id);
   var costColumnNo = rowIndex + (rowIndex * 4);
@@ -74,8 +81,7 @@ function deletePurchase() {
   var locationQueryString = 'td:eq(' + (costColumnNo + 2) + ')';
   var dateQueryString = 'td:eq(' + (costColumnNo + 3) + ')';
   var cost = $(costQueryString).text();
-  cost = numeral().unformat(cost);
-  cost *= 100
+  cost = cost.split(/[$.]+/).join('');
   var purchaseToDelete = {
     cost: cost,
     category: $(categoryQueryString).text(),
@@ -86,6 +92,32 @@ function deletePurchase() {
   App.removeUserPurchase(rowIndex);
   App.buildPieChart();
   App.buildTable();
+  App.buildIncomeTable();
+  App.buildCompareChart();
+  sendDeletePurchaseFetch(purchaseToDelete);
+}
+
+function deleteIncome() {
+  //Get row number of button being clicked and remove it client side
+  var rowIndex = parseInt($(this)[0].id);
+  var incomeRowIndex = rowIndex + App.getUserSpending().length;
+  var costColumnNo = incomeRowIndex + (incomeRowIndex * 4);
+  var costQueryString = 'td:eq(' + costColumnNo + ')';
+  var categoryQueryString = 'td:eq(' + (costColumnNo + 1) + ')';
+  var locationQueryString = 'td:eq(' + (costColumnNo + 2) + ')';
+  var dateQueryString = 'td:eq(' + (costColumnNo + 3) + ')';
+  var cost = $(costQueryString).text();
+  cost = cost.split(/[$.]+/).join('');
+  var purchaseToDelete = {
+    cost: cost,
+    category: $(categoryQueryString).text(),
+    location: $(locationQueryString).text(),
+    date: $(dateQueryString).text()
+  }
+  console.log('purchase to delete', purchaseToDelete);
+  App.removeUserIncome(rowIndex);
+  App.buildIncomeTable();
+  App.buildCompareChart();
   sendDeletePurchaseFetch(purchaseToDelete);
 }
 

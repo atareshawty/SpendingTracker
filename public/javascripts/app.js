@@ -98,20 +98,37 @@ var App = (function() {
     },
 
     addUserPurchase: function(purchase) {
-      user.total += purchase.cost;
+      user.totalSpending += purchase.cost;
       purchase.formattedCost = numeral(purchase.cost / 100).format(moneyFormatString);
       var newPurchaseIndex = 0;
       while ( newPurchaseIndex < user.spending.length && user.spending[newPurchaseIndex].date.localeCompare(purchase.date) < 0) {
         newPurchaseIndex++;
       }
       user.spending.splice(newPurchaseIndex, 0, purchase);
-      user.formattedTotalSpending = numeral(user.total / 100).format(moneyFormatString);
+      user.formattedTotalSpending = numeral(user.totalSpending / 100).format(moneyFormatString);
     },
 
+    addUserIncome: function(income) {
+      user.totalIncome += income.cost;
+      income.formattedCost = numeral(income.cost / 100).format(moneyFormatString);
+      var newPurchaseIndex = 0;
+      while (newPurchaseIndex < user.income.length && user.income[newPurchaseIndex].date.localeCompare(income.date) < 0) {
+        newPurchaseIndex++;
+      }
+      user.income.splice(newPurchaseIndex, 0, income);
+      user.formattedTotalIncome = numeral(user.totalIncome / 100).format(moneyFormatString);
+    },
+    
     removeUserPurchase: function(indexToRemove) {
-      user.total -= user.spending[indexToRemove].cost;
-      user.formattedTotalSpending = numeral(user.total / 100).format(moneyFormatString);
+      user.totalSpending -= user.spending[indexToRemove].cost;
+      user.formattedTotalSpending = numeral(user.totalSpending / 100).format(moneyFormatString);
       user.spending.splice(indexToRemove, 1);
+    },
+    
+    removeUserIncome: function(indexToRemove) {
+      user.totalIncome -= user.income[indexToRemove].cost;
+      user.formattedTotalIncome = numeral(user.totalIncome / 100).format(moneyFormatString);
+      user.income.splice(indexToRemove, 1);
     },
 
     buildPieChart: function(spending) {
@@ -160,7 +177,6 @@ var App = (function() {
     },
     
     buildCompareChart: function(incomeTotal, spendingTotal) {
-      debugger;
       incomeTotal = incomeTotal || user.totalIncome;
       spendingTotal = spendingTotal || user.totalSpending;
       $('.income-chart-container').html('<canvas class="income-chart"></canvas>');
@@ -172,18 +188,18 @@ var App = (function() {
         datasets: [
             {
               label: "Income",
-              fillColor: "rgba(220,220,220,0.5)",
-              strokeColor: "rgba(220,220,220,0.8)",
-              highlightFill: "rgba(220,220,220,0.75)",
-              highlightStroke: "rgba(220,220,220,1)",
+              fillColor: "rgba(64, 188, 6, 0.5)",
+              strokeColor: "rgba(64, 188, 6, 0.8)",
+              highlightFill: "rgba(64, 188, 6, 0.75)",
+              highlightStroke: "rgba(64, 188, 6, 0.1)",
               data: [incomeTotal / 100]
             },
             {
               label: "Spending",
-              fillColor: "rgba(151,187,205,0.5)",
-              strokeColor: "rgba(151,187,205,0.8)",
-              highlightFill: "rgba(151,187,205,0.75)",
-              highlightStroke: "rgba(151,187,205,1)",
+              fillColor: "rgba(188, 6, 6,0.5)",
+              strokeColor: "rgba(188, 6, 6,0.8)",
+              highlightFill: "rgba(188, 6, 6,0.75)",
+              highlightStroke: "rgba(188, 6, 6,1)",
               data: [spendingTotal / 100]
             }
         ]

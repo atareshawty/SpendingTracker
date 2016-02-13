@@ -10,6 +10,16 @@ a {
 .spending-table {
   width: 100%;
   text-align: left;
+  table-layout: fixed;
+}
+
+.spending-info {
+  height: 260px;
+}
+
+.spending-table-container {
+  height: 208px;
+  overflow-y: scroll;
 }
 
 .label-button-padding {

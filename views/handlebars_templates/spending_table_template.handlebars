@@ -1,18 +1,22 @@
+<table style="width: 100%; table-layout: fixed; text-align: left;">
+<tr>
+  <th style="width: 12%">Cost</th>
+  <th style="width: 17%">Category</th>
+  <th style="width: 33%">Location</th>
+  <th style="width: 38%">Date</th>
+</tr>
+  </table>
+<div class="spending-table-container">
 <table class="spending-table">
-  <tr>
-    <th>Cost</th>
-    <th>Category</th>
-    <th>Location</th>
-    <th>Date</th>
-  </tr>
   {{#each spending}}
   <tr>
-    <td class="cost">{{this.formattedCost}}</td>
-    <td class="category">{{this.category}}</td>
-    <td class="location">{{this.location}}</td>
-    <td class="date">{{this.date}}</td>
-    <td><button class="purchase-delete-button btn btn-sm btn-danger" id={{@index}}>Delete</button></td>
+    <td class="cost" style="width: 13%">{{this.formattedCost}}</td>
+    <td class="category" style="width: 17%">{{this.category}}</td>
+    <td class="location" style="width: 34%">{{this.location}}</td>
+    <td class="date" style="width: 18%">{{this.date}}</td>
+    <td style="width: 18%"><button class="purchase-delete-button btn btn-sm btn-danger" id={{@index}}>Delete</button></td>
   </tr>
   {{/each}}
 </table>
+</div>
 <h3>Total Spending: {{total}}</h3>

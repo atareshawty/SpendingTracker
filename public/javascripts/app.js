@@ -189,10 +189,13 @@ var App = (function() {
 
     buildTable: function(filteredSpending, filteredTotal) {
       var spending = filteredSpending || user.spending;
-      var total = (filteredTotal || user.formattedTotalSpending);
+      var total = filteredTotal || user.formattedTotalSpending;
       if (spending.length > 0) {
         var newHTML = Handlebars.templates['spending_table_template']({spending: spending, total: total});
         $('.spending-table-placeholder').html(newHTML);
+        if (spending.length > 8) {
+          $('.spending-table-container').css('overflow-y', 'scroll');
+        }
       } else {
         removeSpendingTable();
       }
@@ -204,6 +207,9 @@ var App = (function() {
       if (income.length > 0) {
         var newHTML = Handlebars.templates['income_tracker_template']({income: income, total: total});
         $('.income-table-placeholder').html(newHTML);
+        if (income.length > 8) {
+          $('.income-table-container').css('overflow-y', 'scroll');
+        }
       } else {
         removeIncomeTable();
       }

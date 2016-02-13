@@ -19,7 +19,10 @@ a {
 
 .spending-table-container {
   height: 208px;
-  overflow-y: scroll;
+}
+
+.income-table-container {
+  height: 208px;
 }
 
 .label-button-padding {

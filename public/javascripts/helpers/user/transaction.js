@@ -81,7 +81,7 @@ function deletePurchase() {
   var locationQueryString = 'td:eq(' + (costColumnNo + 2) + ')';
   var dateQueryString = 'td:eq(' + (costColumnNo + 3) + ')';
   var cost = $(costQueryString).text();
-  cost = cost.split(/[$.]+/).join('');
+  cost = cost.split(/[$.,]+/).join('');
   var purchaseToDelete = {
     cost: cost,
     category: $(categoryQueryString).text(),
@@ -107,7 +107,7 @@ function deleteIncome() {
   var locationQueryString = 'td:eq(' + (costColumnNo + 2) + ')';
   var dateQueryString = 'td:eq(' + (costColumnNo + 3) + ')';
   var cost = $(costQueryString).text();
-  cost = cost.split(/[$.]+/).join('');
+  cost = cost.split(/[$.,]+/).join('');
   var purchaseToDelete = {
     cost: cost,
     category: $(categoryQueryString).text(),

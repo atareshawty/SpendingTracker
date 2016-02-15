@@ -226,6 +226,7 @@ var App = (function() {
       var canvas = $('.income-chart-container .income-chart');
       canvas.replaceWith($('<canvas/>', {class: 'income-chart'}));
       var context = $('.income-chart').get(0).getContext('2d');
+      var differenceColor = incomeTotal - spendingTotal > 0 ? 'rgba(64, 188, 6, ' : 'rgba(188, 6, 6, ';
       var data = {
         labels: ["Compare"],
         datasets: [
@@ -234,16 +235,24 @@ var App = (function() {
               fillColor: "rgba(64, 188, 6, 0.5)",
               strokeColor: "rgba(64, 188, 6, 0.8)",
               highlightFill: "rgba(64, 188, 6, 0.75)",
-              highlightStroke: "rgba(64, 188, 6, 0.1)",
+              highlightStroke: "rgba(64, 188, 6, 1)",
               data: [incomeTotal / 100]
             },
             {
               label: "Spending",
-              fillColor: "rgba(188, 6, 6,0.5)",
-              strokeColor: "rgba(188, 6, 6,0.8)",
-              highlightFill: "rgba(188, 6, 6,0.75)",
-              highlightStroke: "rgba(188, 6, 6,1)",
+              fillColor: "rgba(188, 6, 6, 0.5)",
+              strokeColor: "rgba(188, 6, 6, 0.8)",
+              highlightFill: "rgba(188, 6, 6, 0.75)",
+              highlightStroke: "rgba(188, 6, 6, 1)",
               data: [spendingTotal / 100]
+            },
+            {
+              label: 'Difference',
+              fillColor: differenceColor + '0.5)',
+              strokeColor: differenceColor + '0.8)',
+              highlightFill: differenceColor + '0.75)',
+              highlightStroke: differenceColor + '1)',
+              data: [(incomeTotal - spendingTotal) / 100]
             }
         ]
     };      

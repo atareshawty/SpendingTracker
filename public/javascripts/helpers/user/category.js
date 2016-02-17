@@ -26,6 +26,7 @@ function addNewCategory() {
     alert('That category already exists');
   }
   clearNewCategory();
+  $('html, body').animate({ scrollTop: 0 }, 'fast');
 }
 
 function checkForDuplicateCategory() {

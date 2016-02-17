@@ -60,4 +60,5 @@ function filterAndReplaceSpending(minDate, maxDate) {
   App.buildTable(spending, spendingTotal);
   App.buildCompareChart(incomeTotal, spendingTotal);
   App.buildIncomeTable(income, incomeTotal);
+  $('html, body').animate({ scrollTop: 0 }, 'fast');
 }

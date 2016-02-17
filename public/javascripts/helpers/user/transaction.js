@@ -65,9 +65,11 @@ function sendAndInsertNewPurchase() {
     }
 
     App.buildCompareChart();
-    clearPurchaseForm();  
+    clearPurchaseForm();
+    $('html, body').animate({ scrollTop: 0 }, 'fast');
   } else {
     clearPurchaseForm();
+    $('html, body').animate({ scrollTop: 0 }, 'fast');
     alert('Invalid Purchase Information!');
   }
 }
@@ -95,6 +97,7 @@ function deletePurchase() {
   App.buildIncomeTable();
   App.buildCompareChart();
   sendDeletePurchaseFetch(purchaseToDelete);
+  $('html, body').animate({ scrollTop: 0 }, 'fast');
 }
 
 function deleteIncome() {
@@ -119,6 +122,7 @@ function deleteIncome() {
   App.buildIncomeTable();
   App.buildCompareChart();
   sendDeletePurchaseFetch(purchaseToDelete);
+  $('html, body').animate({ scrollTop: 0 }, 'fast');
 }
 
 function sendDeletePurchaseFetch(purchase) {

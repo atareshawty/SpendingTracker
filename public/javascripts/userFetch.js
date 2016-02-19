@@ -1,3 +1,9 @@
+/* global Categories */
+/* global DateFilter */
+/* global Purchases */
+/* global App */
+/* global fetch */
+/* global $ */
 /* global Handlebars */
 var href = document.URL;
 var username = href.substring(href.lastIndexOf('/') + 1);
@@ -17,7 +23,7 @@ result.then(function(response) {
   App.buildCompareChart();
   Categories.startCategoryFormListener();
   DateFilter.startDateFilterFormListener();
-  validateAndCreatePurchaseInput();
+  Purchases.init();
 }).catch(function(err) {
   console.log('failed', err);
 });

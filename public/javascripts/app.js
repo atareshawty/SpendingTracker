@@ -1,3 +1,4 @@
+/* global Chart */
 /* global numeral */
 var App = (function() {
   'use strict';

@@ -16,7 +16,7 @@ result.then(function(response) {
   App.buildIncomeTable();
   App.buildCompareChart();
   Categories.startCategoryFormListener();
-  validateAndCreateDateRange();
+  DateFilter.startDateFilterFormListener();
   validateAndCreatePurchaseInput();
 }).catch(function(err) {
   console.log('failed', err);

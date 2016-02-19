@@ -21,8 +21,8 @@ result.then(function(response) {
   App.buildTable();
   App.buildIncomeTable();
   App.buildCompareChart();
-  Categories.startCategoryFormListener();
-  DateFilter.startDateFilterFormListener();
+  Categories.init();
+  DateFilter.init();
   Purchases.init();
 }).catch(function(err) {
   console.log('failed', err);

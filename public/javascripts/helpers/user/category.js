@@ -7,7 +7,7 @@ var Categories = (function() {
   var categoryDropDown;
    
   return {
-    startCategoryFormListener: function() {
+    init: function() {
       categoryInput = $('.category-form #customCategory');
       categorySubmitButton = $('.category-form #submitCategory');
       categoryDropDown = $('#POST-category');

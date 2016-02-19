@@ -1,7 +1,7 @@
 var DateFilter = (function() {
   var fromInput, toInput, submitButton;
   return {
-    startDateFilterFormListener: function() {
+    init: function() {
       fromInput = $('#from');
       toInput = $('#to');
       submitButton = $('#submitDate');

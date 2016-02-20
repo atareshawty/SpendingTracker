@@ -34,7 +34,7 @@ var Purchases = (function() {
   }
 
   function validatePurchase() {  
-    var moneyRegex = /^-?\d+(\.\d{2})?$/;
+    var moneyRegex = /^[+-]?[0-9]{1,3}(?:,?[0-9]{3})*\.[0-9]{2}$/;
     var dateRegex = /^\d{4}[-]\d{2}[-]\d{2}$/;
     var cost = $('.purchase-form #POST-cost').val();
     var location = $('.purchase-form #POST-location').val();

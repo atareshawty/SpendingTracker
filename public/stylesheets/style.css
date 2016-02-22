@@ -1,6 +1,15 @@
+.form-actions .btn {
+  float: left;
+}
+
+.form-actions + .btn {
+  margin-left: 5px;
+}
+
+
 body {
   padding: 50px;
-  font: 20px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {

@@ -1,0 +1,116 @@
+.container {
+  width: auto;
+  max-width: 980px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.container:before {
+  display: table;
+  content: "";
+}
+
+.container:after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
+.columns {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+@media (max-width: 43em) {
+  .columns .one-half:not(:last-child) {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+  }
+  .columns .one-third:not(:last-child) {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+  }
+}
+
+.one-third {
+  width: 33.333333%;
+}
+
+@media (max-width: 43em) {
+  .one-third {
+    width: 100%;
+  }
+}
+
+.two-thirds {
+  width: 66.666667%;
+}
+
+@media (max-width: 43em) {
+  .two-thirds {
+    width: 100%;
+  }
+}
+
+.one-fourth {
+  width: 25%;
+}
+
+@media (max-width: 43em) {
+  .one-fourth {
+    width: 100%;
+  }
+}
+
+.one-half {
+  width: 50%;
+}
+
+@media (max-width: 43em) {
+  .one-half {
+    width: 100%;
+  }
+}
+
+.three-fourths {
+  width: 75%;
+}
+
+@media (max-width: 43em) {
+  .three-fourths {
+    width: 100%;
+  }
+}
+
+.one-fifth {
+  width: 20%;
+}
+
+@media (max-width: 43em) {
+  .one-fifth {
+    width: 100%;
+  }
+}
+
+.four-fifths {
+  width: 80%;
+}
+
+@media (max-width: 43em) {
+  .four-fifths {
+    width: 100%;
+  }
+}
+
+.single-column {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.table-column {
+  display: table-cell;
+  width: 1%;
+  padding-right: 10px;
+  padding-left: 10px;
+  vertical-align: top;
+}

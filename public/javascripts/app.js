@@ -1,6 +1,8 @@
 /* global Chart */
 /* global numeral */
-var App = (function() {
+/* global $ */
+/* global Handlebars */
+window.App = (function() {
   'use strict';
   //user has spending, income, totalSpending, totalIncome, formattedTotalSpending, formattedTotalIncome
   //non user variables are filteredSpending, filteredIncome, formattedFilteredSpendingTotal, formattedFilteredIncomeTotal, filteredSpendingTotal, filteredIncomeTotal
@@ -176,7 +178,7 @@ var App = (function() {
         var chartData = [];
         var purchaseMap = buildPurchasesMapFromSpending(spending);
         //chartData object determined by pie chart from Chart.js
-        purchaseMap.forEach(function(value, key, map) {
+        purchaseMap.forEach(function(value, key) {
           chartData.push({
             value: (value / 100).toFixed(2),
             color: randomColor(),
@@ -229,50 +231,50 @@ var App = (function() {
       var context = $('.income-chart').get(0).getContext('2d');
       var differenceColor = incomeTotal - spendingTotal > 0 ? 'rgba(64, 188, 6, ' : 'rgba(188, 6, 6, ';
       var data = {
-        labels: ["Compare"],
+        labels: ['Compare'],
         datasets: [
-            {
-              label: "Income",
-              fillColor: "rgba(64, 188, 6, 0.5)",
-              strokeColor: "rgba(64, 188, 6, 0.8)",
-              highlightFill: "rgba(64, 188, 6, 0.75)",
-              highlightStroke: "rgba(64, 188, 6, 1)",
-              data: [incomeTotal / 100]
-            },
-            {
-              label: "Spending",
-              fillColor: "rgba(188, 6, 6, 0.5)",
-              strokeColor: "rgba(188, 6, 6, 0.8)",
-              highlightFill: "rgba(188, 6, 6, 0.75)",
-              highlightStroke: "rgba(188, 6, 6, 1)",
-              data: [spendingTotal / 100]
-            },
-            {
-              label: 'Difference',
-              fillColor: differenceColor + '0.5)',
-              strokeColor: differenceColor + '0.8)',
-              highlightFill: differenceColor + '0.75)',
-              highlightStroke: differenceColor + '1)',
-              data: [(incomeTotal - spendingTotal) / 100]
-            }
+          {
+            label: 'Income',
+            fillColor: 'rgba(64, 188, 6, 0.5)',
+            strokeColor: 'rgba(64, 188, 6, 0.8)',
+            highlightFill: 'rgba(64, 188, 6, 0.75)',
+            highlightStroke: 'rgba(64, 188, 6, 1)',
+            data: [incomeTotal / 100]
+          },
+          {
+            label: 'Spending',
+            fillColor: 'rgba(188, 6, 6, 0.5)',
+            strokeColor: 'rgba(188, 6, 6, 0.8)',
+            highlightFill: 'rgba(188, 6, 6, 0.75)',
+            highlightStroke: 'rgba(188, 6, 6, 1)',
+            data: [spendingTotal / 100]
+          },
+          {
+            label: 'Difference',
+            fillColor: differenceColor + '0.5)',
+            strokeColor: differenceColor + '0.8)',
+            highlightFill: differenceColor + '0.75)',
+            highlightStroke: differenceColor + '1)',
+            data: [(incomeTotal - spendingTotal) / 100]
+          }
         ]
-    };      
+      };      
       return new Chart(context).Bar(data);
     }
-  }
+  };
 
   function randomColor() {
     var letters = '0123456789ABCDEF'.split('');
     var color = '#';
     for (var i = 0; i < 6; i++ ) {
-        color += letters[Math.floor(Math.random() * 16)];
+      color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
   }
 
   function buildPurchasesMapFromSpending(spending) {
     var uniquePurchases = new Map();
-    spending.forEach(function(value, index, array) {
+    spending.forEach(function(value) {
       if (uniquePurchases.has(value.category)) {
         var oldValue = uniquePurchases.get(value.category);
         var newValue = oldValue + value.cost;
@@ -290,7 +292,7 @@ var App = (function() {
   }
   
   function replaceCompareChartWithBlankSlate() {
-    var blankSlate = '<h2 class="blankslate">' + 'Looks like you didn\'t add income here!</h2>'
+    var blankSlate = '<h2 class="blankslate">' + 'Looks like you didn\'t add income here!</h2>';
     $('.income-chart-container').html(blankSlate);
   }
 

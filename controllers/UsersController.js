@@ -1,5 +1,5 @@
 var db = require('../db/users.js');
-var RedisClient
+var RedisClient;
 var redis = require('redis');
 
 function UsersController() {
@@ -13,7 +13,7 @@ function UsersController() {
     } else {
       res.redirect('/users/' + req.user.username);
     }
-  }
+  };
   
   this.create = function(req, res) {
     var username = req.body.username;
@@ -41,7 +41,7 @@ function UsersController() {
         });
       }
     });    
-  }
+  };
   
   this.show = function(req, res) {
     //If user is logged in and at users/:username
@@ -52,7 +52,7 @@ function UsersController() {
     } else {
       res.render('needLogin');
     }    
-  }
+  };
 }
 
 module.exports = UsersController;

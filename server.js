@@ -90,7 +90,7 @@ function start() {
   routes.setup(app, controllers);
   var port = config.server.port;
   server = app.listen(port);
-  console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+  console.log('Express server listening on port %d in %s mode', port, app.settings.env);
 }
 
 function end() {

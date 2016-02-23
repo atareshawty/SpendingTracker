@@ -1,7 +1,7 @@
 /* global fetch */
 /* global App */
 /* global $ */
-var Categories = (function() {
+window.Categories = (function() {
   var categoryInput;
   var categorySubmitButton;
   var categoryDropDown;
@@ -19,10 +19,10 @@ var Categories = (function() {
   function validateNewCategory() {
     var category = categoryInput.val();
     if (0 < category.length && category.length <= 20) {
-      categorySubmitButton.attr("disabled", false);
+      categorySubmitButton.attr('disabled', false);
       return true;
     } else {
-      categorySubmitButton.attr("disabled", true);
+      categorySubmitButton.attr('disabled', true);
       return false;
     }  
   }
@@ -45,7 +45,7 @@ var Categories = (function() {
   function checkForDuplicateCategory() {
     var category = categoryInput.val();
     var hasDuplicate = false;
-    $("select[name='category'] > option").each(function () {
+    $('select[name=\'category\'] > option').each(function () {
       if (category.toLowerCase() === this.text.toLowerCase()) {
         hasDuplicate = true;
         //break out of loop
@@ -56,8 +56,8 @@ var Categories = (function() {
   }
 
   function clearNewCategory() {
-    categorySubmitButton.attr("disabled", true);
-    categoryInput.val('')
+    categorySubmitButton.attr('disabled', true);
+    categoryInput.val('');
   }
 
   function sendNewCategoryWithFetch(category) {

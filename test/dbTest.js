@@ -1,12 +1,10 @@
 /* global process */
-/* global before */
 /* global it */
 /* global describe */ 
 var assert = require('assert');  
 var pg = require('pg');
 var config = require('../config.js');
 var db = require('../db/users.js');
-var bcrypt = require('bcrypt-nodejs');
 
 describe('Database Interaction', function() {
   var testUser = config.test.user;
@@ -20,21 +18,21 @@ describe('Database Interaction', function() {
   
   describe('Find By Username', function() {
     it('should return user if exists', function(done) {
-      db.findByUsername(testUser.username, function(err, user, password) {
+      db.findByUsername(testUser.username, function(err, user) {
         assert.notEqual(user, undefined, 'User object should be returned');
         done();
       });
     });
     
     it('should return same username as requested', function(done) {
-      db.findByUsername(testUser.username, function(err, user, password) {
-        assert.equal(user.username, testUser.username, 'Usernames should match')
+      db.findByUsername(testUser.username, function(err, user) {
+        assert.equal(user.username, testUser.username, 'Usernames should match');
         done();
       });
     });
     
     it('ids should match', function(done) {
-      db.findByUsername(testUser.username, function(err, user, password) {
+      db.findByUsername(testUser.username, function(err, user) {
         assert.equal(user.id, testUser.id, 'Id\'s should match');
         done();
       });
@@ -49,15 +47,15 @@ describe('Database Interaction', function() {
     });
     
     it('should return an empty user if not provided a username', function(done) {
-      db.findByUsername(null, function(err, user, password) {
+      db.findByUsername(null, function(err, user) {
         assert.equal(user, undefined, 'Should not return a user');
         assert.equal(user, undefined, 'Should not return a password');
         done();
-      })
+      });
     });
     
     it('should return an empty user if username is not a string', function(done) {
-      db.findByUsername(15, function(err, user, password) {
+      db.findByUsername(15, function(err, user) {
         assert.equal(user, undefined, 'Should not return a user');
         assert.equal(user, undefined, 'Should not return a password');
         done();  
@@ -77,10 +75,10 @@ describe('Database Interaction', function() {
 
     it('should insert transaction when all parameters are given', function(done) {
       var fake = {
-        "cost": 1099,
-        "category": 'Entertainment',
-        "location": 'Cleveland Cavaliers', 
-        "date": '2015-12-25'
+        'cost': 1099,
+        'category': 'Entertainment',
+        'location': 'Cleveland Cavaliers', 
+        'date': '2015-12-25'
       };
       db.insertPurchase(testUser.username, fake, function() {
         client.connect();
@@ -104,10 +102,10 @@ describe('Database Interaction', function() {
     
     it('should not insert transaction when date is not well formed', function(done) {
       var fake = {
-        "cost": '10.99',
-        "category": 'Entertainment',
-        "location": 'Cleveland Cavaliers', 
-        "date": '12/25/2015'
+        'cost': '10.99',
+        'category': 'Entertainment',
+        'location': 'Cleveland Cavaliers', 
+        'date': '12/25/2015'
       };
       db.insertPurchase(testUser.username, fake, function(err) {
         assert(err != undefined, 'function should give error');
@@ -118,10 +116,10 @@ describe('Database Interaction', function() {
     
     it('should not insert transaction when date is not a string', function(done) {
       var fake = {
-        "cost": '10.99',
-        "category": 'Entertainment',
-        "location": 'Cleveland Cavaliers', 
-        "date": /^\d{4}[-]\d{2}[-]\d{2}$/
+        'cost': '10.99',
+        'category': 'Entertainment',
+        'location': 'Cleveland Cavaliers', 
+        'date': /^\d{4}[-]\d{2}[-]\d{2}$/
       };
       db.insertPurchase(testUser.username, fake, function(err) {
         assert(err != undefined, 'function should give error');
@@ -155,7 +153,7 @@ describe('Database Interaction', function() {
         assert.equal(total, filterTotal, 'Totals should match');
         assert.deepEqual(spending, filterSpending, 'Spending arrays should pass deep equals (be in same order)');
         done();
-      })
+      });
     });
     
     it('should return full spending when only given from filter date', function(done) {
@@ -214,12 +212,12 @@ describe('Database Interaction', function() {
         assert.equal(total, testFilteredTotal, 'Totals should be equal');
         done(err);
       });
-    })
+    });
   });
   
   describe('Create User', function() {
     it('should return error if the username already exists', function(done) {
-      db.createUser(testUser.username, testUser.password, function(err, id) {
+      db.createUser(testUser.username, testUser.password, function(err) {
         assert(err != undefined, 'Should return an error');
         assert(err != null, 'Should return an error');
         done();
@@ -231,14 +229,14 @@ describe('Database Interaction', function() {
       db.createUser(fake, 'password', function(err, id) {
         assert(id != undefined, 'Should return an id');
         var client = createDBClient();
-        client.query('DELETE FROM users WHERE username = $1',[fake], function(err, result) {
+        client.query('DELETE FROM users WHERE username = $1',[fake], function(err) {
           done(err);
         });
       });
     });
 
     it('should return an error when username.length > 30', function(done) {
-      db.createUser('testUser.username .length should be greather than 30', 'neat', function(err, alreadyExists) {
+      db.createUser('testUser.username .length should be greather than 30', 'neat', function(err) {
         assert(err != undefined, 'Function should give error');
         assert(err != null, 'Function should give error');
         done();
@@ -258,7 +256,7 @@ describe('Database Interaction', function() {
           var deleteQuery = insertClient.query('DELETE FROM categories WHERE id=$1 AND category=$2', [testUser.id, 'test']);
           deleteQuery.on('end', function() {
             insertClient.end();
-            done();
+            done(err);
           });
         });
       });
@@ -316,10 +314,10 @@ describe('Database Interaction', function() {
   describe('Validate Transaction', function() {
     it('should return true with all correct properties', function(done) {
       var trans = {
-        "cost": 10.99,
-        "category": 'Food',
-        "location": 'Chipotle',
-        "date": '2015-11-09'
+        'cost': 10.99,
+        'category': 'Food',
+        'location': 'Chipotle',
+        'date': '2015-11-09'
       };
       assert(db.validateTransaction(trans));
       done();
@@ -327,10 +325,10 @@ describe('Database Interaction', function() {
   
     it('should return false if cost is not a number', function(done) {
       var trans = {
-        "cost": '10.99',
-        "category": 'Food',
-        "location": 'Chipotle',
-        "date": '2015-11-09'
+        'cost': '10.99',
+        'category': 'Food',
+        'location': 'Chipotle',
+        'date': '2015-11-09'
       };
       assert(!db.validateTransaction(trans));
       done();
@@ -338,9 +336,9 @@ describe('Database Interaction', function() {
     
     it('should return false if cost is undefined', function(done) {
       var trans = {
-        "category": 'Food',
-        "location": 'Chipotle',
-        "date": '2015-11-09'
+        'category': 'Food',
+        'location': 'Chipotle',
+        'date': '2015-11-09'
       };
       assert(!db.validateTransaction(trans));
       done();
@@ -348,10 +346,10 @@ describe('Database Interaction', function() {
     
     it('should return false if category is not a string', function(done) {
       var trans = {
-        "cost": '10.99',
-        "category": ['Food'],
-        "location": 'Chipotle',
-        "date": '2015-11-09'
+        'cost': '10.99',
+        'category': ['Food'],
+        'location': 'Chipotle',
+        'date': '2015-11-09'
       };
       assert(!db.validateTransaction(trans));
       done();
@@ -359,10 +357,10 @@ describe('Database Interaction', function() {
     
     it('should return false if location is not a string', function(done) {
       var trans = {
-        "cost": '10.99',
-        "category": 'Food',
-        "location": ['Chipotle'],
-        "date": '2015-11-09'
+        'cost': '10.99',
+        'category': 'Food',
+        'location': ['Chipotle'],
+        'date': '2015-11-09'
       };
       assert(!db.validateTransaction(trans));
       done();
@@ -370,10 +368,10 @@ describe('Database Interaction', function() {
     
     it('should return false if date is not well formed', function(done) {
       var trans = {
-        "cost": '10.99',
-        "category": 'Food',
-        "location": 'Chipotle',
-        "date": ['2015-11-09']
+        'cost': '10.99',
+        'category': 'Food',
+        'location': 'Chipotle',
+        'date': ['2015-11-09']
       };
       assert(!db.validateTransaction(trans));
       done();
@@ -381,10 +379,10 @@ describe('Database Interaction', function() {
     
     it('should return false if date is not well formed', function(done) {
       var trans = {
-        "cost": '10.99',
-        "category": 'Food',
-        "location": 'Chipotle',
-        "date": '11/09/2015'
+        'cost': '10.99',
+        'category': 'Food',
+        'location': 'Chipotle',
+        'date': '11/09/2015'
       };
       assert(!db.validateTransaction(trans));
       done();
@@ -393,10 +391,10 @@ describe('Database Interaction', function() {
   
   describe('Delete Individual Purchase', function() {
     var fake = {
-      "cost": 1099,
-      "category": 'Entertainment',
-      "location": 'Cleveland Cavaliers', 
-      "date": '2015-12-25'
+      'cost': 1099,
+      'category': 'Entertainment',
+      'location': 'Cleveland Cavaliers', 
+      'date': '2015-12-25'
     };
     
     it('should delete one instance of the spending', function(done) {
@@ -404,7 +402,6 @@ describe('Database Interaction', function() {
         if (err) {done(err);}
         db.deleteIndividualPurchase(testUser.username, fake, function(err) {
           if (err) {done(err);}
-          var client = createDBClient();
           db.getSpendingWithUsername(testUser.username, function(err, spending) {
             if (err) {done(err);}
             assert.deepEqual(spending, testUser.spending, 'Spending should match');
@@ -413,7 +410,7 @@ describe('Database Interaction', function() {
         });  
       });
     });
-  })
+  });
 });
 
 function createDBClient() {
@@ -421,4 +418,4 @@ function createDBClient() {
   var client = new pg.Client(connectionString);
   client.connect();
   return client;
-};
+}

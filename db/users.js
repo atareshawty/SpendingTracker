@@ -10,7 +10,7 @@ function createDBClient() {
   var client = new pg.Client(connectionString);
   client.connect();
   return client;
-};
+}
 
 /**
   Gets all necessary information from db to create user object passed back into callback
@@ -27,7 +27,7 @@ function createUserObj(id, username, done) {
   var total = 0;
 
   query.on('error', function(error) {
-      done(error);
+    done(error);
   });
 
   query.on('row', function(row) {
@@ -45,7 +45,7 @@ function createUserObj(id, username, done) {
       }
     });
   });
-};
+}
 
 /**
   Inserts transaction {@transaction} into db, for user with id = {@id}
@@ -64,7 +64,7 @@ exports.insertPurchase = function(username, purchase, done) {
       client.end();
       done(err);
     });
-    query.on('end', function(row) {
+    query.on('end', function() {
       client.end();
       done(null);
     });  
@@ -96,8 +96,8 @@ exports.findByUsername = function(username, done) {
     if (result.rowCount === 1) {
       var row = result.rows[0];
       createUserObj(row.id, row.username, function(err, user) {
-          if (err) {done(err);}
-          done(null, user, row.password);
+        if (err) {done(err);}
+        done(null, user, row.password);
       });
     } else {
       done(null, null);
@@ -117,7 +117,7 @@ exports.findByUsername = function(username, done) {
 exports.getSpending = function(id, minDate, maxDate, done) {
   var client = createDBClient();
   var queryString, query;
-  var spending = []
+  var spending = [];
   var total = 0;
   
   if (typeof minDate == 'function') {
@@ -128,7 +128,7 @@ exports.getSpending = function(id, minDate, maxDate, done) {
 
   if (validateDate(minDate) && validateDate(maxDate)) {
     queryString = 'SELECT * FROM spending WHERE id = $1 AND date BETWEEN $2 and $3 ORDER BY date asc';
-    query = client.query(queryString, [id, minDate, maxDate])
+    query = client.query(queryString, [id, minDate, maxDate]);
   } else {
     queryString = 'SELECT * FROM spending WHERE id = $1 ORDER BY date asc';
     query = client.query(queryString, [id]);
@@ -154,7 +154,7 @@ exports.getSpendingWithUsername = function(username, minDate, maxDate, done) {
   if (typeof minDate === 'function') {
     done = minDate,
     minDate = {},
-    maxDate = {}
+    maxDate = {};
   }
   var client = createDBClient();
   var queryString, query, spending = [], total = 0;
@@ -182,8 +182,8 @@ exports.getSpendingWithUsername = function(username, minDate, maxDate, done) {
     client.end();
     total = parseFloat(total.toFixed(2));
     done(undefined, spending, total);
-  })
-}
+  });
+};
 
 
 /**
@@ -244,9 +244,9 @@ exports.deleteIndividualPurchase = function(username, purchase, done) {
       done(null, true);
     });
   } else {
-    done("Bad purchase format");
+    done('Bad purchase format');
   }
-}
+};
 
 exports.validateDate = validateDate;
 exports.validateTransaction = validateTransaction;
@@ -268,32 +268,12 @@ function getCategories(id, done) {
   });
 
   categoryQuery.on('row', function(row) {
-      categories.push(row.category);
+    categories.push(row.category);
   });
 
   categoryQuery.on('end', function() {
     client.end();
     done(null, categories);
-  });
-}
-
-/**
- * Checks to see whether or not a username exists
- * Callback function {@done} expects err and boolean
- * @param username
- * @param callback function
- */
-function usernameExists(username, done) {
-  var client = createDBClient()
-  var query;
-  client.on('error', function(err) {
-    done(err);
-  });
-
-  query = client.query('SELECT * FROM login WHERE username = $1', [username]);
-  query.on('end', function(result) {
-    client.end();
-    done(null, result.rowCount > 0);
   });
 }
 

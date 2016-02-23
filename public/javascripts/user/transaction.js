@@ -1,4 +1,6 @@
-var Purchases = (function() {
+/* global $ */
+/* global App */
+window.Purchases = (function() {
   var cost, location, category, date, submitButton;
   
   return {
@@ -7,7 +9,7 @@ var Purchases = (function() {
       location = $('#POST-location');
       category = $('#POST-category');
       date = $('#POST-date');
-      submitButton = $("input[id=submitData]");
+      submitButton = $('input[id=submitData]');
       createSpendingDate();
       cost.on('keyup', validatePurchase);
       location.on('keyup', validatePurchase);
@@ -22,13 +24,13 @@ var Purchases = (function() {
   
   function createSpendingDate() {
     date.datepicker({
-      defaultDate: "+0",
+      defaultDate: '+0',
       changeMonth: true,
       numberOfMonths: 1,
-      dateFormat: "yy-mm-dd",
-      altFormat: "yy-mm-dd",
+      dateFormat: 'yy-mm-dd',
+      altFormat: 'yy-mm-dd',
       onClose: function(selectedDate) {
-        $('#from').datepicker("option", "maxDate", selectedDate)
+        $('#from').datepicker('option', 'maxDate', selectedDate);
       }
     });
   }
@@ -41,10 +43,10 @@ var Purchases = (function() {
     var date = $('.purchase-form #POST-date').val();
 
     if (0 < location.length && location.length <= 20 && moneyRegex.test(cost) && dateRegex.test(date)) {
-      submitButton.attr("disabled", false);
+      submitButton.attr('disabled', false);
       return true;
     } else {
-      submitButton.attr("disabled", true);
+      submitButton.attr('disabled', true);
       return false;
     }
   }
@@ -60,7 +62,7 @@ var Purchases = (function() {
         location: location.val(),
         category: category.val(),
         date: date.val()
-      }
+      };
       var url = '/api/spending/' + username + '/?cost=' + purchase.cost 
                 + '&location=' + purchase.location + '&category=' + purchase.category
                 + '&date=' + purchase.date;
@@ -102,7 +104,7 @@ var Purchases = (function() {
       category: $(categoryQueryString).text(),
       location: $(locationQueryString).text(),
       date: $(dateQueryString).text()
-    }
+    };
     console.log('purchase to delete', purchaseToDelete);
     App.removeUserPurchase(rowIndex);
     App.buildPieChart();
@@ -129,7 +131,7 @@ var Purchases = (function() {
       category: $(categoryQueryString).text(),
       location: $(locationQueryString).text(),
       date: $(dateQueryString).text()
-    }
+    };
     console.log('purchase to delete', purchaseToDelete);
     App.removeUserIncome(rowIndex);
     App.buildIncomeTable();
@@ -153,6 +155,6 @@ var Purchases = (function() {
     cost.val('');
     location.val('');
     date.val('');
-    submitButton.attr("disabled", true);
+    submitButton.attr('disabled', true);
   }  
 }());

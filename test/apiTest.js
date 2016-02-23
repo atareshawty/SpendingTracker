@@ -1,17 +1,12 @@
 /* global process */
-/* global before */
 /* global it */
 /* global describe */
-var express = require('express');
-var app = express();
-var should = require('should'); 
 var assert = require('assert');
 var request = require('supertest');  
 var pg = require('pg');
 var config = require('../config.js');
 var server = require('../server.js');
 var db = require('../db/users.js');
-var pg = require('pg');
 var dbConnectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/spending_tracker_development';
 
 server.start();
@@ -55,14 +50,14 @@ describe('API', function() {
         username: config.test.user.username,
         password: config.test.password
       };
-     var spending = config.test.user.spending;
-     var total = config.test.user.total;
+      var spending = config.test.user.spending;
+      var total = config.test.user.total;
      
-     request(url).get('/api/spending/' + config.test.user.username).send(requestObj).expect('Content-Type', /json/).end(function(err, res) {
-       assert.deepEqual(res.body.spending, spending, 'Response spending should match test user spending');
-       assert.equal(res.body.total, total, 'Response total should match test user total');
-       done(err);
-     });
+      request(url).get('/api/spending/' + config.test.user.username).send(requestObj).expect('Content-Type', /json/).end(function(err, res) {
+        assert.deepEqual(res.body.spending, spending, 'Response spending should match test user spending');
+        assert.equal(res.body.total, total, 'Response total should match test user total');
+        done(err);
+      });
     });
     
     it('should return a 401 when the wrong username and password is sent', function(done) {
@@ -79,21 +74,21 @@ describe('API', function() {
     });
     
     it('should return correct spending, in JSON, when given proper username, password, and filter dates', function(done) {
-     var testUser = config.test.user;
-     var requestObj = {
-       username: testUser.username,
-       password: config.test.password,
-       from: config.test.filterDates.from,
-       to: config.test.filterDates.to
-     };
-     var spending = config.test.filterSpending;
-     var total = config.test.filteredTotal;
+      var testUser = config.test.user;
+      var requestObj = {
+        username: testUser.username,
+        password: config.test.password,
+        from: config.test.filterDates.from,
+        to: config.test.filterDates.to
+      };
+      var spending = config.test.filterSpending;
+      var total = config.test.filteredTotal;
      
-     request(url).get('/api/spending/' + config.test.user.username).send(requestObj).expect('Content-Type', /json/).end(function(err, res) {
-       assert.deepEqual(res.body.spending, spending, 'Response spending should match test user spending');
-       assert.equal(res.body.total, total, 'Response total should match test user total');
-       done(err);
-     });
+      request(url).get('/api/spending/' + config.test.user.username).send(requestObj).expect('Content-Type', /json/).end(function(err, res) {
+        assert.deepEqual(res.body.spending, spending, 'Response spending should match test user spending');
+        assert.equal(res.body.total, total, 'Response total should match test user total');
+        done(err);
+      });
     });
   });
   
@@ -164,7 +159,7 @@ describe('API', function() {
         assert.equal(result.status, 200, 'Should get back 200 code');
         var client = new pg.Client(dbConnectionString);
         client.connect();
-        var queryString = 'SELECT category FROM categories WHERE id=(SELECT id FROM users WHERE username=$1)'
+        var queryString = 'SELECT category FROM categories WHERE id=(SELECT id FROM users WHERE username=$1)';
         var deleteQueryString = 'DELETE FROM categories WHERE category=$1';
         //Get new category from db to see if it matches the one sent
         var query = client.query(queryString, [config.test.user.username]);
@@ -177,7 +172,7 @@ describe('API', function() {
           //Remove new category so test can run again
           var deleteQuery = client.query(deleteQueryString, [postObject.category]);
           deleteQuery.on('error', function(err) {done(err);});
-          deleteQuery.on('end', function() {done()});
+          deleteQuery.on('end', function() {done();});
         });
       });
     });
@@ -199,10 +194,10 @@ describe('API', function() {
   describe('Delete Spending', function() {
     it('should delete spending given all details of the purchase', function(done) {
       var fakePurchase = {
-        "cost": 1099,
-        "category": 'Entertainment',
-        "location": 'Cleveland Cavaliers', 
-        "date": '2015-12-25'
+        'cost': 1099,
+        'category': 'Entertainment',
+        'location': 'Cleveland Cavaliers', 
+        'date': '2015-12-25'
       };
       var deleteObject = {
         username: config.test.user.username,
@@ -214,15 +209,15 @@ describe('API', function() {
       };
       db.insertPurchase(config.test.user.username, fakePurchase, function(err) {
         if (err) {done(err);}
-        request(url).delete('/api/spending/' + config.test.user.username).send(deleteObject).end(function(err, result) {
+        request(url).delete('/api/spending/' + config.test.user.username).send(deleteObject).end(function(err) {
           if (err) {done(err);}
-          db.getSpendingWithUsername(config.test.user.username, function(err, spending, total) {
+          db.getSpendingWithUsername(config.test.user.username, function(err, spending) {
             if (err) {done(err);}
             assert.deepEqual(spending, config.test.user.spending);
             done();
           });
-        })
-      })
+        });
+      });
     });
     
     it('should return a 401 when the request is not authenticated', function(done) {
@@ -235,7 +230,7 @@ describe('API', function() {
         if (err) {done(err);}
         assert.equal(result.status, 401, 'Should give back a 401');
         done();
-      })
+      });
     });
     
     it('should return a 400 with bad purchase form', function(done) {

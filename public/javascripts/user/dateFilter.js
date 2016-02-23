@@ -1,4 +1,6 @@
-var DateFilter = (function() {
+/* global $ */
+/* global App */
+window.DateFilter = (function() {
   var fromInput, toInput, submitButton;
   return {
     init: function() {
@@ -16,22 +18,22 @@ var DateFilter = (function() {
 
   function createDateRange() {
     fromInput.datepicker({
-      defaultDate: "-1m",
+      defaultDate: '-1m',
       changeMonth: true,
       numberOfMonths: 1,
-      dateFormat: "yy-mm-dd",
+      dateFormat: 'yy-mm-dd',
       onClose: function(selectedDate) {
-        fromInput.datepicker("option", "minDate", selectedDate)
+        fromInput.datepicker('option', 'minDate', selectedDate);
       }
     });
 
     toInput.datepicker({
-      defaultDate: "+0",
+      defaultDate: '+0',
       changeMonth: true,
       numberOfMonths: 1,
-      dateFormat: "yy-mm-dd",
+      dateFormat: 'yy-mm-dd',
       onClose: function(selectedDate) {
-        toInput.datepicker("option", "maxDate", selectedDate)
+        toInput.datepicker('option', 'maxDate', selectedDate);
       }
     });  
   }
@@ -41,10 +43,10 @@ var DateFilter = (function() {
     var minDate = fromInput.val();
     var maxDate = toInput.val();
     if (regex.test(minDate) && regex.test(maxDate)) {
-      submitButton.attr("disabled", false);
+      submitButton.attr('disabled', false);
       return true;
     } else {
-      submitButton.attr("disabled", true);
+      submitButton.attr('disabled', true);
       return false;
     }
   }
@@ -55,7 +57,7 @@ var DateFilter = (function() {
     } else {
       alert('Invalid date format!');    
     }
-    $("input[id=submitDate]").attr("disabled", true);
+    $('input[id=submitDate]').attr('disabled', true);
     fromInput.val('');
     toInput.val('');
   }
@@ -65,7 +67,7 @@ var DateFilter = (function() {
     var income = App.getFilteredIncome(minDate, maxDate);
     var spendingTotal = App.getFilteredSpendingTotal();
     var incomeTotal = App.getFilteredIncomeTotal();
-    App.buildPieChart(spending)
+    App.buildPieChart(spending);
     App.buildTable(spending, spendingTotal);
     App.buildCompareChart(incomeTotal, spendingTotal);
     App.buildIncomeTable(income, incomeTotal);

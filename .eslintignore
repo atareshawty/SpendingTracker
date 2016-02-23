@@ -1,3 +1,4 @@
 node_modules/**
 public/javascripts/templates.js
 public/javascripts/libraries
+gulpfile.js

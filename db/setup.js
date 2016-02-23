@@ -1,3 +1,4 @@
+'use strict';
 var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
 var config = require('../config');

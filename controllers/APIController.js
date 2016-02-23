@@ -2,9 +2,6 @@
 var db = require('../db/users.js');
 var bcrypt = require('bcrypt-nodejs');
 var redis = require('redis');
-var cookieParser = require('cookie-parser');
-var config = require('../config.js');
-var secret = process.env.PASSPORT_SECRET || config.passport.secret;
 
 function APIController() {
   this.getUser = function(req, res) {
@@ -73,7 +70,7 @@ function APIController() {
         res.status(401).send('You can/t make that unauthenticated request!');
       }
     });
-  }
+  };
   
   this.deletePurchase = function(req, res) {
     authenticate(req, function(err, authenticated) {
@@ -94,7 +91,7 @@ function APIController() {
         res.status(401).send('You can/t make that unauthenticated request!');
       }
     });
-  }
+  };
 }
 
 function authenticate(req, done) {

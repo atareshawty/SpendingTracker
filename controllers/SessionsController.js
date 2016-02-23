@@ -1,8 +1,8 @@
-var RedisClient
+var RedisClient;
 var redis = require('redis');
 
 function SessionsController() {
-	this.loginPage = function(req,res) {
+  this.loginPage = function(req,res) {
     if (!req.isAuthenticated()) {
       if (req.query.auth) {
         res.render('login', {message: 'Username or password was incorrect. Try again'});
@@ -12,7 +12,7 @@ function SessionsController() {
     } else {
       res.redirect('/users/' + req.user.username);
     }
-  }
+  };
   
   //Authentication gets handled by passport in routes.js
   //User would already by authenticated when this function is called
@@ -23,12 +23,12 @@ function SessionsController() {
       RedisClient.end();
     });
     res.status(200).redirect('/users/' + req.user.username);
-  }
+  };
   
   this.destroy = function(req, res) {
     req.session.destroy();
     res.redirect('/');
-  }
+  };
 }
 
 module.exports = SessionsController;

@@ -13,3 +13,4 @@ npm-debug.log
 *.rdb
 nohup.out
 /public
+/src/js/templates.js

@@ -11,7 +11,7 @@ Inside your terminal application run the following commands to get the project u
 ```bash
 git clone https://github.com/atareshawty/SpendingTracker.git
 cd SpendingTracker
-
+npm install -g gulp
 script/setup
 ```
 

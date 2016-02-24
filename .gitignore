@@ -10,6 +10,7 @@ Thumbs.db
 /node_modules
 npm-debug.log
 /*.env
-/public/javascripts/templates.js
 *.rdb
 nohup.out
+/public
+/src/js/templates.js

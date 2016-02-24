@@ -1,8 +1,8 @@
 /* global process */
 var pg = require('pg');
 var bcrypt = require('bcrypt-nodejs');
-var User = require('../public/javascripts/userModel.js');
-var Transaction = require('../public/javascripts/transactionModel.js');
+var User = require('./userModel.js');
+var Transaction = require('./transactionModel.js');
 var config = require('../config.js');
 
 function createDBClient() {

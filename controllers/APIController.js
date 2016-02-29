@@ -18,7 +18,7 @@ function APIController() {
       }
     });
   };
-  
+
   this.getSpending = function(req, res) {
     authenticate(req, function(err, authenticated) {
       if (err) {res.status(500).send(err);}
@@ -34,7 +34,7 @@ function APIController() {
       }
     });
   };
-  
+
   this.newSpending = function(req, res) {
     authenticate(req, function(err, authenticated) {
       if (err) {res.status(500).send(err);}
@@ -55,7 +55,7 @@ function APIController() {
       }
     });
   };
-  
+
   this.newCategory = function(req, res) {
     authenticate(req, function(err, authenticated) {
       if (err) {res.status(500).send(err);}
@@ -71,7 +71,14 @@ function APIController() {
       }
     });
   };
-  
+
+  this.loginUser = function(req,res) {
+    authThroughDB(req.body.username, req.body.password, function(err, auth) {
+      if (auth) res.status(200).send();
+      else res.status(401).send();
+    });
+  };
+
   this.deletePurchase = function(req, res) {
     authenticate(req, function(err, authenticated) {
       if (err) {res.status(500).send(err);}
@@ -126,10 +133,10 @@ function authThroughRedisStore(username, cookie, done) {
 
 function authThroughDB(username, password, done) {
   db.findByUsername(username, function(err, user, userPassword) {
-    if (err) {done(err);} 
-    else if (!user) {done(null, false);} 
-    else if (!bcrypt.compareSync(password, userPassword)) {done(null, false);} 
-    else {done(null, true);} 
+    if (err) {done(err);}
+    else if (!user) {done(null, false);}
+    else if (!bcrypt.compareSync(password, userPassword)) {done(null, false);}
+    else {done(null, true);}
   });
 }
 

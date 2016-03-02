@@ -18,7 +18,7 @@ function APIController() {
       }
     });
   };
-  
+
   this.getSpending = function(req, res) {
     authenticate(req, function(err, authenticated) {
       if (err) {res.status(500).send(err);}
@@ -34,7 +34,7 @@ function APIController() {
       }
     });
   };
-  
+
   this.newSpending = function(req, res) {
     authenticate(req, function(err, authenticated) {
       if (err) {res.status(500).send(err);}
@@ -55,7 +55,7 @@ function APIController() {
       }
     });
   };
-  
+
   this.newCategory = function(req, res) {
     authenticate(req, function(err, authenticated) {
       if (err) {res.status(500).send(err);}
@@ -71,7 +71,34 @@ function APIController() {
       }
     });
   };
-  
+
+  //For desktop app only! Don't user anywhere else!
+  this.loginUser = function(req,res) {
+    authThroughDB(req.body.username, req.body.password, function(err, auth) {
+      if (auth) {
+        var RedisClient = redis.createClient();
+        var hashedUsername = bcrypt.hashSync(req.body.username, bcrypt.genSaltSync(10));
+        RedisClient.set(req.body.username + 'Desktop', hashedUsername, function(err) {
+          if (err) res.status(500).send();
+          else  {
+            res.status(200);
+            res.send(hashedUsername);
+          }
+        });
+      }
+      else res.status(401).send();
+    });
+  };
+
+  //For desktop app only! Don't user anywhere else!
+  this.logoutUser = function(req, res) {
+    var RedisClient = redis.createClient();
+    RedisClient.del(req.body.username + 'Desktop', function(err) {
+      if (err) res.status(500).send();
+      else res.status(200).send();
+    });
+  };
+
   this.deletePurchase = function(req, res) {
     authenticate(req, function(err, authenticated) {
       if (err) {res.status(500).send(err);}
@@ -100,6 +127,11 @@ function authenticate(req, done) {
       if (err) {done(err);}
       else {done(null, auth);}
     });
+  } else if (req.params.username && req.query.sessionID){
+    authThroughRedisStore(`${req.params.username}Desktop`, req.query.sessionID, function(err, auth) {
+      if (err) {done(err);}
+      else done(null, auth);
+    });
   } else if (req.body.username && req.body.password) {
     authThroughDB(req.body.username, req.body.password, function(err, auth) {
       if (err) {done(err);}
@@ -126,10 +158,10 @@ function authThroughRedisStore(username, cookie, done) {
 
 function authThroughDB(username, password, done) {
   db.findByUsername(username, function(err, user, userPassword) {
-    if (err) {done(err);} 
-    else if (!user) {done(null, false);} 
-    else if (!bcrypt.compareSync(password, userPassword)) {done(null, false);} 
-    else {done(null, true);} 
+    if (err) {done(err);}
+    else if (!user) {done(null, false);}
+    else if (!bcrypt.compareSync(password, userPassword)) {done(null, false);}
+    else {done(null, true);}
   });
 }
 

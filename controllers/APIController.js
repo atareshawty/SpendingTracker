@@ -72,10 +72,30 @@ function APIController() {
     });
   };
 
+  //For desktop app only! Don't user anywhere else!
   this.loginUser = function(req,res) {
     authThroughDB(req.body.username, req.body.password, function(err, auth) {
-      if (auth) res.status(200).send();
+      if (auth) {
+        var RedisClient = redis.createClient();
+        var hashedUsername = bcrypt.hashSync(req.body.username, bcrypt.genSaltSync(10));
+        RedisClient.set(req.body.username + 'Desktop', hashedUsername, function(err) {
+          if (err) res.status(500).send();
+          else  {
+            res.status(200);
+            res.send(hashedUsername);
+          }
+        });
+      }
       else res.status(401).send();
+    });
+  };
+
+  //For desktop app only! Don't user anywhere else!
+  this.logoutUser = function(req, res) {
+    var RedisClient = redis.createClient();
+    RedisClient.del(req.body.username + 'Desktop', function(err) {
+      if (err) res.status(500).send();
+      else res.status(200).send();
     });
   };
 
@@ -106,6 +126,11 @@ function authenticate(req, done) {
     authThroughRedisStore(req.params.username, req.headers.cookie, function(err, auth) {
       if (err) {done(err);}
       else {done(null, auth);}
+    });
+  } else if (req.params.username && req.query.sessionID){
+    authThroughRedisStore(`${req.params.username}Desktop`, req.query.sessionID, function(err, auth) {
+      if (err) {done(err);}
+      else done(null, auth);
     });
   } else if (req.body.username && req.body.password) {
     authThroughDB(req.body.username, req.body.password, function(err, auth) {

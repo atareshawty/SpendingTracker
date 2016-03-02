@@ -24,6 +24,7 @@ router.setup = function(app, controllers) {
   app.post('/api/spending/:username', controllers.api.newSpending);
   app.post('/api/category/:username', controllers.api.newCategory);
   app.post('/api/users/login', controllers.api.loginUser);
+  app.post('/api/users/logout', controllers.api.logoutUser);
   app.delete('/api/spending/:username', controllers.api.deletePurchase);
 };
 
